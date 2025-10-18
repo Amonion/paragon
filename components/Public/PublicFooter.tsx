@@ -176,7 +176,7 @@ export default function PublicFooter() {
           </div>
         </div>
       </div>
-      <div className="flex justify-center py-[50px] bg-[var(--backgroundColor)]">
+      <div className="flex justify-center py-5 sm:py-[40px] bg-[var(--backgroundColor)]">
         <div className="customContainer">
           <div className="flex justify-center">
             <i className="bi bi-c-circle mr-1"></i>

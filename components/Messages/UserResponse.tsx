@@ -10,7 +10,7 @@ export default function Response() {
         <div className={`overlay z-50`} onClick={clearMessage}>
           <motion.div
             className={`text-white ${
-              isSuccess ? 'bg-green-500' : 'bg-[var(--custom)]'
+              isSuccess ? 'bg-green-500' : 'bg-[var(--customRedColor)]'
             } rounded-[5px] py-[5px] px-2 reply max-w-[500px] w-full flex flex-col items-center `}
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

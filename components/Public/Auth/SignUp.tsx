@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { validateInputs, ValidationResult } from '@/lib/validateInputs'
 import apiRequest, { ApiResponseInterface } from '@/lib/axios'
-import { useAuthStore } from '@/src/authStore'
 import { validateUsername } from '@/lib/helpers'
 import { MessageStore } from '@/src/zustand/notification/Message'
 
@@ -105,8 +104,6 @@ export default function SignUp() {
       })
 
       if (response.status === 200) {
-        const { user, token } = response.data
-        useAuthStore.getState().login(user, token)
         router.replace('/signup-successful')
       }
     } catch (error) {

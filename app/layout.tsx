@@ -137,7 +137,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100vh] bg-[var(--white-gray)] text-[var(--text-main-color)]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100vh] bg-[var(--white-gray)] text-[var(--secondaryTextColor)]`}
       >
         <GeneralProvider>
           <ThemeProvider>{isMounted && children}</ThemeProvider>

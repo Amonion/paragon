@@ -19,7 +19,7 @@ export default function SignupSuccess() {
           className="my-2"
           width={0}
           height={0}
-          alt="Archination Logo"
+          alt="Paragon Farms"
         />
         <h2 className="text-xl text-center font-semibold mb-2">
           Your account has been created successfully

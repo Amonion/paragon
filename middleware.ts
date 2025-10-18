@@ -12,14 +12,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  if (
-    pathname.startsWith('/home') ||
-    pathname.startsWith('/onboarding') ||
-    pathname.startsWith('/team') ||
-    pathname.startsWith('/utils')
-  ) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/dashboard')) {
     if (!token) {
-      return NextResponse.redirect(new URL('/home', request.url))
+      return NextResponse.redirect(new URL('/', request.url))
     }
     return NextResponse.next()
   }
@@ -34,7 +29,7 @@ export function middleware(request: NextRequest) {
       pathname === '/email-sent' ||
       pathname === '/signup-successful')
   ) {
-    return NextResponse.redirect(new URL('/home', request.url))
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return NextResponse.next()
