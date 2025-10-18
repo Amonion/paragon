@@ -3,11 +3,11 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 export const metadata = generateMetadata({
-  title: 'Sign Up Successful | Archination',
+  title: 'Sign Up Successful | Paragon',
   description: 'Congratulations, your account has been created successfully.',
   twitter: {
     card: 'summary',
-    site: '@archination',
+    site: '@paragon',
   },
 })
 
