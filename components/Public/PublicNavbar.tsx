@@ -46,7 +46,7 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
-                  pathName === '/' ? 'bg-[var(--custom-light-color)]' : ''
+                  pathName === '/' ? 'bg-[var(--customRedColor)]' : ''
                 }`}
                 href={`/`}
               >
@@ -90,9 +90,7 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
-                  pathName === '/contact'
-                    ? 'bg-[var(--custom-light-color)]'
-                    : ''
+                  pathName === '/contact' ? 'bg-[var(--customRedColor)]' : ''
                 }`}
                 href={`/contact`}
               >
@@ -112,9 +110,7 @@ export default function PublicNavbar() {
             <li className="ml-auto">
               <Link
                 className={`navLinks ${
-                  pathName === '/sign-up'
-                    ? 'bg-[var(--custom-light-color)]'
-                    : ''
+                  pathName === '/sign-up' ? 'bg-[var(--customRedColor)]' : ''
                 }`}
                 href={`/sign-up`}
               >
@@ -123,7 +119,11 @@ export default function PublicNavbar() {
             </li>
             <li>
               <Link
-                className={`navLinks bg-[var(--customTextDarkColor)]`}
+                className={`navLinks ${
+                  pathName === '/sign-in'
+                    ? 'bg-[var(--customRedColor)]'
+                    : 'bg-[var(--customDarkColor)]'
+                }`}
                 href={`/sign-in`}
               >
                 Sign In

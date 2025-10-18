@@ -2,19 +2,23 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Autoplay, Navigation, Pagination } from 'swiper/modules'
+import { Autoplay, Pagination } from 'swiper/modules'
 
 export default function Hero() {
   return (
     <section className=" flex relative w-full justify-center">
       <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        navigation
+        modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}
-        autoplay={{ delay: 3000 }}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false, // keeps autoplay after user swipes
+        }}
         spaceBetween={0}
         slidesPerView={1}
-        className="w-full"
+        speed={1500} // 🔥 Smooth transition (1 second)
+        loop={true} // continuous loop for seamless feel
+        className="w-full transition-transform duration-1000 ease-in-out"
       >
         <SwiperSlide>
           <Image

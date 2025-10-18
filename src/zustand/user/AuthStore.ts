@@ -16,14 +16,7 @@ interface AuthState {
   userOffices: Office[]
   user: User | null
   token: string | null
-  login: (
-    user: User,
-    bioUserSettings: BioUserSettings,
-    bioUser: BioUser,
-    bioUserState: BioUserState,
-    bioUserSchoolInfo: BioUserSchoolInfo,
-    token: string
-  ) => void
+  login: (user: User, token: string) => void
   setUser: (userData: User) => void
   setAllUser: (
     bioUserState: BioUserState,
@@ -89,20 +82,9 @@ export const AuthStore = create<AuthState>()(
         })
       },
 
-      login: (
-        user,
-        bioUserSettings,
-        bioUser,
-        bioUserState,
-        bioUserSchoolInfo,
-        token
-      ) => {
+      login: (user, token) => {
         set({
           user: user,
-          bioUserSettings: bioUserSettings,
-          bioUser: bioUser,
-          bioUserState: bioUserState,
-          bioUserSchoolInfo: bioUserSchoolInfo,
           token,
         })
         const expirationDays = 30

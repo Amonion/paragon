@@ -33,6 +33,8 @@
  --primaryTextColor: #181818;
  --secondaryTextColor: #716C80;
   --customColor: #FE964D;
+  --customDarkColor: #f57c25;
+  --customRedColor: #F35329;
   --secondaryCustomColor: #FFF7F1;
 }
 
@@ -173,7 +175,7 @@ ol {
 }
 
 .homeButton{
-  @apply w-full text-center cursor-pointer rounded-md bg-[var(--customTextColor)] py-2 text-white hover:bg-[var(--customTextDarkColor)]
+  @apply w-full text-center cursor-pointer transition-all duration-500 rounded-md bg-[var(--customColor)] py-2 text-white hover:bg-[var(--customDarkColor)]
 }
 
 .homeInputLabel{
@@ -181,7 +183,7 @@ ol {
 }
 
 .navLinks{
-  @apply py-3 px-5 block lg:text-lg hover:bg-[var(--custom-light-color)]
+  @apply py-3 px-5 block lg:text-lg hover:bg-[var(--customDarkColor)]
 }
 
 .footerPill{

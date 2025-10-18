@@ -1,9 +1,11 @@
 'use client'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import Footer from '@/components/Public/Footer'
 import { useTheme } from '@/context/ThemeProvider'
 import Link from 'next/link'
+import PublicFooter from '@/components/Public/PublicFooter'
+import PublicHeader from '@/components/Public/PublicHeader'
+import PublicNavbar from '@/components/Public/PublicNavbar'
 
 export default function NotFound() {
   const { theme } = useTheme()
@@ -11,18 +13,8 @@ export default function NotFound() {
   return (
     <>
       <div className="flex min-h-[100vh] w-full flex-1 flex-col items-center ">
-        <div className="flex w-full bg-[var(--primary)] justify-center py-1 mb-5">
-          <Image
-            style={{ height: 'auto' }}
-            src="/images/logos/SchoolingLogo.png"
-            loading="lazy"
-            sizes="100vw"
-            className="w-32"
-            width={0}
-            height={0}
-            alt="Schooling Social Logo"
-          />
-        </div>
+        <PublicHeader />
+        <PublicNavbar />
         <div className="max-w-[1000px] px-4 flex flex-col items-center w-full my-auto pb-5">
           <div className="text-center text-2xl mb-5 text-[var(--text-secondary)]">
             Page Not Found
@@ -54,7 +46,7 @@ export default function NotFound() {
             </Link>
           </div>
         </div>
-        <Footer />
+        <PublicFooter />
       </div>
     </>
   )
