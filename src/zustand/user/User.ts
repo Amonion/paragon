@@ -374,32 +374,16 @@ export const UserStore = create<UserState>((set) => ({
 
 export interface User {
   _id: string
-  bioUserId: string
   comments: number
   createdAt: Date
   displayName: string
   email: string
-  exams: number
   isSuspended: boolean
-  followed: boolean
-  followers: number
-  followings: number
-  intro: string
   isFirstTime: boolean
   isActive?: boolean
   isChecked?: boolean
-  isVerified: boolean
-  media: string
-  officeNum: number
-  postMedia: number
-  online: boolean
   phone: string
   picture: string | File
-  posts: number
-  country: string
-  state: string
-  signupIp: string
-  signupLocation: { lat: number; lng: number }
   staffPositions: string[]
   staffRanking: number
   status: string

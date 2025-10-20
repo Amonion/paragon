@@ -6,99 +6,52 @@ interface FetchResponse {
   message: string
   count: number
   page_size: number
-  results: News[]
-  data: News
+  results: Product[]
+  data: Product
 }
 
-export interface News {
+export interface Product {
   _id: string
-  placeId: string
-  title: string
-  priority: string
-  content: string
-  author: string
-  publishedAt: Date | null | number
+  name: string
+  discount: number
+  costPrice: number
+  price: number
+  description: string
+  picture: string | File
   createdAt: Date | null | number
-  isPublished: boolean
-  state: string
-  country: string
-  views: number
-  shares: number
-  comments: number
-  bookmarks: number
-  likes: number
-  replies: number
-  tags: string[]
-  continent: string
-  picture: string | File | null
-  video: string | File | null
-  videoUrl: string
-  category: string
-  subtitle: string
-  source: string
-  bookmarked: boolean
-  liked: boolean
-  isFeatured: boolean
   seoTitle: string
-  seoDescription: string
   isChecked?: boolean
   isActive?: boolean
 }
 
-export const NewsEmpty = {
+export const ProductEmpty = {
   _id: '',
-  placeId: '',
-  title: '',
-  priority: '',
-  content: '',
-  author: '',
-  publishedAt: null,
-  createdAt: null,
-  isPublished: false,
-  state: '',
-  country: '',
-  views: 0,
-  replies: 0,
-  comments: 0,
-  shares: 0,
-  bookmarks: 0,
-  likes: 0,
-  tags: [],
-  continent: '',
+  name: '',
+  discount: 0,
+  costPrice: 0,
+  price: 0,
+  description: '',
   picture: '',
-  video: '',
-  videoUrl: '',
-  category: '',
-  subtitle: '',
-  source: '',
-  bookmarked: false,
-  liked: false,
-  isFeatured: false,
+  createdAt: 0,
   seoTitle: '',
-  seoDescription: '',
 }
 
-interface NewsState {
+interface ProductState {
   count: number
   page_size: number
-  news: News[]
-  featuredNews: News[]
+  products: Product[]
   loading: boolean
-  selectedItems: News[]
-  searchedNews: News[]
+  selectedProducts: Product[]
+  searchedProducts: Product[]
   isAllChecked: boolean
-  newsForm: News
-  setForm: (key: keyof News, value: News[keyof News]) => void
+  productForm: Product
+  setForm: (key: keyof Product, value: Product[keyof Product]) => void
   resetForm: () => void
-  getFeaturedNews: (
+  getProducts: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
-  getItems: (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => Promise<void>
-  getANews: (
+  getProduct: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -106,7 +59,7 @@ interface NewsState {
   setLoading?: (loading: boolean) => void
   massDelete: (
     url: string,
-    selectedItems: Record<string, unknown>,
+    selectedProducts: Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   deleteItem: (
@@ -114,49 +67,50 @@ interface NewsState {
     setMessage: (message: string, isError: boolean) => void,
     setLoading?: (loading: boolean) => void
   ) => Promise<void>
-  updateNews: (
+  updateProduct: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
-  postItem: (
+  postProduct: (
     url: string,
     data: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
   ) => Promise<void>
   toggleChecked: (index: number) => void
   toggleActive: (index: number) => void
   toggleAllSelected: () => void
   reshuffleResults: () => void
-  searchNews: (url: string) => void
+  searchProducts: (url: string) => void
 }
 
-const NewsStore = create<NewsState>((set) => ({
+const ProductStore = create<ProductState>((set) => ({
   count: 0,
   page_size: 0,
-  news: [],
-  featuredNews: [],
+  products: [],
   loading: false,
-  selectedItems: [],
-  searchedNews: [],
+  selectedProducts: [],
+  searchedProducts: [],
   isAllChecked: false,
-  newsForm: NewsEmpty,
+  productForm: ProductEmpty,
   setForm: (key, value) =>
     set((state) => ({
-      newsForm: {
-        ...state.newsForm,
+      productForm: {
+        ...state.productForm,
         [key]: value,
       },
     })),
+
   resetForm: () =>
     set({
-      newsForm: NewsEmpty,
+      productForm: ProductEmpty,
     }),
 
   setProcessedResults: ({ count, page_size, results }: FetchResponse) => {
     if (results) {
-      const updatedResults = results.map((item: News) => ({
+      const updatedResults = results.map((item: Product) => ({
         ...item,
         isChecked: false,
         isActive: false,
@@ -165,7 +119,7 @@ const NewsStore = create<NewsState>((set) => ({
       set({
         count,
         page_size,
-        news: updatedResults,
+        products: updatedResults,
       })
     }
   },
@@ -174,54 +128,36 @@ const NewsStore = create<NewsState>((set) => ({
     set({ loading: loadState })
   },
 
-  getItems: async (
+  getProducts: async (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
         setMessage,
-        setLoading: NewsStore.getState().setLoading,
+        setLoading: ProductStore.getState().setLoading,
       })
       const data = response?.data
       if (data) {
-        NewsStore.getState().setProcessedResults(data)
+        ProductStore.getState().setProcessedResults(data)
       }
     } catch (error: unknown) {
       console.log(error)
     }
   },
 
-  getFeaturedNews: async (
+  getProduct: async (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
         setMessage,
-        setLoading: NewsStore.getState().setLoading,
+        setLoading: ProductStore.getState().setLoading,
       })
       const data = response?.data
       if (data) {
-        set({ featuredNews: data.results })
-      }
-    } catch (error: unknown) {
-      console.log(error)
-    }
-  },
-
-  getANews: async (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
-    try {
-      const response = await apiRequest<FetchResponse>(url, {
-        setMessage,
-        setLoading: NewsStore.getState().setLoading,
-      })
-      const data = response?.data
-      if (data) {
-        set({ newsForm: data.data })
+        set({ productForm: data.data })
       }
     } catch (error: unknown) {
       console.log(error)
@@ -230,7 +166,7 @@ const NewsStore = create<NewsState>((set) => ({
 
   reshuffleResults: async () => {
     set((state) => ({
-      news: state.news.map((item: News) => ({
+      products: state.products.map((item: Product) => ({
         ...item,
         isChecked: false,
         isActive: false,
@@ -238,31 +174,31 @@ const NewsStore = create<NewsState>((set) => ({
     }))
   },
 
-  searchNews: _debounce(async (url: string) => {
+  searchProducts: _debounce(async (url: string) => {
     const response = await apiRequest<FetchResponse>(url, {
-      setLoading: NewsStore.getState().setLoading,
+      setLoading: ProductStore.getState().setLoading,
     })
     const results = response?.data.results
     if (results) {
-      set({ searchedNews: results })
+      set({ searchedProducts: results })
     }
   }, 1000),
 
   massDelete: async (
     url,
-    selectedItems,
+    selectedProducts,
     setMessage: (message: string, isError: boolean) => void
   ) => {
     const response = await apiRequest<FetchResponse>(url, {
       method: 'PATCH',
-      body: selectedItems,
+      body: selectedProducts,
       setMessage,
-      setLoading: NewsStore.getState().setLoading,
+      setLoading: ProductStore.getState().setLoading,
     })
     const data = response?.data
     console.log(data)
     if (data) {
-      NewsStore.getState().setProcessedResults(data)
+      ProductStore.getState().setProcessedResults(data)
     }
   },
 
@@ -278,57 +214,55 @@ const NewsStore = create<NewsState>((set) => ({
     })
     const data = response?.data
     if (data) {
-      NewsStore.getState().setProcessedResults(data)
+      ProductStore.getState().setProcessedResults(data)
     }
   },
 
-  updateNews: async (url, updatedItem, setMessage, redirect) => {
+  updateProduct: async (url, updatedItem, setMessage, redirect) => {
     set({ loading: true })
     const response = await apiRequest<FetchResponse>(url, {
       method: 'PATCH',
       body: updatedItem,
       setMessage,
-      setLoading: NewsStore.getState().setLoading,
+      setLoading: ProductStore.getState().setLoading,
     })
     if (response?.data) {
-      NewsStore.getState().setProcessedResults(response.data)
+      ProductStore.getState().setProcessedResults(response.data)
     }
     if (redirect) redirect()
   },
 
-  postItem: async (
-    url: string,
-    updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
+  postProduct: async (url, updatedItem, setMessage, redirect) => {
     set({ loading: true })
     const response = await apiRequest<FetchResponse>(url, {
       method: 'POST',
       body: updatedItem,
       setMessage,
-      setLoading: NewsStore.getState().setLoading,
+      setLoading: ProductStore.getState().setLoading,
     })
-    if (response?.status !== 404 && response?.data) {
-      NewsStore.getState().setProcessedResults(response.data)
+    if (response?.data) {
+      ProductStore.getState().setProcessedResults(response.data)
     }
+
+    if (redirect) redirect()
   },
 
   toggleActive: (index: number) => {
     set((state) => {
-      const isCurrentlyActive = state.news[index]?.isActive
-      const updatedResults = state.news.map((tertiary, idx) => ({
+      const isCurrentlyActive = state.products[index]?.isActive
+      const updatedResults = state.products.map((tertiary, idx) => ({
         ...tertiary,
         isActive: idx === index ? !isCurrentlyActive : false,
       }))
       return {
-        news: updatedResults,
+        products: updatedResults,
       }
     })
   },
 
   toggleChecked: (index: number) => {
     set((state) => {
-      const updatedResults = state.news.map((tertiary, idx) =>
+      const updatedResults = state.products.map((tertiary, idx) =>
         idx === index
           ? { ...tertiary, isChecked: !tertiary.isChecked }
           : tertiary
@@ -337,13 +271,13 @@ const NewsStore = create<NewsState>((set) => ({
       const isAllChecked = updatedResults.every(
         (tertiary) => tertiary.isChecked
       )
-      const updatedSelectedItems = updatedResults.filter(
+      const updatedSelectedProducts = updatedResults.filter(
         (tertiary) => tertiary.isChecked
       )
 
       return {
-        news: updatedResults,
-        selectedItems: updatedSelectedItems,
+        products: updatedResults,
+        selectedProducts: updatedSelectedProducts,
         isAllChecked,
       }
     })
@@ -351,21 +285,22 @@ const NewsStore = create<NewsState>((set) => ({
 
   toggleAllSelected: () => {
     set((state) => {
-      const isAllChecked = state.news.length === 0 ? false : !state.isAllChecked
-      const updatedResults = state.news.map((item) => ({
+      const isAllChecked =
+        state.products.length === 0 ? false : !state.isAllChecked
+      const updatedResults = state.products.map((item) => ({
         ...item,
         isChecked: isAllChecked,
       }))
 
-      const updatedSelectedItems = isAllChecked ? updatedResults : []
+      const updatedSelectedProducts = isAllChecked ? updatedResults : []
 
       return {
-        news: updatedResults,
-        selectedItems: updatedSelectedItems,
+        products: updatedResults,
+        selectedProducts: updatedSelectedProducts,
         isAllChecked,
       }
     })
   },
 }))
 
-export default NewsStore
+export default ProductStore

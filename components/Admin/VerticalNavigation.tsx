@@ -233,8 +233,11 @@ export default function VerticalNavigation() {
               className="flex cursor-pointer items-center py-3"
               onClick={() => toggleMessages((e) => !e)}
             >
-              <Boxes className="mr-3 w-5 h-5" />
-              Products
+              <Link className="flex items-center" href="/admin/products">
+                <Boxes className="mr-3 w-5 h-5" />
+                Products
+              </Link>
+
               <i
                 className={`bi bi-caret-down-fill ml-auto ${
                   isMsgActive ? 'active' : ''
@@ -242,7 +245,7 @@ export default function VerticalNavigation() {
               ></i>
             </div>
             <div className="nav_dropdown">
-              <Link className="inner_nav_items" href="/team/messages/emails">
+              <Link className="inner_nav_items" href="/admin/products">
                 Product Settings
               </Link>
               <Link

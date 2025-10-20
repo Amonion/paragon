@@ -52,12 +52,12 @@ export default function MainHeader() {
     >
       <div className="custom_container">
         <div className="flex relative">
-          <Link href={`/admin/profile`} className="headerCircle top">
-            <i className="bi bi-person common-icon"></i>
-          </Link>
           <span onClick={toggleVNav} className="headerCircle hfs">
             <i className="bi bi-text-left text-lg text-[var(--text-primary)]"></i>
           </span>
+          <Link href={`/admin/profile`} className="headerCircle top">
+            <i className="bi bi-person common-icon"></i>
+          </Link>
           <div className="mr-auto"></div>
 
           <Link href="/home/questions" className="block absoluteCenter">

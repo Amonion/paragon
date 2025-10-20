@@ -18,14 +18,11 @@ export default function RootLayout({
 }>) {
   // const { display } = uploadStore()
   const { message } = MessageStore()
-  const { headerHeight, setHeaderHeight } = NavStore()
+  const { headerHeight } = NavStore()
   const [isMd, setIsMd] = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
-    if (pathname.includes('/home/friends')) {
-      setHeaderHeight(0)
-    }
     const media = window.matchMedia('(min-width: 990px)')
     setIsMd(media.matches)
 
