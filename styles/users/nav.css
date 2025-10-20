@@ -150,9 +150,8 @@
 }
 
 .v_nav_items {
-  @apply text-lg border-b border-b-[var(--border-color)] overflow-hidden h-[45px]  transition-[height] duration-300;
+  @apply text-lg border-b border-b-[var(--border-color)] overflow-hidden h-[50px]  transition-[height] duration-300;
 }
-
 
 .v_nav_items_user {
   @apply transition-colors duration-300 hover:text-[var(--custom)] text-xl border-b border-b-[var(--border-color)] overflow-hidden py-2 last:border-b-0;
