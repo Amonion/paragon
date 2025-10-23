@@ -1,11 +1,9 @@
 'use client'
 import { formatTimeTo12Hour } from '@/lib/helpers'
 import { OfficeNotificationStore } from '@/src/zustand/notification/OfficeNotification'
-import { AuthStore } from '@/src/zustand/user/AuthStore'
 import Image from 'next/image'
 
 export default function LatestMessages() {
-  const { bioUserState } = AuthStore()
   const { officialMessages } = OfficeNotificationStore()
   return (
     <div className="card_body flex-1 sm:mr-4 mb-2 sm:mb-0 p-4 sharp overflow-x-auto">
@@ -13,7 +11,8 @@ export default function LatestMessages() {
 
       {officialMessages
         .filter(
-          (item) => item.senderUsername !== bioUserState?.activeOffice.username
+          (item) =>
+            item.senderUsername !== 'bioUserState?.activeOffice.username'
         )
         .slice(0, 5)
         .map((item, index) => (
