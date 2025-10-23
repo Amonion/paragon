@@ -6,7 +6,6 @@ import axios, {
   AxiosResponse,
   Method,
 } from 'axios'
-import { Office } from '@/src/zustand/utility/Office'
 import { Post } from '@/src/zustand/post/Post'
 const apiClient = axios.create({
   baseURL:
@@ -125,8 +124,6 @@ export interface ApiResponseInterface {
   data: ResponseData
   user: User
   posts: Post[]
-  activeOffice: Office
-  userOffices: Office[]
 }
 
 interface ResponseData {

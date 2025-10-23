@@ -1,11 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { User } from './User'
-import { Office } from '../utility/Office'
 
 interface AuthState {
-  activeOffice: Office | null
-  userOffices: Office[]
   user: User | null
   token: string | null
   login: (user: User, token: string) => void
