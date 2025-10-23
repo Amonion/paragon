@@ -5,7 +5,7 @@ function Welcome() {
   return (
     <div className="flex justify-center bg-[var(--backgroundColor)] py-[75px]">
       <div className="customContainer">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid md:grid-cols-2 gap-3 px-[12px]">
           <Image
             src="/poultryImage2.jpg"
             sizes="100vw"
@@ -15,7 +15,7 @@ function Welcome() {
             alt="real"
           />
           <div className="flex flex-col items-start">
-            <div className="text-[40px] text-[var(--primaryTextColor)] font-bold mb-6">
+            <div className="md:text-[40px] text-[25px] text-[var(--primaryTextColor)] font-bold mb-6">
               Welcome to Our Poultry And Egg Farm.
             </div>
             <div className="text-[var(--secondaryTextColor)] mb-6">

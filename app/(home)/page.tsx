@@ -4,8 +4,8 @@ import Hero from '@/components/Public/Hero'
 import Image from 'next/image'
 import { Autoplay, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import Testimonial from '@/components/Public/Testimonial'
 import Welcome from '@/components/Public/Welcome'
+import Testimonial from '@/components/Public/Testimonial'
 
 export default function Home() {
   return (
@@ -28,8 +28,8 @@ export default function Home() {
                 interfaces without Globally
               </div>
             </div>
-            <div className="grid grid-cols-4 w-full gap-7 mb-9">
-              <div className="flex flex-col items-center shadow-[0_2px_6px_rgba(0,0,0,0.1)] rounded-[15px] bg-[var(--backgroundColor)] py-7 px-6">
+            <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 w-full gap-4 mb-9">
+              <div className="flex flex-col items-center shadow-[0_2px_6px_rgba(0,0,0,0.1)] rounded-[15px] bg-[var(--backgroundColor)] p-3 md:p-7">
                 <Image
                   src="/poultryImage3.jpg"
                   sizes="100vw"
@@ -38,22 +38,72 @@ export default function Home() {
                   height={0}
                   alt="real"
                 />
-                <div className="flex mb-1">
-                  <i className="bi bi-star text-[var(--customColor)] mr-1 text-[20px]"></i>
-                  <i className="bi bi-star text-[var(--customColor)]  mr-1 text-[20px]"></i>
-                  <i className="bi bi-star text-[var(--customColor)]  mr-1 text-[20px]"></i>
-                  <i className="bi bi-star text-[var(--customColor)]  mr-1 text-[20px]"></i>
-                  <i className="bi bi-star text-[var(--customColor)] text-[22px]"></i>
+                <div className="flex mb-1 md:text-[20px] text-[17px]">
+                  <i className="bi bi-star text-[var(--customColor)] mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]"></i>
                 </div>
-                <div className="text-[var(--primaryTextColor text-[22px] font-bold mb-2">
+                <div className="text-[var(--primaryTextColor md:text-[22px]  md:font-bold mb-2 text-center">
                   Light Brown Eggs
                 </div>
                 <div className="flex">
                   <div className="text-[var(--customColor)] text-[18px] font-bold mr-3">
                     $29.99
                   </div>
-                  <div className="text-[var(--primaryTextColor)] text-[18px] font-bold line-through">
+                  <div className="text-[var(--primaryTextColor)] text-[18px] font-bold line-through mb-3">
                     $49.99
+                  </div>
+                </div>
+                <div className="flex w-full justify-evenly">
+                  <div className="flex justify-center h-[30px] w-[35px] cursor-pointer items-center border border-gray-200 rounded-[5px]">
+                    <i className="bi bi-dash text-[var(--primaryTextColor)]"></i>
+                  </div>
+                  <div className="text-[var(--primaryTextColor)] text-[15px]">
+                    9
+                  </div>
+                  <div className="flex justify-center h-[30px] w-[35px] cursor-pointer items-center border border-gray-200 rounded-[5px]">
+                    <i className="bi bi-plus text-[var(--primaryTextColor)]"></i>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-center shadow-[0_2px_6px_rgba(0,0,0,0.1)] rounded-[15px] bg-[var(--backgroundColor)] p-3 md:p-7">
+                <Image
+                  src="/poultryImage3.jpg"
+                  sizes="100vw"
+                  className="h-full w-full object-contain bg-[var(--secondaryTextColor)] mb-7"
+                  width={0}
+                  height={0}
+                  alt="real"
+                />
+                <div className="flex mb-1 md:text-[20px] text-[17px]">
+                  <i className="bi bi-star text-[var(--customColor)] mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
+                  <i className="bi bi-star text-[var(--customColor)]"></i>
+                </div>
+                <div className="text-[var(--primaryTextColor md:text-[22px] md:font-bold mb-2 text-center">
+                  Light Brown Eggs
+                </div>
+                <div className="flex">
+                  <div className="text-[var(--customColor)] text-[18px] font-bold mr-3">
+                    $29.99
+                  </div>
+                  <div className="text-[var(--primaryTextColor)] text-[18px] font-bold line-through mb-3">
+                    $49.99
+                  </div>
+                </div>
+                <div className="flex w-full justify-evenly">
+                  <div className="flex justify-center h-[30px] w-[35px] cursor-pointer items-center border border-gray-200 rounded-[5px]">
+                    <i className="bi bi-dash text-[var(--primaryTextColor)]"></i>
+                  </div>
+                  <div className="text-[var(--primaryTextColor)] text-[15px]">
+                    9
+                  </div>
+                  <div className="flex justify-center h-[30px] w-[35px] cursor-pointer items-center border border-gray-200 rounded-[5px]">
+                    <i className="bi bi-plus text-[var(--primaryTextColor)]"></i>
                   </div>
                 </div>
               </div>
@@ -279,7 +329,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 w-full gap-7">
+            <div className="grid md:grid-cols-3 w-full gap-7">
               <div className="flex flex-col shadow py-[15px] px-[25px]">
                 <div className="flex mb-6 items-center">
                   <Image
@@ -404,13 +454,13 @@ export default function Home() {
             <div className="text-[30px] text-[var(--primaryTextColor)] mb-2 font-bold">
               Poultry Farm Products
             </div>
-            <div className="text-[16px] text-[var(--secondaryTextColor)] mb-18">
+            <div className="text-[16px] text-[var(--secondaryTextColor)] mb-18 px-2">
               Conveniently customize proactive web services for leveraged
               interfaces without Globally
             </div>
           </div>
-          <div className="grid grid-cols-4 w-full gap-7 mb-9">
-            <div className="h-[400px]">
+          <div className="grid md:grid-cols-4 grid-cols-2 w-full md:gap-7 gap-4 mb-9 px-[12px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage12.jpg"
                 sizes="100vw"
@@ -420,7 +470,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage13.jpg"
                 sizes="100vw"
@@ -430,7 +480,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage14.jpg"
                 sizes="100vw"
@@ -440,7 +490,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage15.jpg"
                 sizes="100vw"
@@ -450,7 +500,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage16.jpg"
                 sizes="100vw"
@@ -460,7 +510,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage17.jpg"
                 sizes="100vw"
@@ -470,7 +520,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage18.jpg"
                 sizes="100vw"
@@ -480,7 +530,7 @@ export default function Home() {
                 alt="real"
               />
             </div>
-            <div className="h-[400px]">
+            <div className="md:h-[400px] h-[200px]">
               <Image
                 src="/poultryImage19.jpg"
                 sizes="100vw"
@@ -513,7 +563,7 @@ export default function Home() {
                 interfaces without Globally
               </div>
             </div>
-            <div className="grid grid-cols-4 w-full gap-7">
+            <div className="grid md:grid-cols-4 w-full gap-7">
               <div className="flex flex-col items-center">
                 <div className="h-[250px] w-full mb-4">
                   <Image
@@ -536,7 +586,7 @@ export default function Home() {
                   <div className="text-[var(--secondaryTextColor)] mb-3">
                     Manager
                   </div>
-                  <div className="flex">
+                  <div className="grid grid-cols-4 gap-3">
                     <Link
                       className="hover:text-[var(--customColor)]"
                       href={'/'}
@@ -730,12 +780,12 @@ export default function Home() {
               <div className="text-[35px] text-[var(--primaryTextColor)] mb-2 font-bold">
                 Our Recent News
               </div>
-              <div className="text-[16px] text-[var(--secondaryTextColor)] mb-15">
+              <div className="text-[16px] text-[var(--secondaryTextColor)] md:mb-15 mb-10">
                 Conveniently customize proactive web services for leveraged
                 interfaces without Globally
               </div>
             </div>
-            <div className="grid grid-cols-3 w-full gap-7">
+            <div className="grid md:grid-cols-3 w-full gap-7">
               <div className="flex flex-col items-start py-7 bg-[var(--backgroundColor)]">
                 <Image
                   src="/poultryImage17.jpg"
@@ -828,19 +878,25 @@ export default function Home() {
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             pagination={{ clickable: true }}
-            autoplay={{ delay: 3000 }}
-            spaceBetween={0}
-            slidesPerView={5}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            spaceBetween={10}
+            slidesPerView={5} // Default for desktop
             slidesPerGroup={1}
             loop={true}
+            speed={800} // Smooth transition speed (in ms)
+            breakpoints={{
+              0: { slidesPerView: 2 }, // 📱 Mobile (2 slides)
+              640: { slidesPerView: 3 }, // 📱 Tablets (3 slides)
+              1024: { slidesPerView: 5 }, // 💻 Desktops (5 slides)
+            }}
             className="w-full"
           >
             <SwiperSlide>
-              <Link href="/" className="">
+              <Link href="/" className="w-full">
                 <Image
                   src="/poultryImage24.jpg"
                   sizes="100vw"
-                  className="h-auto w-auto"
+                  className="h-auto w-[120px]"
                   width={0}
                   height={0}
                   alt="real"
@@ -848,11 +904,11 @@ export default function Home() {
               </Link>
             </SwiperSlide>
             <SwiperSlide>
-              <Link href="/" className="">
+              <Link href="/" className="w-full">
                 <Image
                   src="/poultryImage25.jpg"
                   sizes="100vw"
-                  className="h-auto w-auto"
+                  className="h-auto w-[120px]"
                   width={0}
                   height={0}
                   alt="real"
@@ -860,11 +916,11 @@ export default function Home() {
               </Link>
             </SwiperSlide>
             <SwiperSlide>
-              <Link href="/" className="">
+              <Link href="/" className="w-full">
                 <Image
                   src="/poultryImage26.jpg"
                   sizes="100vw"
-                  className="h-auto w-auto"
+                  className="h-auto w-[120px]"
                   width={0}
                   height={0}
                   alt="real"
@@ -872,11 +928,11 @@ export default function Home() {
               </Link>
             </SwiperSlide>
             <SwiperSlide>
-              <Link href="/" className="">
+              <Link href="/" className="w-full">
                 <Image
                   src="/poultryImage27.jpg"
                   sizes="100vw"
-                  className="h-auto w-auto"
+                  className="h-auto w-[120px]"
                   width={0}
                   height={0}
                   alt="real"
@@ -884,11 +940,11 @@ export default function Home() {
               </Link>
             </SwiperSlide>
             <SwiperSlide>
-              <Link href="/" className="">
+              <Link href="/" className="w-full">
                 <Image
                   src="/poultryImage28.jpg"
                   sizes="100vw"
-                  className="h-auto w-auto"
+                  className="h-auto w-[120px]"
                   width={0}
                   height={0}
                   alt="real"
@@ -896,11 +952,11 @@ export default function Home() {
               </Link>
             </SwiperSlide>
             <SwiperSlide>
-              <Link href="/" className="">
+              <Link href="/" className="w-full">
                 <Image
                   src="/poultryImage28.jpg"
                   sizes="100vw"
-                  className="h-auto w-auto"
+                  className="h-auto w-[120px]"
                   width={0}
                   height={0}
                   alt="real"
@@ -913,7 +969,7 @@ export default function Home() {
 
       <div className="flex py-[120px] bg-[var(--backgroundColor)] justify-center">
         <div className="customContainer text-center">
-          <div className="grid grid-cols-4 gap-5 w-full">
+          <div className="grid md:grid-cols-4 gap-5 w-full">
             <div className="flex flex-col items-center  py-20 px-8 border-[3px] border-gray-100/40">
               <Image
                 src="/poultryImage29.jpg"
@@ -985,8 +1041,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* ////// FOOTER SECTION ///// */}
     </div>
   )
 }

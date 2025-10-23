@@ -24,12 +24,12 @@ export default function SignupSuccess() {
         <h2 className="text-xl text-center font-semibold mb-2">
           Your account has been created successfully
         </h2>
-        <button
+        <div
           onClick={() => router.replace(`/sign-in`)}
           className="homeButton block w-full"
         >
           Go To Dashboard
-        </button>
+        </div>
       </form>
     </>
   )

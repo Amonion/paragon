@@ -68,7 +68,7 @@
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #111111 inset !important;
+  -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
   -webkit-text-fill-color: var(--text-main-color);
 }
 
@@ -171,7 +171,7 @@ ol {
 }
 
 .customHomeInput{
-  @apply mt-1 w-full rounded-md border border-gray-300 pr-2 py-2 focus:border-[var(--customTextColor)] focus:outline-none focus:ring-1 focus:ring-[var(--customTextColor)]
+  @apply mt-1 w-full text-gray-600 rounded-md border border-gray-300 pr-2 py-2 focus:border-[var(--customTextColor)] focus:outline-none focus:ring-1 focus:ring-[var(--customTextColor)]
 }
 
 .homeButton{

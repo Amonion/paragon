@@ -4,9 +4,20 @@ import Image from 'next/image'
 import { FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { NavStore } from '@/src/zustand/notification/Navigation'
+import BlogStore from '@/src/zustand/Blog'
+import { useEffect } from 'react'
+import { MessageStore } from '@/src/zustand/notification/Message'
 
 export default function PublicHeader() {
   const { toggleVNav } = NavStore()
+  const { setMessage } = MessageStore()
+  const { banners, getBanners } = BlogStore()
+
+  useEffect(() => {
+    if (banners.length === 0) {
+      getBanners(`/blogs?category=Home-Banner`, setMessage)
+    }
+  }, [banners])
   return (
     <header className="bg-[var(--backgroundColor)] text-[var(--primaryTextColor)] py-1 flex justify-center">
       <div className="custom-container">

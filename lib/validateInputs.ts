@@ -49,7 +49,7 @@ export const validateInputs = (
 
 export const validateSignUp = (
   password: string,
-  email: string
+  username: string
 ): ValidationResult => {
   const result: ValidationResult = { valid: true }
 
@@ -69,10 +69,10 @@ export const validateSignUp = (
   //     "Username must start with a letter and contain at least one letter";
   // }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
+  if (/^[_\d]+$/.test(username)) {
     result.valid = false
-    result.emailMessage = 'Invalid email address'
+    result.usernameMessage =
+      'Username must start with a letter and contain at least one letter'
   }
 
   const passwordRegex =

@@ -39,7 +39,7 @@ export default function SignInClient() {
 
     setLoading(true)
     const form = new FormData()
-    form.append('email', formData.username.trim().toLocaleLowerCase())
+    form.append('username', formData.username.trim())
     form.append('password', formData.password.trim())
 
     try {

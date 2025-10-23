@@ -5,6 +5,7 @@ export function middleware(request: NextRequest) {
   const signupCookie = request.cookies.get('signup_success')
   const { pathname } = request.nextUrl
 
+  // 🔒 Restrict signup success page to those with signup cookie
   if (pathname === '/signup-success') {
     if (!signupCookie) {
       return NextResponse.redirect(new URL('/auth', request.url))
@@ -19,16 +20,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  if (
-    token &&
-    (pathname === '/' ||
-      pathname === '/sign-in' ||
-      pathname === '/forgotten-password' ||
-      pathname === '/reset-password' ||
-      pathname === '/sign-up' ||
-      pathname === '/email-sent' ||
-      pathname === '/signup-successful')
-  ) {
+  const authPages = [
+    '/sign-in',
+    '/sign-up',
+    '/forgotten-password',
+    '/reset-password',
+    '/email-sent',
+    '/signup-successful',
+  ]
+
+  if (token && authPages.includes(pathname)) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 

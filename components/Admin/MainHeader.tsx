@@ -60,7 +60,7 @@ export default function MainHeader() {
           </Link>
           <div className="mr-auto"></div>
 
-          <Link href="/home/questions" className="block absoluteCenter">
+          <Link href="/" className="block absoluteCenter">
             <Image
               style={{ height: 'auto' }}
               src="/Icon.png"

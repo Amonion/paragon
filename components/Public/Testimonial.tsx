@@ -15,7 +15,7 @@ function Testimonial() {
               interfaces without Globally
             </div>
           </div>
-          <div className="grid grid-cols-3 w-full gap-7">
+          <div className="grid md:grid-cols-3 w-full gap-7">
             <div className="flex flex-col items-start shadow py-7 px-6 bg-[var(--backgroundColor)]">
               <div className="flex mb-7">
                 <Image

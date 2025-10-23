@@ -6,13 +6,15 @@ import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { FaFacebookF, FaTwitter, FaYoutube, FaLinkedinIn } from 'react-icons/fa'
 import { NavStore } from '@/src/zustand/notification/Navigation'
+import { AuthStore } from '@/src/zustand/user/AuthStore'
 export default function PublicNavbar() {
   const pathName = usePathname()
   const { vNav, clearNav } = NavStore()
+  const { user } = AuthStore()
 
   useEffect(() => {
     clearNav()
-  }, [pathName])
+  }, [pathName, user])
 
   const closeNave = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -107,28 +109,60 @@ export default function PublicNavbar() {
                 Blog
               </Link>
             </li>
-            <li className="ml-auto">
-              <Link
-                className={`navLinks ${
-                  pathName === '/sign-up' ? 'bg-[var(--customRedColor)]' : ''
-                }`}
-                href={`/sign-up`}
-              >
-                Sign Up
-              </Link>
-            </li>
-            <li>
-              <Link
-                className={`navLinks ${
-                  pathName === '/sign-in'
-                    ? 'bg-[var(--customRedColor)]'
-                    : 'bg-[var(--customDarkColor)]'
-                }`}
-                href={`/sign-in`}
-              >
-                Sign In
-              </Link>
-            </li>
+            {user ? (
+              <>
+                <li className="ml-auto">
+                  <Link
+                    className={`navLinks ${
+                      pathName === '/sign-up'
+                        ? 'bg-[var(--customRedColor)]'
+                        : ''
+                    }`}
+                    href={user.status === 'Admin' ? `/admin` : '/dashboard'}
+                  >
+                    {user.status === 'Admin' ? 'Admin' : 'Dashboard'}
+                  </Link>
+                </li>
+                <li>
+                  <div
+                    className={`navLinks ${
+                      pathName === '/sign-in'
+                        ? 'bg-[var(--customRedColor)]'
+                        : 'bg-[var(--customDarkColor)]'
+                    }`}
+                  >
+                    Logout
+                  </div>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="ml-auto">
+                  <Link
+                    className={`navLinks ${
+                      pathName === '/sign-up'
+                        ? 'bg-[var(--customRedColor)]'
+                        : ''
+                    }`}
+                    href={`/sign-up`}
+                  >
+                    Sign Up
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className={`navLinks ${
+                      pathName === '/sign-in'
+                        ? 'bg-[var(--customRedColor)]'
+                        : 'bg-[var(--customDarkColor)]'
+                    }`}
+                    href={`/sign-in`}
+                  >
+                    Sign In
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
         <ul className="flex md:hidden items-center w-full">

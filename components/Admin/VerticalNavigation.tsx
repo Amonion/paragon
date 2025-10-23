@@ -124,18 +124,15 @@ export default function VerticalNavigation() {
             Services
           </Link>
 
-          <div className={`v_nav_items ${isPagesActive ? 'active' : ''}`}>
+          <div className={`v_nav_items ${isPagesActive ? 'active trip' : ''}`}>
             <div
               onClick={() => togglePages((e) => !e)}
-              className="flex cursor-pointer items-center py-3"
+              className={`flex cursor-pointer ${
+                pathname.includes('pages') ? 'text-[var(--customRedColor)]' : ''
+              } items-center py-3`}
             >
-              <Link
-                className="flex items-center hover:text-[var(--customColor)]"
-                href="/team/company/set-company"
-              >
-                <FileArchive className="mr-3 w-5 h-5" />
-                Pages
-              </Link>
+              <FileArchive className="mr-3 w-5 h-5" />
+              Pages
               <i
                 className={`bi bi-caret-down-fill ml-auto ${
                   isPagesActive ? 'active' : ''
@@ -145,26 +142,20 @@ export default function VerticalNavigation() {
             <div className="nav_dropdown">
               <Link
                 className="inner_nav_items hover:text-[var(--customColor)]"
-                href="/team/company/staffs"
+                href="/admin/pages/blog"
               >
                 Blog
               </Link>
 
               <Link
                 className="inner_nav_items hover:text-[var(--customColor)]"
-                href="/team/company/expenses"
-              >
-                Banner
-              </Link>
-              <Link
-                className="inner_nav_items hover:text-[var(--customColor)]"
-                href="/team/company"
+                href="/admin/pages/faq"
               >
                 FAQ
               </Link>
               <Link
                 className="inner_nav_items hover:text-[var(--customColor)]"
-                href="/team/company"
+                href="/admin/pages/terms"
               >
                 Terms
               </Link>

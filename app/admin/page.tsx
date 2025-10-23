@@ -10,15 +10,15 @@ export default function Home() {
   return (
     <>
       <div className="sm:space-y-5 space-y-2  text-[var(--text-primary)] w-full">
-        <div className="flex flex-wrap items-start lg:items-center justify-between mb-3">
+        {/* <div className="flex flex-wrap items-start lg:items-center justify-between mb-3">
           <div className="pageTitle mb-1 sm:mb-0">
             <span className="text-[var(--custom)] text-base mr-2 uppercase">
               CEO:
             </span>
             Paragon Farms Limited{' '}
           </div>
-        </div>
-        <StatDuration title="Duration" url="" />
+        </div> */}
+        <StatDuration title="CEO: Paragon Farms Limited" url="" />
         {/* <SchoolDashboardCards /> */}
 
         <div className="flex flex-wrap">
