@@ -1,15 +1,13 @@
 'use client'
-import { formatTimeTo12Hour } from '@/lib/helpers'
-import { OfficeNotificationStore } from '@/src/zustand/notification/OfficeNotification'
-import Image from 'next/image'
+// import { formatTimeTo12Hour } from '@/lib/helpers'
+// import Image from 'next/image'
 
-export default function LatestMessages() {
-  const { officialMessages } = OfficeNotificationStore()
+export default function LatestTransactions() {
   return (
     <div className="card_body flex-1 sm:mr-4 mb-2 sm:mb-0 p-4 sharp overflow-x-auto">
-      <h2 className="mb-2 text-lg font-semibold">Latest Messages</h2>
+      <h2 className="mb-2 text-lg font-semibold">Latest Transactions</h2>
 
-      {officialMessages
+      {/* {officialMessages
         .filter(
           (item) =>
             item.senderUsername !== 'bioUserState?.activeOffice.username'
@@ -53,7 +51,7 @@ export default function LatestMessages() {
               ></div>
             </div>
           </div>
-        ))}
+        ))} */}
     </div>
   )
 }
