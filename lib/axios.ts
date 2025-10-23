@@ -6,7 +6,6 @@ import axios, {
   AxiosResponse,
   Method,
 } from 'axios'
-import { Post } from '@/src/zustand/post/Post'
 const apiClient = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
@@ -123,7 +122,6 @@ export interface ApiResponseInterface {
   count: number
   data: ResponseData
   user: User
-  posts: Post[]
 }
 
 interface ResponseData {
