@@ -1,32 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { BioUser } from './BioUser'
-import { BioUserState } from './BioUserState'
 import { User } from './User'
-import { BioUserSchoolInfo } from './BioUserSchoolInfo'
-import { BioUserSettings } from './BioUserSettings'
 import { Office } from '../utility/Office'
 
 interface AuthState {
-  bioUser: BioUser | null
-  bioUserSettings: BioUserSettings | null
-  bioUserState: BioUserState | null
-  bioUserSchoolInfo: BioUserSchoolInfo | null
   activeOffice: Office | null
   userOffices: Office[]
   user: User | null
   token: string | null
   login: (user: User, token: string) => void
   setUser: (userData: User) => void
-  setAllUser: (
-    bioUserState: BioUserState,
-    bioUser?: BioUser,
-    bioUserSchoolInfo?: BioUserSchoolInfo,
-    bioUserSettings?: BioUserSettings
-  ) => void
-  setBioUserState: (bioUserState: BioUserState) => void
-  setBioUserSchoolInfo: (user: BioUserSchoolInfo) => void
-  setOfficeState: (office?: Office, userOffices?: Office[]) => void
   logout: () => void
   isAuthenticated: () => boolean
 }
@@ -34,53 +17,10 @@ interface AuthState {
 export const AuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      bioUser: null,
-      bioUserState: null,
-      bioUserSettings: null,
-      bioUserSchoolInfo: null,
       activeOffice: null,
       userOffices: [],
       user: null,
       token: null,
-      setAllUser: (
-        bioUserState,
-        bioUser,
-        bioUserSchoolInfo,
-        bioUserSettings
-      ) => {
-        set((prev) => {
-          return {
-            bioUserState: bioUserState,
-            bioUser: bioUser ? bioUser : prev.bioUser,
-            bioUserSchoolInfo: bioUserSchoolInfo
-              ? bioUserSchoolInfo
-              : prev.bioUserSchoolInfo,
-            bioUserSettings: bioUserSettings
-              ? bioUserSettings
-              : prev.bioUserSettings,
-          }
-        })
-      },
-
-      setBioUserState: (bioUserState) => {
-        set({ bioUserState: bioUserState })
-      },
-
-      setBioUserSchoolInfo: (user) => {
-        set((state) => ({
-          ...state,
-          bioUserSchoolInfo: user,
-        }))
-      },
-
-      setOfficeState: (office, userOffices) => {
-        set((prev) => {
-          return {
-            activeOffice: office ? office : prev.activeOffice,
-            userOffices: userOffices ? userOffices : prev.userOffices,
-          }
-        })
-      },
 
       login: (user, token) => {
         set({
@@ -112,10 +52,7 @@ export const AuthStore = create<AuthState>()(
       logout: () => {
         set({
           user: null,
-          bioUser: null,
-          bioUserSchoolInfo: null,
-          bioUserState: null,
-          bioUserSettings: null,
+
           token: null,
         })
         document.cookie =
@@ -134,12 +71,6 @@ export const AuthStore = create<AuthState>()(
       partialize: (state) => ({
         token: state.token,
         user: state.user,
-        bioUserState: state.bioUserState,
-        bioUserSchoolInfo: state.bioUserSchoolInfo,
-        bioUserSettings: state.bioUserSettings,
-        bioUser: state.bioUser,
-        activeOffice: state.activeOffice,
-        userOffices: state.userOffices,
       }),
     }
   )

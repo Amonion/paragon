@@ -1,8 +1,5 @@
 import { AuthStore } from '@/src/zustand/user/AuthStore'
-import { BioUser } from '@/src/zustand/user/BioUser'
-import { BioUserState } from '@/src/zustand/user/BioUserState'
 import { User } from '@/src/zustand/user/User'
-import { BioUserSettings } from '@/src/zustand/user/BioUserSettings'
 import axios, {
   AxiosError,
   AxiosRequestConfig,
@@ -10,7 +7,6 @@ import axios, {
   Method,
 } from 'axios'
 import { Office } from '@/src/zustand/utility/Office'
-import { BioUserSchoolInfo } from '@/src/zustand/user/BioUserSchoolInfo'
 import { Post } from '@/src/zustand/post/Post'
 const apiClient = axios.create({
   baseURL:
@@ -128,11 +124,7 @@ export interface ApiResponseInterface {
   count: number
   data: ResponseData
   user: User
-  bioUser: BioUser
   posts: Post[]
-  bioUserSchoolInfo: BioUserSchoolInfo
-  bioUserState: BioUserState
-  bioUserSettings: BioUserSettings
   activeOffice: Office
   userOffices: Office[]
 }
