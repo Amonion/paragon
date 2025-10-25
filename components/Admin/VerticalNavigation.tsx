@@ -248,20 +248,13 @@ export default function VerticalNavigation() {
             </div>
           </div>
 
-          <div
-            className={`v_nav_items ${isSettingsActive ? 'active tri' : ''}`}
-          >
+          <div className={`v_nav_items ${isSettingsActive ? 'active' : ''}`}>
             <div
               onClick={() => toggleSettings((e) => !e)}
               className="flex cursor-pointer items-center py-3"
             >
-              <Link
-                className="flex items-center"
-                href="/team/company/set-company"
-              >
-                <Settings className="mr-3 w-5 h-5" />
-                Set Company
-              </Link>
+              <Settings className="mr-3 w-5 h-5" />
+              Company
               <i
                 className={`bi bi-caret-down-fill ml-auto ${
                   isSettingsActive ? 'active' : ''
@@ -269,7 +262,10 @@ export default function VerticalNavigation() {
               ></i>
             </div>
             <div className="nav_dropdown">
-              <Link className="inner_nav_items" href="/team/company/staffs">
+              <Link className="inner_nav_items" href="/admin/company">
+                Set Company
+              </Link>
+              <Link className="inner_nav_items" href="/admin/company/staffs">
                 Staffs
               </Link>
 

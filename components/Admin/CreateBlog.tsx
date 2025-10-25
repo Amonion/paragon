@@ -75,13 +75,13 @@ const CreateBlog: React.FC = () => {
       {
         name: 'title',
         value: blogForm.title,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: false, maxLength: 100 },
         field: 'Title field',
       },
       {
         name: 'subtitle',
         value: blogForm.subtitle,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: false, maxLength: 100 },
         field: 'Subtitle field',
       },
       {
@@ -100,7 +100,7 @@ const CreateBlog: React.FC = () => {
       {
         name: 'content',
         value: blogForm.content,
-        rules: { blank: false, maxSize: 5000 },
+        rules: { blank: false, maxSize: 10000 },
         field: 'Content file',
       },
     ]

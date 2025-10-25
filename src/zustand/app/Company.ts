@@ -11,8 +11,9 @@ export interface Company {
   phone: string
   allowSignUp: boolean
   headquaters: string
-  newVersion: string
-  newVersionLink: string
+  bankAccountName: string
+  bankAccountNumber: string
+  bankName: string
 }
 
 export const CompanyEmpty = {
@@ -25,8 +26,9 @@ export const CompanyEmpty = {
   phone: '',
   allowSignUp: false,
   headquaters: '',
-  newVersion: '',
-  newVersionLink: '',
+  bankAccountNumber: '',
+  bankAccountName: '',
+  bankName: '',
 }
 
 interface FetchResponse {

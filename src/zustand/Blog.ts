@@ -37,6 +37,7 @@ interface BlogState {
   page_size: number
   blogs: Blog[]
   banners: Blog[]
+  gallery: Blog[]
   loading: boolean
   selectedBlogs: Blog[]
   searchedBlogs: Blog[]
@@ -49,6 +50,10 @@ interface BlogState {
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   getBlogs: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  getGallery: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -92,6 +97,7 @@ const BlogStore = create<BlogState>((set) => ({
   page_size: 0,
   blogs: [],
   banners: [],
+  gallery: [],
   loading: false,
   selectedBlogs: [],
   searchedBlogs: [],
@@ -130,6 +136,20 @@ const BlogStore = create<BlogState>((set) => ({
     set({ loading: loadState })
   },
 
+  getGallery: async (url, setMessage) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        setMessage,
+        setLoading: BlogStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ gallery: data.results })
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
   getBanners: async (url, setMessage) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {

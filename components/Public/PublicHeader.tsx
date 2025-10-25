@@ -7,17 +7,35 @@ import { NavStore } from '@/src/zustand/notification/Navigation'
 import BlogStore from '@/src/zustand/Blog'
 import { useEffect } from 'react'
 import { MessageStore } from '@/src/zustand/notification/Message'
+import CompanyStore from '@/src/zustand/app/Company'
+import ProductStore from '@/src/zustand/Product'
 
 export default function PublicHeader() {
   const { toggleVNav } = NavStore()
   const { setMessage } = MessageStore()
-  const { banners, getBanners } = BlogStore()
+  const { getBanners, getGallery, getBlogs } = BlogStore()
+  const { getCompany, companyForm } = CompanyStore()
+  const { getProducts } = ProductStore()
+
+  // useEffect(() => {
+  //   if (banners.length === 0) {
+  //     getBanners(`/blogs?category=Home-Banner`, setMessage)
+  //   }
+  // }, [banners])
 
   useEffect(() => {
-    if (banners.length === 0) {
-      getBanners(`/blogs?category=Home-Banner`, setMessage)
-    }
-  }, [banners])
+    getProducts(`/products?ordering=-createdAt&page_size=20`, setMessage)
+    getGallery(
+      `/blogs?category=Gallery&ordering=-createdAt&page_size=20`,
+      setMessage
+    )
+    getBlogs(
+      `/blogs?category=Blog&ordering=-createdAt&page_size=20`,
+      setMessage
+    )
+    getBanners(`/blogs?category=Home-Banner`, setMessage)
+    getCompany(`/company`, setMessage)
+  }, [])
   return (
     <header className="bg-[var(--backgroundColor)] text-[var(--primaryTextColor)] py-1 flex justify-center">
       <div className="custom-container">
@@ -43,9 +61,9 @@ export default function PublicHeader() {
               />
               <div>
                 <p className="font-semibold text-[var(--secondaryTextColor)] text-base">
-                  3015 Grand Ave, Grove
+                  Our Head Office
                 </p>
-                <p>Merrick, FL 12345</p>
+                <p>{companyForm.headquaters}</p>
               </div>
             </div>
 
@@ -56,7 +74,7 @@ export default function PublicHeader() {
               />
               <div>
                 <p className="font-bold text-[var(--secondaryTextColor)] text-base">
-                  1-800-555-1234
+                  {companyForm.phone}
                 </p>
                 <p>24/7 Customer Support</p>
               </div>
@@ -71,7 +89,7 @@ export default function PublicHeader() {
                 <p className="font-bold text-[var(--secondaryTextColor)] text-base">
                   Send Mail
                 </p>
-                <p>murgifarm@gmail.com</p>
+                <p>{companyForm.email}</p>
               </div>
             </div>
           </div>

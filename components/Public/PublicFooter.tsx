@@ -1,13 +1,16 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
+import CompanyStore from '@/src/zustand/app/Company'
 
 export default function PublicFooter() {
+  const { companyForm } = CompanyStore()
+
   return (
     <>
       <div className="flex py-[90px] justify-center bg-[var(--secondaryCustomColor)] relative">
         <Image
-          src="/poultryImage33.jpg"
+          src="/images/poultryFooter.jpg"
           sizes="100vw"
           className="h-full w-full object-cover absolute z-0 top-0 left-0"
           width={0}
@@ -28,12 +31,7 @@ export default function PublicFooter() {
                 alt="Paragon Logo"
               />
               <div className="text mb-3 text-[var(--secondaryTextColor)]">
-                Conveniently customizec web services aggregate frictionle
-                internet withouevs Conveniently customizec.
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Enthusiastically scale synergistic technologies for leveraged
-                with technology quickly.
+                {companyForm.finalInstruction}
               </div>
             </div>
             <div className="flex flex-col mb-8 md:mb-0">
@@ -178,19 +176,16 @@ export default function PublicFooter() {
           <div className="flex justify-center flex-wrap">
             <i className="bi bi-c-circle mr-1"></i>
             <div className="text-[var(--primaryCustomColor)] mr-2 font-bold">
-              2020
+              {new Date().getFullYear()}
             </div>
-            <Link
-              className="text-[var(--customColor)] mr-1 font-bold"
-              href={'/'}
-            >
-              Poultry Farm
-            </Link>
-            <div className="text-[var(--primaryCustomColor)] text-[15px] mr-2 font-bold">
-              .All Rights Reserved By
+            <div className="text-[var(--customColor)] mr-1 font-bold">
+              {companyForm.name}
+            </div>
+            <div className="text-[var(--primaryCustomColor)] text-[15px] mx-2 font-bold">
+              All Rights Reserved By
             </div>
             <Link className="text-[var(--customColor)]" href={'/'}>
-              LabArtisan
+              Amonion Developers
             </Link>
           </div>
         </div>

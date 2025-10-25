@@ -7,7 +7,7 @@ function Welcome() {
       <div className="customContainer">
         <div className="grid md:grid-cols-2 gap-3 px-[12px]">
           <Image
-            src="/poultryImage2.jpg"
+            src="/images/poultryFamily.png"
             sizes="100vw"
             className="h-full w-full object-contain"
             width={0}

@@ -27,6 +27,7 @@ interface UserState {
   count: number
   isAllChecked: boolean
   loading: boolean
+  autLoading: boolean
   page: number
   page_size: number
   selectedUsers: User[]
@@ -65,6 +66,11 @@ interface UserState {
     updatedItem: FormData | Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
+  updateAuthUser: (
+    url: string,
+    updatedItem: FormData | Record<string, unknown>,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
   sendUsersEmail: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
@@ -79,34 +85,21 @@ interface UserState {
 
 export const UserEmpty = {
   _id: '',
-  bioUserId: '',
-  comments: 0,
   createdAt: new Date(),
-  displayName: '',
+  fullName: '',
   email: '',
-  exams: 0,
+  isTwoFactor: false,
   isSuspended: false,
-  followed: false,
-  followers: 0,
-  followings: 0,
-  intro: '',
   isFirstTime: false,
-  isVerified: false,
-  media: '',
-  officeNum: 0,
-  online: false,
   phone: '',
   picture: '',
-  posts: 0,
-  postMedia: 0,
-  country: '',
-  state: '',
-  signupIp: '',
-  signupLocation: { lat: 0, lng: 0 },
   staffPositions: [],
   staffRanking: 0,
   username: '',
   status: '',
+  newPassword: '',
+  password: '',
+  confirmPassword: '',
 }
 
 export const UserStore = create<UserState>((set) => ({
@@ -115,6 +108,7 @@ export const UserStore = create<UserState>((set) => ({
   count: 0,
   isAllChecked: false,
   loading: false,
+  autLoading: false,
   page: 1,
   page_size: 20,
   selectedUsers: [],
@@ -325,20 +319,37 @@ export const UserStore = create<UserState>((set) => ({
     })
   },
 
-  updateUser: async (
-    url: string,
-    updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
-    set({ loading: true })
-    const response = await apiRequest<FetchUser>(url, {
-      method: 'PATCH',
-      body: updatedItem,
-      setMessage,
-    })
-    const data = response?.data
-    if (data) {
-      AuthStore.getState().setUser(data.data)
+  updateUser: async (url, updatedItem, setMessage) => {
+    try {
+      set({ loading: true })
+      const response = await apiRequest<FetchUser>(url, {
+        method: 'PATCH',
+        body: updatedItem,
+        setMessage,
+      })
+      const data = response?.data
+      if (data) {
+        AuthStore.getState().setUser(data.data)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      set({ loading: false })
+    }
+  },
+
+  updateAuthUser: async (url, updatedItem, setMessage) => {
+    try {
+      set({ autLoading: true })
+      await apiRequest<FetchUser>(url, {
+        method: 'POST',
+        body: updatedItem,
+        setMessage,
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      set({ autLoading: false })
     }
   },
 
@@ -374,12 +385,12 @@ export const UserStore = create<UserState>((set) => ({
 
 export interface User {
   _id: string
-  comments: number
   createdAt: Date
-  displayName: string
+  fullName: string
   email: string
   isSuspended: boolean
   isFirstTime: boolean
+  isTwoFactor: boolean
   isActive?: boolean
   isChecked?: boolean
   phone: string
@@ -388,4 +399,7 @@ export interface User {
   staffRanking: number
   status: string
   username: string
+  newPassword: string
+  password: string
+  confirmPassword: string
 }
