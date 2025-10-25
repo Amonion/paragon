@@ -54,7 +54,11 @@ export default function SignInClient() {
         AuthStore.getState().login(user, token)
 
         setTimeout(() => {
-          router.replace('/dashboard')
+          if (user.status === 'Staff') {
+            router.replace('/admin')
+          } else {
+            router.replace('/dashboard')
+          }
         }, 100)
       }
     } catch (error) {
