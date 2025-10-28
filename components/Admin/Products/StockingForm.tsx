@@ -1,0 +1,230 @@
+'use client'
+import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import { appendForm } from '@/lib/helpers'
+import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
+import ProductStore from '@/src/zustand/Product'
+import PictureDisplay from '@/components/PictureDisplay'
+import { validateInputs } from '@/lib/validation'
+import { AuthStore } from '@/src/zustand/user/AuthStore'
+
+const StockingForm: React.FC = () => {
+  const {
+    reshuffleResults,
+    stockingFrom,
+    loading,
+    postStocking,
+    setStockingForm,
+    setShowStocking,
+  } = ProductStore()
+  const { setMessage } = MessageStore()
+  const pathname = usePathname()
+  const { setAlert } = AlartStore()
+  const { user } = AuthStore()
+  const url = '/products/stocking'
+
+  useEffect(() => {
+    reshuffleResults()
+  }, [pathname])
+
+  const handleFileChange =
+    (key: keyof typeof stockingFrom) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files ? e.target.files[0] : null
+      setStockingForm(key, file)
+    }
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setStockingForm(name as keyof typeof stockingFrom, value)
+  }
+
+  const handleSubmit = async (e: boolean) => {
+    if (stockingFrom.units <= 0) {
+      setMessage('The product units cannot be less than 1', false)
+      return
+    }
+
+    if (!user) {
+      setMessage('Please login to continue', false)
+      return
+    }
+
+    const inputsToValidate = [
+      {
+        name: 'staffName',
+        value: user?.fullName,
+        rules: { blank: true, minLength: 10, maxLength: 100 },
+        field: 'Staff Name field',
+      },
+      {
+        name: 'name',
+        value: stockingFrom.name,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Name field',
+      },
+      {
+        name: 'productId',
+        value: stockingFrom.productId,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Name field',
+      },
+      {
+        name: 'units',
+        value: stockingFrom.units,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Unit field',
+      },
+      {
+        name: 'reason',
+        value: stockingFrom.reason,
+        rules: { blank: false, maxLength: 100 },
+        field: 'Reason field',
+      },
+      {
+        name: 'video',
+        value: stockingFrom.video,
+        rules: { blank: false, maxLength: 1000 },
+        field: 'Video field',
+      },
+      {
+        name: 'isProfit',
+        value: e,
+        rules: { blank: false, maxLength: 1000 },
+        field: 'Condition field',
+      },
+      {
+        name: 'picture',
+        value: stockingFrom.picture,
+        rules: { blank: false, maxSize: 5000 },
+        field: 'Picture file',
+      },
+    ]
+    const { messages } = validateInputs(inputsToValidate)
+    const getFirstNonEmptyMessage = (
+      messages: Record<string, string>
+    ): string | null => {
+      for (const key in messages) {
+        if (messages[key].trim() !== '') {
+          return messages[key]
+        }
+      }
+      return null
+    }
+
+    const firstNonEmptyMessage = getFirstNonEmptyMessage(messages)
+    if (firstNonEmptyMessage) {
+      setMessage(firstNonEmptyMessage, false)
+      return
+    }
+
+    const data = appendForm(inputsToValidate)
+    alertAndSubmit(data)
+  }
+
+  const alertAndSubmit = (data: FormData) => {
+    setAlert(
+      'Warning',
+      'Are you sure you want to submit this stock record',
+      true,
+      () =>
+        postStocking(`${url}/?ordering=-createdAt`, data, setMessage, () =>
+          setShowStocking(false)
+        )
+    )
+  }
+
+  return (
+    <>
+      <div
+        onClick={() => setShowStocking(false)}
+        className="fixed h-full w-full z-20 left-0 top-0 bg-black/50 items-center justify-center flex"
+      >
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          className="card_body sharp w-full max-w-[600px]"
+        >
+          <div className="flex w-full justify-center">
+            <div className="relative my-5 w-full max-w-[200px] h-[150px] rounded-xl  overflow-hidden">
+              {stockingFrom?.picture ? (
+                <PictureDisplay source={String(stockingFrom.picture)} />
+              ) : (
+                <div className="bg-[var(--secondary)] h-full w-full" />
+              )}
+            </div>
+          </div>
+          <div className="custom_sm_title text-center">{stockingFrom.name}</div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Units
+            </label>
+            <input
+              className="form-input"
+              name="units"
+              value={stockingFrom.units}
+              onChange={handleInputChange}
+              type="number"
+              placeholder="Enter units"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Reason
+            </label>
+            <textarea
+              placeholder="Enter if any reason for any damages"
+              className="form-input"
+              name="reason"
+              value={stockingFrom.reason}
+              onChange={handleInputChange}
+            ></textarea>
+          </div>
+
+          <div className="table-action mt-3 flex flex-wrap">
+            {loading ? (
+              <button className="custom_btn">
+                <i className="bi bi-opencollective loading"></i>
+                Processing...
+              </button>
+            ) : (
+              <>
+                <label htmlFor="video" className="custom_btn mr-3">
+                  <input
+                    className="input-file"
+                    type="file"
+                    name="video"
+                    id="video"
+                    accept="image/*"
+                    onChange={handleFileChange('video')}
+                  />
+                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
+                  Video
+                </label>
+
+                <button
+                  className="custom_btn mr-3"
+                  onClick={() => handleSubmit(false)}
+                >
+                  Added
+                </button>
+
+                <button
+                  className="custom_btn danger"
+                  onClick={() => handleSubmit(false)}
+                >
+                  Removed
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default StockingForm

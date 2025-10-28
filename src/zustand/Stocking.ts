@@ -6,15 +6,8 @@ interface FetchResponse {
   message: string
   count: number
   page_size: number
-  results: Product[]
-  data: Product
-}
-interface StockingsResponse {
-  message: string
-  count: number
-  page_size: number
   results: Stocking[]
-  data: Product
+  data: Stocking
 }
 
 export interface Stocking {
@@ -23,6 +16,7 @@ export interface Stocking {
   units: number
   picture: string
   reason: string
+  staffName: string
   productId: string
   video: string | File
   amount: number
@@ -36,6 +30,7 @@ export const StockingEmpty = {
   name: '',
   units: 1,
   picture: '',
+  staffName: '',
   reason: '',
   productId: '',
   video: '',
@@ -43,72 +38,32 @@ export const StockingEmpty = {
   createdAt: null,
 }
 
-export interface Product {
-  _id: string
-  name: string
-  purchaseUnit: string
-  discount: number
-  unitPerPurchase: number
-  costPrice: number
-  price: number
-  description: string
-  picture: string | File
-  createdAt: Date | null | number
-  seoTitle: string
-  isChecked?: boolean
-  isActive?: boolean
-}
-
-export const ProductEmpty = {
-  _id: '',
-  name: '',
-  purchaseUnit: '',
-  discount: 0,
-  unitPerPurchase: 1,
-  costPrice: 0,
-  price: 0,
-  description: '',
-  picture: '',
-  createdAt: 0,
-  seoTitle: '',
-}
-
 interface ProductState {
   count: number
   page_size: number
-  products: Product[]
   productStockings: Stocking[]
   loading: boolean
   showStocking: boolean
-  selectedProducts: Product[]
-  searchedProducts: Product[]
+  selectedStockings: Stocking[]
+  searchedStockings: Stocking[]
   isAllChecked: boolean
-  productForm: Product
   stockingFrom: Stocking
-  setForm: (key: keyof Product, value: Product[keyof Product]) => void
   setShowStocking: (status: boolean) => void
   setStockingForm: (
     key: keyof Stocking,
     value: Stocking[keyof Stocking]
   ) => void
   resetForm: () => void
-  getProducts: (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => Promise<void>
   getProductStockings: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
-  getProduct: (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => Promise<void>
+
   setProcessedResults: (data: FetchResponse) => void
   setLoading?: (loading: boolean) => void
   massDelete: (
     url: string,
-    selectedProducts: Record<string, unknown>,
+    selectedStockings: Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   deleteItem: (
@@ -116,18 +71,13 @@ interface ProductState {
     setMessage: (message: string, isError: boolean) => void,
     setLoading?: (loading: boolean) => void
   ) => Promise<void>
-  updateProduct: (
+  updateStocking: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
-  postProduct: (
-    url: string,
-    data: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void,
-    redirect?: () => void
-  ) => Promise<void>
+
   postStocking: (
     url: string,
     data: FormData | Record<string, unknown>,
@@ -138,29 +88,20 @@ interface ProductState {
   toggleActive: (index: number) => void
   toggleAllSelected: () => void
   reshuffleResults: () => void
-  searchProducts: (url: string) => void
+  searchStockings: (url: string) => void
 }
 
-const ProductStore = create<ProductState>((set) => ({
+const StockingStore = create<ProductState>((set) => ({
   count: 0,
   page_size: 0,
   products: [],
   productStockings: [],
   loading: false,
   showStocking: false,
-  selectedProducts: [],
-  searchedProducts: [],
+  selectedStockings: [],
+  searchedStockings: [],
   isAllChecked: false,
-  productForm: ProductEmpty,
   stockingFrom: StockingEmpty,
-
-  setForm: (key, value) =>
-    set((state) => ({
-      productForm: {
-        ...state.productForm,
-        [key]: value,
-      },
-    })),
 
   setStockingForm: (key, value) =>
     set((state) => ({
@@ -172,12 +113,12 @@ const ProductStore = create<ProductState>((set) => ({
 
   resetForm: () =>
     set({
-      productForm: ProductEmpty,
+      stockingFrom: StockingEmpty,
     }),
 
   setProcessedResults: ({ count, page_size, results }: FetchResponse) => {
     if (results) {
-      const updatedResults = results.map((item: Product) => ({
+      const updatedResults = results.map((item: Stocking) => ({
         ...item,
         isChecked: false,
         isActive: false,
@@ -186,7 +127,7 @@ const ProductStore = create<ProductState>((set) => ({
       set({
         count,
         page_size,
-        products: updatedResults,
+        productStockings: updatedResults,
       })
     }
   },
@@ -199,51 +140,15 @@ const ProductStore = create<ProductState>((set) => ({
     set({ showStocking: loadState })
   },
 
-  getProducts: async (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
-    try {
-      const response = await apiRequest<FetchResponse>(url, {
-        setMessage,
-        setLoading: ProductStore.getState().setLoading,
-      })
-      const data = response?.data
-      if (data) {
-        ProductStore.getState().setProcessedResults(data)
-      }
-    } catch (error: unknown) {
-      console.log(error)
-    }
-  },
-
   getProductStockings: async (url, setMessage) => {
     try {
-      const response = await apiRequest<StockingsResponse>(url, {
-        setMessage,
-        setLoading: ProductStore.getState().setLoading,
-      })
-      const data = response?.data
-      if (data) {
-        set({ productStockings: data.results })
-      }
-    } catch (error: unknown) {
-      console.log(error)
-    }
-  },
-
-  getProduct: async (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
-    try {
       const response = await apiRequest<FetchResponse>(url, {
         setMessage,
-        setLoading: ProductStore.getState().setLoading,
+        setLoading: StockingStore.getState().setLoading,
       })
       const data = response?.data
       if (data) {
-        set({ productForm: data.data })
+        StockingStore.getState().setProcessedResults(data)
       }
     } catch (error: unknown) {
       console.log(error)
@@ -252,7 +157,7 @@ const ProductStore = create<ProductState>((set) => ({
 
   reshuffleResults: async () => {
     set((state) => ({
-      products: state.products.map((item: Product) => ({
+      productStockings: state.productStockings.map((item: Stocking) => ({
         ...item,
         isChecked: false,
         isActive: false,
@@ -260,31 +165,30 @@ const ProductStore = create<ProductState>((set) => ({
     }))
   },
 
-  searchProducts: _debounce(async (url: string) => {
+  searchStockings: _debounce(async (url: string) => {
     const response = await apiRequest<FetchResponse>(url, {
-      setLoading: ProductStore.getState().setLoading,
+      setLoading: StockingStore.getState().setLoading,
     })
     const results = response?.data.results
     if (results) {
-      set({ searchedProducts: results })
+      set({ searchedStockings: results })
     }
   }, 1000),
 
   massDelete: async (
     url,
-    selectedProducts,
+    selectedStockings,
     setMessage: (message: string, isError: boolean) => void
   ) => {
     const response = await apiRequest<FetchResponse>(url, {
       method: 'PATCH',
-      body: selectedProducts,
+      body: selectedStockings,
       setMessage,
-      setLoading: ProductStore.getState().setLoading,
+      setLoading: StockingStore.getState().setLoading,
     })
     const data = response?.data
-    console.log(data)
     if (data) {
-      ProductStore.getState().setProcessedResults(data)
+      StockingStore.getState().setProcessedResults(data)
     }
   },
 
@@ -300,36 +204,21 @@ const ProductStore = create<ProductState>((set) => ({
     })
     const data = response?.data
     if (data) {
-      ProductStore.getState().setProcessedResults(data)
+      StockingStore.getState().setProcessedResults(data)
     }
   },
 
-  updateProduct: async (url, updatedItem, setMessage, redirect) => {
+  updateStocking: async (url, updatedItem, setMessage, redirect) => {
     set({ loading: true })
     const response = await apiRequest<FetchResponse>(url, {
       method: 'PATCH',
       body: updatedItem,
       setMessage,
-      setLoading: ProductStore.getState().setLoading,
+      setLoading: StockingStore.getState().setLoading,
     })
     if (response?.data) {
-      ProductStore.getState().setProcessedResults(response.data)
+      StockingStore.getState().setProcessedResults(response.data)
     }
-    if (redirect) redirect()
-  },
-
-  postProduct: async (url, updatedItem, setMessage, redirect) => {
-    set({ loading: true })
-    const response = await apiRequest<FetchResponse>(url, {
-      method: 'POST',
-      body: updatedItem,
-      setMessage,
-      setLoading: ProductStore.getState().setLoading,
-    })
-    if (response?.data) {
-      ProductStore.getState().setProcessedResults(response.data)
-    }
-
     if (redirect) redirect()
   },
 
@@ -338,7 +227,7 @@ const ProductStore = create<ProductState>((set) => ({
       method: 'POST',
       body: updatedItem,
       setMessage,
-      setLoading: ProductStore.getState().setLoading,
+      setLoading: StockingStore.getState().setLoading,
     })
 
     if (redirect) redirect()
@@ -346,20 +235,20 @@ const ProductStore = create<ProductState>((set) => ({
 
   toggleActive: (index: number) => {
     set((state) => {
-      const isCurrentlyActive = state.products[index]?.isActive
-      const updatedResults = state.products.map((tertiary, idx) => ({
+      const isCurrentlyActive = state.productStockings[index]?.isActive
+      const updatedResults = state.productStockings.map((tertiary, idx) => ({
         ...tertiary,
         isActive: idx === index ? !isCurrentlyActive : false,
       }))
       return {
-        products: updatedResults,
+        productStockings: updatedResults,
       }
     })
   },
 
   toggleChecked: (index: number) => {
     set((state) => {
-      const updatedResults = state.products.map((tertiary, idx) =>
+      const updatedResults = state.productStockings.map((tertiary, idx) =>
         idx === index
           ? { ...tertiary, isChecked: !tertiary.isChecked }
           : tertiary
@@ -368,13 +257,13 @@ const ProductStore = create<ProductState>((set) => ({
       const isAllChecked = updatedResults.every(
         (tertiary) => tertiary.isChecked
       )
-      const updatedSelectedProducts = updatedResults.filter(
+      const updatedSelectedStockings = updatedResults.filter(
         (tertiary) => tertiary.isChecked
       )
 
       return {
-        products: updatedResults,
-        selectedProducts: updatedSelectedProducts,
+        productStockings: updatedResults,
+        selectedStockings: updatedSelectedStockings,
         isAllChecked,
       }
     })
@@ -383,21 +272,21 @@ const ProductStore = create<ProductState>((set) => ({
   toggleAllSelected: () => {
     set((state) => {
       const isAllChecked =
-        state.products.length === 0 ? false : !state.isAllChecked
-      const updatedResults = state.products.map((item) => ({
+        state.productStockings.length === 0 ? false : !state.isAllChecked
+      const updatedResults = state.productStockings.map((item) => ({
         ...item,
         isChecked: isAllChecked,
       }))
 
-      const updatedSelectedProducts = isAllChecked ? updatedResults : []
+      const updatedSelectedStockings = isAllChecked ? updatedResults : []
 
       return {
-        products: updatedResults,
-        selectedProducts: updatedSelectedProducts,
+        productStockings: updatedResults,
+        selectedStockings: updatedSelectedStockings,
         isAllChecked,
       }
     })
   },
 }))
 
-export default ProductStore
+export default StockingStore

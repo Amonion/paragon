@@ -9,7 +9,7 @@ export default function UserAlert() {
       {display && (
         <div className="overlay z-50">
           <motion.div
-            className="text-white bg-[var(--custom-color)] sm:rounded-xl rounded-[5px] py-3 px-2 reply max-w-[500px] w-full flex flex-col items-start text-lg"
+            className="text-white bg-[var(--customRedColor)] sm:rounded-xl rounded-[5px] py-3 px-2 reply max-w-[500px] w-full flex flex-col items-start text-lg"
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}

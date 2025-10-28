@@ -118,14 +118,14 @@ ol li{
 }
 
 .checkbox {
-  @apply flex justify-center min-w-[16px] items-center border border-[var(--customColor)]  rounded-[3px];
+  @apply flex justify-center min-w-[16px] items-center border border-[var(--customRedColor)]  rounded-[3px];
 }
 
 .check_box {
   @apply w-[14px] min-w-[14px] h-[14px] flex justify-center items-center border border-[var(--border-color)]  rounded-[3px];
 }
 .check_box.active {
-  @apply bg-[var(--customColor)] text-white border-[var(--customColor)];
+  @apply bg-[var(--customRedColor)] text-white border-[var(--customRedColor)];
 }
 
 .checkbox_container {
@@ -172,7 +172,7 @@ ol li{
 
 
 .custom_btn.line {
-  @apply text-[var(--custom-color)] border-[var(--custom-color)] bg-transparent;
+  @apply text-[var(--customRedColor)] border-[var(--customRedColor)] bg-transparent;
 }
 
 .custom_btn.success {

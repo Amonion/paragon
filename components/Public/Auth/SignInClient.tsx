@@ -144,7 +144,7 @@ export default function SignInClient() {
         {loading ? (
           <button
             type="button"
-            className=" custom-btn"
+            className="homeButton"
             style={{ width: '100%' }}
           >
             <Spinner size={30} />

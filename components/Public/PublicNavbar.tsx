@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { FaFacebookF, FaTwitter, FaYoutube, FaLinkedinIn } from 'react-icons/fa'
 import { NavStore } from '@/src/zustand/notification/Navigation'
@@ -11,6 +11,12 @@ export default function PublicNavbar() {
   const pathName = usePathname()
   const { vNav, clearNav } = NavStore()
   const { user } = AuthStore()
+  const router = useRouter()
+
+  const logout = () => {
+    AuthStore.getState().logout()
+    router.replace('/')
+  }
 
   useEffect(() => {
     clearNav()
@@ -123,7 +129,7 @@ export default function PublicNavbar() {
                     {user.status === 'Admin' ? 'Admin' : 'Dashboard'}
                   </Link>
                 </li>
-                <li>
+                <li onClick={logout} className="cursor-pointer">
                   <div
                     className={`navLinks ${
                       pathName === '/sign-in'

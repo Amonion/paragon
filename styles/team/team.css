@@ -28,11 +28,11 @@ td {
 }
 
 .checkbox {
-  @apply w-4 h-4 mr-2 border border-[var(--custom-color)] rounded  flex items-center justify-center cursor-pointer;
+  @apply w-4 h-4 mr-2 border border-[var(--customRedColor)] rounded  flex items-center justify-center cursor-pointer;
 }
 
 .checkbox.active {
-  @apply bg-[var(--custom-color)];
+  @apply bg-[var(--customRedColor)];
 }
 
 .custom_btn {
@@ -107,7 +107,7 @@ td {
 }
 
 .not_found_text {
-  @apply text-3xl font-bold absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-[var(--custom-color)];
+  @apply text-3xl font-bold absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-[var(--customRedColor)];
 }
 
 .option_num {
@@ -194,7 +194,7 @@ td {
   @apply w-7 h-7 mx-1 flex justify-center items-center rounded-full bg-[var(--border-background)] cursor-pointer;
 }
 .table_nav_items.active {
-  @apply bg-[var(--custom-color)] text-white;
+  @apply bg-[var(--customRedColor)] text-white;
 }
 
 .tr {

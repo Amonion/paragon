@@ -75,25 +75,37 @@ const CreateProduct: React.FC = () => {
       {
         name: 'name',
         value: productForm.name,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: true, maxLength: 100 },
         field: 'Name field',
       },
       {
         name: 'costPrice',
         value: productForm.costPrice,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: true, maxLength: 100 },
         field: 'Cost price field',
       },
       {
         name: 'price',
         value: productForm.price,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: true, maxLength: 100 },
         field: 'Price field',
+      },
+      {
+        name: 'unitPerPurchase',
+        value: productForm.unitPerPurchase,
+        rules: { blank: false, maxLength: 100 },
+        field: 'Unit field',
+      },
+      {
+        name: 'purchaseUnit',
+        value: productForm.purchaseUnit,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Purchase Unit field',
       },
       {
         name: 'seoTitle',
         value: productForm.seoTitle,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: false, maxLength: 100 },
         field: 'SEO title field',
       },
       {
@@ -189,6 +201,21 @@ const CreateProduct: React.FC = () => {
               placeholder="Enter cost price"
             />
           </div>
+
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Unit Per Purchase
+            </label>
+            <input
+              className="form-input"
+              name="unitPerPurchase"
+              value={productForm.unitPerPurchase}
+              onChange={handleInputChange}
+              type="number"
+              placeholder="Enter cost price"
+            />
+          </div>
+
           <div className="flex flex-col">
             <label className="label" htmlFor="">
               Price
@@ -200,6 +227,20 @@ const CreateProduct: React.FC = () => {
               onChange={handleInputChange}
               type="number"
               placeholder="Enter price"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Purchase Unit
+            </label>
+            <input
+              className="form-input"
+              name="purchaseUnit"
+              value={productForm.purchaseUnit}
+              onChange={handleInputChange}
+              type="text"
+              placeholder="Enter purchase unit name"
             />
           </div>
         </div>

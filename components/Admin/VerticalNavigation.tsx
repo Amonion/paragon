@@ -63,10 +63,21 @@ export default function VerticalNavigation() {
         className="v_nav_card nav"
       >
         <div className="flex items-start pt-2">
-          {user && user.picture && (
+          {user && user.picture ? (
             <Image
               className="object-cover rounded-full mr-2"
               src={String(user.picture)}
+              loading="lazy"
+              alt="username"
+              sizes="100vw"
+              height={0}
+              width={0}
+              style={{ height: '50px', width: '50px' }}
+            />
+          ) : (
+            <Image
+              className="object-cover rounded-full mr-2"
+              src={'/images/avatar.jpg'}
               loading="lazy"
               alt="username"
               sizes="100vw"
@@ -219,16 +230,13 @@ export default function VerticalNavigation() {
             </div>
           </div>
 
-          <div className={`v_nav_items ${isMsgActive ? 'active two' : ''}`}>
+          <div className={`v_nav_items ${isMsgActive ? 'active trip' : ''}`}>
             <div
               className="flex cursor-pointer items-center py-3"
               onClick={() => toggleMessages((e) => !e)}
             >
-              <Link className="flex items-center" href="/admin/products">
-                <Boxes className="mr-3 w-5 h-5" />
-                Products
-              </Link>
-
+              <Boxes className="mr-3 w-5 h-5" />
+              Products
               <i
                 className={`bi bi-caret-down-fill ml-auto ${
                   isMsgActive ? 'active' : ''
@@ -239,10 +247,10 @@ export default function VerticalNavigation() {
               <Link className="inner_nav_items" href="/admin/products">
                 Product Settings
               </Link>
-              <Link
-                className="inner_nav_items"
-                href="/team/messages/notifications"
-              >
+              <Link className="inner_nav_items" href="/admin/products/stocking">
+                Product Stocking
+              </Link>
+              <Link className="inner_nav_items" href="/team/products/stocks">
                 Stocks
               </Link>
             </div>

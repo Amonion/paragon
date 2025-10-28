@@ -6,9 +6,10 @@ import { useParams, usePathname } from 'next/navigation'
 import { formatMoney } from '@/lib/helpers'
 import _debounce from 'lodash/debounce'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
-import { Edit, Trash } from 'lucide-react'
+import { Edit, Package, Trash } from 'lucide-react'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import ProductStore from '@/src/zustand/Product'
+import ProductStore, { Product } from '@/src/zustand/Product'
+import StockingForm from '@/components/Admin/Products/StockingForm'
 
 const Products: React.FC = () => {
   const {
@@ -21,6 +22,8 @@ const Products: React.FC = () => {
     toggleActive,
     reshuffleResults,
     searchProducts,
+    setShowStocking,
+    showStocking,
     searchedProducts,
     isAllChecked,
     selectedProducts,
@@ -88,6 +91,20 @@ const Products: React.FC = () => {
     await massDelete(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
 
+  const setStockingForm = (stock: Product) => {
+    ProductStore.setState((prev) => {
+      return {
+        stockingFrom: {
+          ...prev.stockingFrom,
+          name: stock.name,
+          productId: stock._id,
+          picture: String(stock.picture),
+        },
+      }
+    })
+    setShowStocking(true)
+  }
+
   return (
     <>
       <div className="card_body sharp mb-5">
@@ -132,6 +149,7 @@ const Products: React.FC = () => {
           )}
         </div>
       </div>
+
       {products.map((item, index) => (
         <div key={index} className="card_body sharp mb-1">
           <div className="">
@@ -191,12 +209,20 @@ const Products: React.FC = () => {
                 </div>
               </div>
               <div className="absolute top-[-10px] right-0 flex items-center">
-                <Link href={`/admin/products/edit-product/${item._id}`}>
+                <Package
+                  onClick={() => setStockingForm(item)}
+                  className="cursor-pointer"
+                  size={18}
+                />
+                <Link
+                  className="mx-3"
+                  href={`/admin/products/edit-product/${item._id}`}
+                >
                   <Edit className="cursor-pointer" size={18} />
                 </Link>
 
                 <Trash
-                  className="ml-2 cursor-pointer"
+                  className="cursor-pointer"
                   onClick={() => startDelete(item._id, index)}
                   size={18}
                 />
@@ -211,11 +237,13 @@ const Products: React.FC = () => {
           </div>
         </div>
       ))}
+
       {loading && (
         <div className="flex w-full justify-center py-5">
           <i className="bi bi-opencollective loading"></i>
         </div>
       )}
+
       <div className="card_body sharp mb-3">
         <div className="flex flex-wrap items-center">
           <div className="grid mr-auto grid-cols-4 gap-2 w-[160px]">
@@ -241,6 +269,8 @@ const Products: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {showStocking && <StockingForm />}
 
       <div className="card_body sharp">
         <LinkedPagination url="/admin/products" count={count} page_size={20} />

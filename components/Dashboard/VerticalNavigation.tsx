@@ -50,7 +50,7 @@ export default function DashboardNavigation() {
         className="v_nav_card nav"
       >
         <div className="flex items-start pt-2">
-          {user ? (
+          {user && user.picture ? (
             <Image
               className="object-cover rounded-full mr-2"
               src={String(user.picture)}
