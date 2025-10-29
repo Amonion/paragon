@@ -4,11 +4,6 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import {
-  formatDateToDDMMYY,
-  formatMoney,
-  formatTimeTo12Hour,
-} from '@/lib/helpers'
 import { UserStore } from '@/src/zustand/user/User'
 
 const Users: React.FC = () => {
@@ -36,7 +31,7 @@ const Users: React.FC = () => {
   const url = '/users'
   const params = `?page_size=${page_size}&page=${
     page ? page : 1
-  }&ordering=${sort}&status=User`
+  }&ordering=${sort}&status=Staff`
 
   useEffect(() => {
     reshuffleResults()
@@ -86,8 +81,8 @@ const Users: React.FC = () => {
     await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
 
-  const makeStaff = async (id: string) => {
-    await makeUserStaff(`/staffs/make-staff/${params}`, { id: id }, setMessage)
+  const makeUser = async (id: string) => {
+    await makeUserStaff(`/make-user/${params}`, { id: id }, setMessage)
   }
 
   const suspend = async (id: string) => {
@@ -147,10 +142,9 @@ const Users: React.FC = () => {
                 <th>S/N</th>
                 <th>Picture</th>
                 <th>Name</th>
-                <th>Purchase</th>
+                <th>Position</th>
+                <th>Ranking</th>
                 <th>Phone</th>
-                <th>Email</th>
-                <th>Time</th>
               </tr>
             </thead>
             <tbody>
@@ -188,9 +182,9 @@ const Users: React.FC = () => {
 
                         <div
                           className="card_list_item"
-                          onClick={() => makeStaff(item._id)}
+                          onClick={() => makeUser(item._id)}
                         >
-                          Make Staff
+                          Make User
                         </div>
                         <div
                           className="card_list_item"
@@ -202,7 +196,7 @@ const Users: React.FC = () => {
                           className="card_list_item"
                           onClick={() => startDelete(item._id, index)}
                         >
-                          Delete Customer
+                          Delete Staff
                         </div>
                       </div>
                     )}
@@ -228,15 +222,9 @@ const Users: React.FC = () => {
                     </div>
                   </td>
                   <td>{item.fullName}</td>
-                  <td>₦{formatMoney(item.totalPurchase)}</td>
-
+                  <td>{item.staffPositions}</td>
+                  <td>{item.staffRanking}</td>
                   <td>{item.phone}</td>
-                  <td>{item.email}</td>
-
-                  <td>
-                    {formatTimeTo12Hour(item.createdAt)} <br />
-                    {formatDateToDDMMYY(item.createdAt)}
-                  </td>
                 </tr>
               ))}
             </tbody>

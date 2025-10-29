@@ -3,12 +3,11 @@ import { useState, useRef, useEffect, FC } from 'react'
 import JsBarcode from 'jsbarcode'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-// Define the type for a barcode record
+
 interface BarcodeItem {
   id: string
 }
 
-// Barcode component
 const Barcode: FC<{ value: string }> = ({ value }) => {
   const ref = useRef<SVGSVGElement | null>(null)
 
@@ -17,62 +16,47 @@ const Barcode: FC<{ value: string }> = ({ value }) => {
       JsBarcode(ref.current, value, {
         format: 'CODE128',
         lineColor: '#000',
-        width: 2,
-        height: 50,
+        width: 1.5,
+        height: 40,
         displayValue: false,
+        margin: 0,
       })
     }
   }, [value])
 
-  return <svg ref={ref}></svg>
+  return (
+    <div className="flex flex-col items-center justify-center p-2">
+      <svg ref={ref} />
+      <p
+        style={{
+          fontSize: '9pt',
+          marginTop: '3px',
+          textAlign: 'center',
+          fontFamily: 'monospace',
+          letterSpacing: '0.5px',
+        }}
+      >
+        {value}
+      </p>
+    </div>
+  )
 }
 
-// Main dashboard component
 const BarcodeDashboard: FC = () => {
   const [codes, setCodes] = useState<BarcodeItem[]>([])
   const [count, setCount] = useState<number>(10)
 
-  // Generate barcodes
   const generateCodes = (): void => {
-    const newCodes: BarcodeItem[] = Array.from({ length: count }, (_, i) => ({
-      id: `GIVEAWAY-${Math.floor(1000 + Math.random() * 9000)}-${i + 1}`,
+    const newCodes: BarcodeItem[] = Array.from({ length: count }, () => ({
+      id: `PGF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
     }))
     setCodes(newCodes)
   }
-
-  // Save to backend
-  //   const saveToServer = async (): Promise<void> => {
-  //     try {
-  //       const res = await fetch('/api/barcodes', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify(codes),
-  //       })
-
-  //       if (!res.ok) throw new Error('Failed to save to server')
-  //       alert('✅ Barcodes saved to MongoDB!')
-  //     } catch (err) {
-  //       console.error(err)
-  //       alert('❌ Error saving to server')
-  //     }
-  //   }
-
-  //   const downloadCSV = (): void => {
-  //     const csv = ['id', ...codes.map((c) => c.id)].join('\n')
-  //     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-  //     const link = document.createElement('a')
-  //     link.href = URL.createObjectURL(blob)
-  //     link.download = 'barcodes.csv'
-  //     link.click()
-  //   }
-
-  // ...
 
   const downloadPDF = async (): Promise<void> => {
     const tableElement = document.getElementById('barcode-table')
     if (!tableElement) return
 
-    // Use html2canvas to capture the table as an image
     const canvas = await html2canvas(tableElement, { scale: 2 })
     const imgData = canvas.toDataURL('image/png')
 
@@ -83,7 +67,7 @@ const BarcodeDashboard: FC = () => {
     })
 
     const pageWidth = pdf.internal.pageSize.getWidth()
-    const imgWidth = pageWidth - 40 // add margin
+    const imgWidth = pageWidth - 40
     const imgHeight = (canvas.height * imgWidth) / canvas.width
 
     pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight)
@@ -94,13 +78,13 @@ const BarcodeDashboard: FC = () => {
     <div className="py-3 space-y-4">
       <h1 className="text-2xl font-bold">Barcode Generator Dashboard</h1>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <input
           type="number"
           min={1}
           value={count}
           onChange={(e) => setCount(Number(e.target.value))}
-          className="border border-[var(--border)] p-2 rounded outline-none w-24 bg-transparent"
+          className="border border-gray-300 p-2 rounded outline-none w-24 bg-transparent"
         />
 
         <button
@@ -109,13 +93,6 @@ const BarcodeDashboard: FC = () => {
         >
           Generate {count} Codes
         </button>
-        {/*
-        <button
-          onClick={saveToServer}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Save to Server
-        </button> */}
 
         <button
           onClick={downloadPDF}
@@ -123,31 +100,21 @@ const BarcodeDashboard: FC = () => {
         >
           Download PDF
         </button>
-        {/* <button
-          onClick={downloadCSV}
-          className="bg-gray-700 text-white px-4 py-2 rounded"
-        >
-          Download CSV
-        </button> */}
       </div>
 
       {codes.length > 0 && (
-        <table id="barcode-table" className="min-w-full  mt-4 text-sm">
+        <table
+          id="barcode-table"
+          className="w-full max-w-[300px] border mt-4 text-sm border-gray-300"
+        >
           <thead>
-            <tr className="bg-[var(--primary)]">
-              <th className="p-2 text-left">#</th>
-              <th className="p-2 text-left">Code</th>
+            <tr className="bg-[var(--primary)] border-b">
               <th className="p-2 text-left">Barcode</th>
             </tr>
           </thead>
           <tbody>
             {codes.map((item, i) => (
-              <tr
-                key={i}
-                className={` ${i % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
-              >
-                <td className="p-2">{i + 1}</td>
-                <td className="p-2">{item.id}</td>
+              <tr key={i} className="border-b">
                 <td className="p-2">
                   <Barcode value={item.id} />
                 </td>
