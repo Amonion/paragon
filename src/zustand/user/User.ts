@@ -19,6 +19,7 @@ interface FetchUserResponse {
   page_size: number
   results: User[]
   data: User
+  result: FetchUserResponse
 }
 
 interface UserState {
@@ -47,6 +48,11 @@ interface UserState {
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   massDeleteUsers: (
+    url: string,
+    selectedUsers: Record<string, unknown>,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  makeUserStaff: (
     url: string,
     selectedUsers: Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
@@ -163,6 +169,25 @@ export const UserStore = create<UserState>((set) => ({
       }
     } catch (error: unknown) {
       console.log(error)
+    }
+  },
+
+  makeUserStaff: async (url, selectedUsers, setMessage) => {
+    try {
+      set({ loading: true })
+      const response = await apiRequest<FetchUserResponse>(url, {
+        method: 'PATCH',
+        body: selectedUsers,
+        setMessage,
+      })
+      const data = response.data
+      if (data) {
+        UserStore.getState().setProcessedResults(data.result)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      set({ loading: false })
     }
   },
 

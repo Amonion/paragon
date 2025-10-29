@@ -1,12 +1,20 @@
 import { create } from 'zustand'
 import _debounce from 'lodash/debounce'
 import apiRequest from '@/lib/axios'
+import { Product } from './Product'
 
 interface FetchResponse {
   message: string
   count: number
   page_size: number
   results: Stocking[]
+  data: Stocking
+}
+interface StockResponse {
+  message: string
+  count: number
+  page_size: number
+  results: Product[]
   data: Stocking
 }
 
@@ -44,6 +52,7 @@ interface ProductState {
   count: number
   page_size: number
   productStockings: Stocking[]
+  stocks: Product[]
   loading: boolean
   showStocking: boolean
   selectedStockings: Stocking[]
@@ -57,6 +66,10 @@ interface ProductState {
   ) => void
   resetForm: () => void
   getProductStockings: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  getStocks: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -96,7 +109,7 @@ interface ProductState {
 const StockingStore = create<ProductState>((set) => ({
   count: 0,
   page_size: 0,
-  products: [],
+  stocks: [],
   productStockings: [],
   loading: false,
   showStocking: false,
@@ -151,6 +164,21 @@ const StockingStore = create<ProductState>((set) => ({
       const data = response?.data
       if (data) {
         StockingStore.getState().setProcessedResults(data)
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  getStocks: async (url, setMessage) => {
+    try {
+      const response = await apiRequest<StockResponse>(url, {
+        setMessage,
+        setLoading: StockingStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ stocks: data.results })
       }
     } catch (error: unknown) {
       console.log(error)

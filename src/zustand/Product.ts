@@ -9,39 +9,6 @@ interface FetchResponse {
   results: Product[]
   data: Product
 }
-interface StockingsResponse {
-  message: string
-  count: number
-  page_size: number
-  results: Stocking[]
-  data: Product
-}
-
-export interface Stocking {
-  _id: string
-  name: string
-  units: number
-  picture: string
-  reason: string
-  productId: string
-  video: string | File
-  amount: number
-  createdAt: Date | null | number
-  isChecked?: boolean
-  isActive?: boolean
-}
-
-export const StockingEmpty = {
-  _id: '',
-  name: '',
-  units: 1,
-  picture: '',
-  reason: '',
-  productId: '',
-  video: '',
-  amount: 0,
-  createdAt: null,
-}
 
 export interface Product {
   _id: string
@@ -49,6 +16,7 @@ export interface Product {
   purchaseUnit: string
   discount: number
   unitPerPurchase: number
+  units: number
   costPrice: number
   price: number
   description: string
@@ -64,6 +32,7 @@ export const ProductEmpty = {
   name: '',
   purchaseUnit: '',
   discount: 0,
+  units: 0,
   unitPerPurchase: 1,
   costPrice: 0,
   price: 0,
@@ -77,26 +46,16 @@ interface ProductState {
   count: number
   page_size: number
   products: Product[]
-  productStockings: Stocking[]
   loading: boolean
   showStocking: boolean
   selectedProducts: Product[]
   searchedProducts: Product[]
   isAllChecked: boolean
   productForm: Product
-  stockingFrom: Stocking
   setForm: (key: keyof Product, value: Product[keyof Product]) => void
   setShowStocking: (status: boolean) => void
-  setStockingForm: (
-    key: keyof Stocking,
-    value: Stocking[keyof Stocking]
-  ) => void
   resetForm: () => void
   getProducts: (
-    url: string,
-    setMessage: (message: string, isError: boolean) => void
-  ) => Promise<void>
-  getProductStockings: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -152,20 +111,11 @@ const ProductStore = create<ProductState>((set) => ({
   searchedProducts: [],
   isAllChecked: false,
   productForm: ProductEmpty,
-  stockingFrom: StockingEmpty,
 
   setForm: (key, value) =>
     set((state) => ({
       productForm: {
         ...state.productForm,
-        [key]: value,
-      },
-    })),
-
-  setStockingForm: (key, value) =>
-    set((state) => ({
-      stockingFrom: {
-        ...state.stockingFrom,
         [key]: value,
       },
     })),
@@ -211,21 +161,6 @@ const ProductStore = create<ProductState>((set) => ({
       const data = response?.data
       if (data) {
         ProductStore.getState().setProcessedResults(data)
-      }
-    } catch (error: unknown) {
-      console.log(error)
-    }
-  },
-
-  getProductStockings: async (url, setMessage) => {
-    try {
-      const response = await apiRequest<StockingsResponse>(url, {
-        setMessage,
-        setLoading: ProductStore.getState().setLoading,
-      })
-      const data = response?.data
-      if (data) {
-        set({ productStockings: data.results })
       }
     } catch (error: unknown) {
       console.log(error)

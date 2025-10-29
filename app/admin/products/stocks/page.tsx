@@ -2,47 +2,27 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
-import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
+import { formatCount } from '@/lib/helpers'
+import { MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import FaqStore from '@/src/zustand/faq'
-import CreateFaq from '@/components/Admin/CreateFaq'
 import StockingStore from '@/src/zustand/Stocking'
-import {
-  formatDateToDDMMYY,
-  formatMoney,
-  formatTimeTo12Hour,
-} from '@/lib/helpers'
 
-const ProductStocking: React.FC = () => {
+const Stocks: React.FC = () => {
   const {
-    massDelete,
-    setLoading,
-    getFaq,
-    showForm,
-    // searchFaq,
-    // searchedFaqs,
-    isForm,
-  } = FaqStore()
+    getStocks,
+    toggleChecked,
+    toggleActive,
+    reshuffleResults,
+    loading,
+    count,
+    stocks,
+  } = StockingStore()
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
-  const {
-    productStockings,
-    isAllChecked,
-    loading,
-    count,
-    selectedStockings,
-    deleteItem,
-    toggleAllSelected,
-    toggleChecked,
-    reshuffleResults,
-    toggleActive,
-    getProductStockings,
-  } = StockingStore()
   const pathname = usePathname()
   const { page } = useParams()
-  const { setAlert } = AlartStore()
-  const url = '/products/stocking'
+  const url = '/products'
 
   useEffect(() => {
     reshuffleResults()
@@ -52,54 +32,8 @@ const ProductStocking: React.FC = () => {
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    getProductStockings(`${url}${params}`, setMessage)
+    getStocks(`${url}${params}`, setMessage)
   }, [page])
-
-  const deleteProductStock = async (id: string, index: number) => {
-    toggleActive(index)
-    const params = `?page_size=${page_size}&page=${
-      page ? page : 1
-    }&ordering=${sort}`
-    await deleteItem(`${url}/${id}/${params}`, setMessage, setLoading)
-  }
-
-  const startDelete = (id: string, index: number) => {
-    setAlert(
-      'Warning',
-      'Are you sure you want to delete this Product Stocking?',
-      true,
-      () => deleteProductStock(id, index)
-    )
-  }
-
-  // const handlesearchFaq = _debounce(
-  //   async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const value = e.target.value
-  //     if (value.trim().length > 0) {
-  //       searchFaq(
-  //         `${url}/search?author=${value}&content=${value}&title=${value}&subtitle=${value}&page_size=${page_size}`
-  //       )
-  //     } else {
-  //       FaqStore.setState({ searchedFaqs: [] })
-  //     }
-  //   },
-  //   1000
-  // )
-
-  const editQuestion = (id: string, index: number) => {
-    getFaq(`/faqs/${id}`, setMessage)
-    toggleActive(index)
-    showForm(true)
-  }
-
-  const deleteFaqs = async () => {
-    if (selectedStockings.length === 0) {
-      setMessage('Please select at least one item to delete', false)
-      return
-    }
-    const ids = selectedStockings.map((item) => item._id)
-    await massDelete(`${url}/mass-delete`, { ids: ids }, setMessage)
-  }
 
   return (
     <>
@@ -147,20 +81,20 @@ const ProductStocking: React.FC = () => {
       </div> */}
 
       <div className="overflow-auto mb-5">
-        {productStockings.length > 0 ? (
+        {stocks.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
+                <th>Picture</th>
                 <th>Product</th>
-                <th>Staff</th>
-                <th>Quantity</th>
-                <th>Amount</th>
-                <th>Time</th>
+                <th>Units</th>
+                <th>Purchase Units</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {productStockings.map((item, index) => (
+              {stocks.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
@@ -183,60 +117,41 @@ const ProductStocking: React.FC = () => {
                         className="bi bi-three-dots-vertical text-lg cursor-pointer"
                       ></i>
                     </div>
-                    {item.isActive && (
-                      <div className="card_list">
-                        <span
-                          onClick={() => toggleActive(index)}
-                          className="more_close "
-                        >
-                          X
-                        </span>
-                        <div
-                          onClick={() => editQuestion(item._id, index)}
-                          className="card_list_item"
-                        >
-                          Edit Stock
-                        </div>
-                        <div
-                          className="card_list_item"
-                          onClick={() => startDelete(item._id, index)}
-                        >
-                          Delete Stock
-                        </div>
-                      </div>
-                    )}
-                  </td>
-                  <td>{item.name}</td>
-                  <td>{item.staffName}</td>
-                  <td
-                    className={`${
-                      item.isProfit
-                        ? 'text-[var(--success)]'
-                        : 'text-[var(--customRedColor)]'
-                    }`}
-                  >
-                    {item.units}
-                  </td>
-                  <td
-                    className={`${
-                      item.isProfit
-                        ? 'text-[var(--success)]'
-                        : 'text-[var(--customRedColor)]'
-                    }`}
-                  >
-                    ₦{formatMoney(item.amount)}
                   </td>
                   <td>
-                    {formatTimeTo12Hour(item.createdAt)} <br />
-                    {formatDateToDDMMYY(item.createdAt)}
+                    <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full">
+                      <Image
+                        alt={`email of ${item.picture}`}
+                        src={
+                          item.picture
+                            ? String(item.picture)
+                            : '/images/avatar.jpg'
+                        }
+                        width={0}
+                        sizes="100vw"
+                        height={0}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </div>
                   </td>
+                  <td>{item.name}</td>
+                  <td>{formatCount(item.units)}</td>
+                  <td>
+                    {Math.floor(item.units / item.unitPerPurchase)}{' '}
+                    {item.purchaseUnit}
+                  </td>
+                  <td>{item.units}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
           <div className="relative flex justify-center">
-            <div className="not_found_text">No Product Stockings Found</div>
+            <div className="not_found_text">No Stocks Found</div>
             <Image
               className="max-w-[300px]"
               alt={`no record`}
@@ -254,35 +169,12 @@ const ProductStocking: React.FC = () => {
           <i className="bi bi-opencollective loading"></i>
         </div>
       )}
-      <div className="card_body sharp mb-3">
-        <div className="flex flex-wrap items-center">
-          <div className="grid mr-auto grid-cols-4 gap-2 w-[160px]">
-            <div onClick={toggleAllSelected} className="tableActions">
-              <i
-                className={`bi bi-check2-all ${
-                  isAllChecked ? 'text-[var(--custom)]' : ''
-                }`}
-              ></i>
-            </div>
-            <div onClick={deleteFaqs} className="tableActions">
-              <i className="bi bi-trash"></i>
-            </div>
-            <div onClick={() => showForm(true)} className="tableActions">
-              <i className="bi bi-plus-circle"></i>
-            </div>
-            {/* <div onClick={updateExam} className="tableActions">
-              <i className="bi bi-table"></i>
-            </div> */}
-          </div>
-        </div>
-      </div>
 
       <div className="card_body sharp">
         <LinkedPagination url="/admin/pages/faq" count={count} page_size={20} />
       </div>
-      {isForm && <CreateFaq />}
     </>
   )
 }
 
-export default ProductStocking
+export default Stocks

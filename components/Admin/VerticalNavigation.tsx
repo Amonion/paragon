@@ -133,14 +133,14 @@ export default function VerticalNavigation() {
               pathname === '/admin/reviews'
                 ? 'text-[var(--customRedColor)]'
                 : ''
-            } v_nav_items hover:text-[var(--customColor)] flex items-center`}
+            } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
             href="/admin/reviews"
           >
             <MessageCircle className="mr-3 w-5 h-5" />
             Reviews
           </Link>
           <Link
-            className="v_nav_items hover:text-[var(--customColor)] flex items-center"
+            className="v_nav_items hover:text-[var(--customRedColor)] flex items-center"
             href="/admin/services"
           >
             <Wrench className="mr-3 w-5 h-5" />
@@ -244,7 +244,11 @@ export default function VerticalNavigation() {
 
           <div className={`v_nav_items ${isMsgActive ? 'active trip' : ''}`}>
             <div
-              className="flex cursor-pointer items-center py-3"
+              className={`flex cursor-pointer items-center py-3 ${
+                pathname.includes('products')
+                  ? 'text-[var(--customRedColor)]'
+                  : ''
+              }`}
               onClick={() => toggleMessages((e) => !e)}
             >
               <Boxes className="mr-3 w-5 h-5" />
@@ -271,7 +275,11 @@ export default function VerticalNavigation() {
           <div className={`v_nav_items ${isSettingsActive ? 'active' : ''}`}>
             <div
               onClick={() => toggleSettings((e) => !e)}
-              className="flex cursor-pointer items-center py-3"
+              className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3 ${
+                pathname.includes('company')
+                  ? 'text-[var(--customRedColor)]'
+                  : ''
+              }`}
             >
               <Settings className="mr-3 w-5 h-5" />
               Company

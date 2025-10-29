@@ -4,46 +4,42 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import {
-  formatDateToDDMMYY,
-  formatMoney,
-  formatTimeTo12Hour,
-} from '@/lib/helpers'
-import { UserStore } from '@/src/zustand/user/User'
+import { formatDateToDDMMYY, formatTimeTo12Hour } from '@/lib/helpers'
+import RatingStore from '@/src/zustand/Rating'
+import { Star } from 'lucide-react'
 
-const Users: React.FC = () => {
+const Ratings: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
   const {
-    users,
+    ratings,
     isAllChecked,
     loading,
     count,
-    selectedUsers,
-    massDeleteUsers,
-    makeUserStaff,
-    deleteUser,
+    selectedRatings,
+    massDelete,
+    deleteRating,
     toggleAllSelected,
     toggleChecked,
     reshuffleResults,
     toggleActive,
-    getUsers,
-  } = UserStore()
+    getRatings,
+  } = RatingStore()
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
-  const url = '/users'
-  const params = `?page_size=${page_size}&page=${
-    page ? page : 1
-  }&ordering=${sort}&status=User`
+  const url = '/reviews/'
 
   useEffect(() => {
     reshuffleResults()
   }, [pathname])
 
   useEffect(() => {
-    getUsers(`${url}${params}`, setMessage)
+    const params = `?page_size=${page_size}&page=${
+      page ? page : 1
+    }&ordering=${sort}`
+    getRatings(`${url}${params}`, setMessage)
   }, [page])
 
   const deleteProductStock = async (id: string, index: number) => {
@@ -51,7 +47,7 @@ const Users: React.FC = () => {
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    await deleteUser(`${url}/${id}/${params}`, setMessage)
+    await deleteRating(`${url}/${id}/${params}`, setMessage)
   }
 
   const startDelete = (id: string, index: number) => {
@@ -78,20 +74,12 @@ const Users: React.FC = () => {
   // )
 
   const deleteFaqs = async () => {
-    if (selectedUsers.length === 0) {
+    if (selectedRatings.length === 0) {
       setMessage('Please select at least one item to delete', false)
       return
     }
-    const ids = selectedUsers.map((item) => item._id)
-    await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
-  }
-
-  const makeStaff = async (id: string) => {
-    await makeUserStaff(`/staffs/make-staff/${params}`, { id: id }, setMessage)
-  }
-
-  const suspend = async (id: string) => {
-    await makeUserStaff(`${url}/suspend/${params}`, { id: id }, setMessage)
+    const ids = selectedRatings.map((item) => item._id)
+    await massDelete(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
 
   return (
@@ -140,21 +128,20 @@ const Users: React.FC = () => {
       </div> */}
 
       <div className="overflow-auto mb-5">
-        {users.length > 0 ? (
+        {ratings.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
                 <th>Picture</th>
                 <th>Name</th>
-                <th>Purchase</th>
-                <th>Phone</th>
-                <th>Email</th>
+                <th>Rating</th>
+                <th>Review</th>
                 <th>Time</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((item, index) => (
+              {ratings.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
@@ -188,21 +175,9 @@ const Users: React.FC = () => {
 
                         <div
                           className="card_list_item"
-                          onClick={() => makeStaff(item._id)}
-                        >
-                          Make Staff
-                        </div>
-                        <div
-                          className="card_list_item"
-                          onClick={() => suspend(item._id)}
-                        >
-                          Suspend
-                        </div>
-                        <div
-                          className="card_list_item"
                           onClick={() => startDelete(item._id, index)}
                         >
-                          Delete Customer
+                          Delete Stock
                         </div>
                       </div>
                     )}
@@ -228,11 +203,23 @@ const Users: React.FC = () => {
                     </div>
                   </td>
                   <td>{item.fullName}</td>
-                  <td>₦{formatMoney(item.totalPurchase)}</td>
-
-                  <td>{item.phone}</td>
-                  <td>{item.email}</td>
-
+                  <td>
+                    <div className="flex items-center">
+                      {item.rating}{' '}
+                      <Star
+                        size={16}
+                        className="text-[var(--customColor)] ml-1"
+                      />{' '}
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      className="line-clamp-5 overflow-ellipsis leading-[25px]"
+                      dangerouslySetInnerHTML={{
+                        __html: item.review,
+                      }}
+                    />
+                  </td>
                   <td>
                     {formatTimeTo12Hour(item.createdAt)} <br />
                     {formatDateToDDMMYY(item.createdAt)}
@@ -243,7 +230,7 @@ const Users: React.FC = () => {
           </table>
         ) : (
           <div className="relative flex justify-center">
-            <div className="not_found_text">No Users Found</div>
+            <div className="not_found_text">No Product Stockings Found</div>
             <Image
               className="max-w-[300px]"
               alt={`no record`}
@@ -291,4 +278,4 @@ const Users: React.FC = () => {
   )
 }
 
-export default Users
+export default Ratings
