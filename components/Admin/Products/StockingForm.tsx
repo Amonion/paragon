@@ -3,10 +3,10 @@ import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { appendForm } from '@/lib/helpers'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
-import ProductStore from '@/src/zustand/Product'
 import PictureDisplay from '@/components/PictureDisplay'
 import { validateInputs } from '@/lib/validation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
+import StockingStore from '@/src/zustand/Stocking'
 
 const StockingForm: React.FC = () => {
   const {
@@ -16,7 +16,7 @@ const StockingForm: React.FC = () => {
     postStocking,
     setStockingForm,
     setShowStocking,
-  } = ProductStore()
+  } = StockingStore()
   const { setMessage } = MessageStore()
   const pathname = usePathname()
   const { setAlert } = AlartStore()

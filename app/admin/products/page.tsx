@@ -10,6 +10,7 @@ import { Edit, Package, Trash } from 'lucide-react'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
 import ProductStore, { Product } from '@/src/zustand/Product'
 import StockingForm from '@/components/Admin/Products/StockingForm'
+import StockingStore from '@/src/zustand/Stocking'
 
 const Products: React.FC = () => {
   const {
@@ -22,8 +23,6 @@ const Products: React.FC = () => {
     toggleActive,
     reshuffleResults,
     searchProducts,
-    setShowStocking,
-    showStocking,
     searchedProducts,
     isAllChecked,
     selectedProducts,
@@ -37,6 +36,7 @@ const Products: React.FC = () => {
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
+  const { showStocking, setShowStocking } = StockingStore()
   const inputRef = useRef<HTMLInputElement>(null)
   const url = '/products'
 
@@ -92,7 +92,7 @@ const Products: React.FC = () => {
   }
 
   const setStockingForm = (stock: Product) => {
-    ProductStore.setState((prev) => {
+    StockingStore.setState((prev) => {
       return {
         stockingFrom: {
           ...prev.stockingFrom,
