@@ -20,6 +20,7 @@ export interface Stocking {
   productId: string
   video: string | File
   amount: number
+  isProfit: boolean
   createdAt: Date | null | number
   isChecked?: boolean
   isActive?: boolean
@@ -35,6 +36,7 @@ export const StockingEmpty = {
   productId: '',
   video: '',
   amount: 0,
+  isProfit: false,
   createdAt: null,
 }
 

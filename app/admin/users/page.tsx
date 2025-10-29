@@ -4,45 +4,35 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import FaqStore from '@/src/zustand/faq'
-import CreateFaq from '@/components/Admin/CreateFaq'
-import StockingStore from '@/src/zustand/Stocking'
 import {
   formatDateToDDMMYY,
   formatMoney,
   formatTimeTo12Hour,
 } from '@/lib/helpers'
+import { UserStore } from '@/src/zustand/user/User'
 
-const ProductStocking: React.FC = () => {
-  const {
-    massDelete,
-    setLoading,
-    getFaq,
-    showForm,
-    // searchFaq,
-    // searchedFaqs,
-    isForm,
-  } = FaqStore()
+const Users: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
   const {
-    productStockings,
+    users,
     isAllChecked,
     loading,
     count,
-    selectedStockings,
-    deleteItem,
+    selectedUsers,
+    massDeleteUsers,
+    deleteUser,
     toggleAllSelected,
     toggleChecked,
     reshuffleResults,
     toggleActive,
-    getProductStockings,
-  } = StockingStore()
+    getUsers,
+  } = UserStore()
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
-  const url = '/products/stocking'
+  const url = '/users/'
 
   useEffect(() => {
     reshuffleResults()
@@ -52,7 +42,7 @@ const ProductStocking: React.FC = () => {
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    getProductStockings(`${url}${params}`, setMessage)
+    getUsers(`${url}${params}`, setMessage)
   }, [page])
 
   const deleteProductStock = async (id: string, index: number) => {
@@ -60,7 +50,7 @@ const ProductStocking: React.FC = () => {
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    await deleteItem(`${url}/${id}/${params}`, setMessage, setLoading)
+    await deleteUser(`${url}/${id}/${params}`, setMessage)
   }
 
   const startDelete = (id: string, index: number) => {
@@ -86,19 +76,13 @@ const ProductStocking: React.FC = () => {
   //   1000
   // )
 
-  const editQuestion = (id: string, index: number) => {
-    getFaq(`/faqs/${id}`, setMessage)
-    toggleActive(index)
-    showForm(true)
-  }
-
   const deleteFaqs = async () => {
-    if (selectedStockings.length === 0) {
+    if (selectedUsers.length === 0) {
       setMessage('Please select at least one item to delete', false)
       return
     }
-    const ids = selectedStockings.map((item) => item._id)
-    await massDelete(`${url}/mass-delete`, { ids: ids }, setMessage)
+    const ids = selectedUsers.map((item) => item._id)
+    await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
 
   return (
@@ -147,20 +131,21 @@ const ProductStocking: React.FC = () => {
       </div> */}
 
       <div className="overflow-auto mb-5">
-        {productStockings.length > 0 ? (
+        {users.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
-                <th>Product</th>
-                <th>Staff</th>
-                <th>Quantity</th>
-                <th>Amount</th>
+                <th>Picture</th>
+                <th>Name</th>
+                <th>Purchase</th>
+                <th>Phone</th>
+                <th>Email</th>
                 <th>Time</th>
               </tr>
             </thead>
             <tbody>
-              {productStockings.map((item, index) => (
+              {users.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
@@ -191,12 +176,7 @@ const ProductStocking: React.FC = () => {
                         >
                           X
                         </span>
-                        <div
-                          onClick={() => editQuestion(item._id, index)}
-                          className="card_list_item"
-                        >
-                          Edit Stock
-                        </div>
+
                         <div
                           className="card_list_item"
                           onClick={() => startDelete(item._id, index)}
@@ -206,26 +186,32 @@ const ProductStocking: React.FC = () => {
                       </div>
                     )}
                   </td>
-                  <td>{item.name}</td>
-                  <td>{item.staffName}</td>
-                  <td
-                    className={`${
-                      item.isProfit
-                        ? 'text-[var(--success)]'
-                        : 'text-[var(--customRedColor)]'
-                    }`}
-                  >
-                    {item.units}
+                  <td>
+                    <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full">
+                      <Image
+                        alt={`email of ${item.picture}`}
+                        src={
+                          item.picture
+                            ? String(item.picture)
+                            : '/images/avatar.jpg'
+                        }
+                        width={0}
+                        sizes="100vw"
+                        height={0}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </div>
                   </td>
-                  <td
-                    className={`${
-                      item.isProfit
-                        ? 'text-[var(--success)]'
-                        : 'text-[var(--customRedColor)]'
-                    }`}
-                  >
-                    ₦{formatMoney(item.amount)}
-                  </td>
+                  <td>{item.fullName}</td>
+                  <td>₦{formatMoney(item.totalPurchase)}</td>
+
+                  <td>{item.phone}</td>
+                  <td>{item.email}</td>
+
                   <td>
                     {formatTimeTo12Hour(item.createdAt)} <br />
                     {formatDateToDDMMYY(item.createdAt)}
@@ -267,9 +253,9 @@ const ProductStocking: React.FC = () => {
             <div onClick={deleteFaqs} className="tableActions">
               <i className="bi bi-trash"></i>
             </div>
-            <div onClick={() => showForm(true)} className="tableActions">
+            {/* <div onClick={() => showForm(true)} className="tableActions">
               <i className="bi bi-plus-circle"></i>
-            </div>
+            </div> */}
             {/* <div onClick={updateExam} className="tableActions">
               <i className="bi bi-table"></i>
             </div> */}
@@ -280,9 +266,8 @@ const ProductStocking: React.FC = () => {
       <div className="card_body sharp">
         <LinkedPagination url="/admin/pages/faq" count={count} page_size={20} />
       </div>
-      {isForm && <CreateFaq />}
     </>
   )
 }
 
-export default ProductStocking
+export default Users

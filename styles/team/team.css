@@ -99,7 +99,7 @@ td {
 }
 
 .more_close {
-  @apply absolute bg-[var(--custom-color)] text-white text-sm flex items-center justify-center w-5 h-5 rounded-full cursor-pointer right-[-5px] top-[-5px];
+  @apply absolute bg-[var(--customRedColor)] text-white text-sm flex items-center justify-center w-5 h-5 rounded-full cursor-pointer right-[-5px] top-[-5px];
 }
 
 .nav_dropdown {

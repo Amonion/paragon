@@ -98,6 +98,7 @@ const Products: React.FC = () => {
           ...prev.stockingFrom,
           name: stock.name,
           productId: stock._id,
+          amount: stock.costPrice,
           picture: String(stock.picture),
         },
       }

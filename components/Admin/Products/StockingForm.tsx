@@ -66,6 +66,12 @@ const StockingForm: React.FC = () => {
         field: 'Name field',
       },
       {
+        name: 'amount',
+        value: stockingFrom.amount,
+        rules: { blank: true, minLength: 1, maxLength: 100 },
+        field: 'Amount field',
+      },
+      {
         name: 'productId',
         value: stockingFrom.productId,
         rules: { blank: true, maxLength: 100 },
@@ -207,7 +213,7 @@ const StockingForm: React.FC = () => {
 
                 <button
                   className="custom_btn mr-3"
-                  onClick={() => handleSubmit(false)}
+                  onClick={() => handleSubmit(true)}
                 >
                   Added
                 </button>

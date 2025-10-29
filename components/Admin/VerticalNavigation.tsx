@@ -99,7 +99,9 @@ export default function VerticalNavigation() {
 
         <div className="mt-4">
           <Link
-            className="v_nav_items hover:text-[var(--customColor)] flex items-center"
+            className={`${
+              pathname === '/admin' ? 'text-[var(--customRedColor)]' : ''
+            } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
             href="/admin"
           >
             <Gauge className="mr-3 w-5 h-5" />
@@ -107,25 +109,35 @@ export default function VerticalNavigation() {
           </Link>
 
           <Link
-            className="v_nav_items hover:text-[var(--customColor)] flex items-center"
+            className={`${
+              pathname === '/admin/profile'
+                ? 'text-[var(--customRedColor)]'
+                : ''
+            } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
             href="/admin/profile"
           >
             <User className="mr-3 w-5 h-5" />
             Profile
           </Link>
           <Link
-            className="v_nav_items hover:text-[var(--customColor)] flex items-center"
+            className={`${
+              pathname === '/admin/users' ? 'text-[var(--customRedColor)]' : ''
+            } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
             href="/admin/users"
           >
             <Users className="mr-3 w-5 h-5" />
-            Users
+            Customers
           </Link>
           <Link
-            className="v_nav_items hover:text-[var(--customColor)] flex items-center"
-            href="/admin/comments"
+            className={`${
+              pathname === '/admin/reviews'
+                ? 'text-[var(--customRedColor)]'
+                : ''
+            } v_nav_items hover:text-[var(--customColor)] flex items-center`}
+            href="/admin/reviews"
           >
             <MessageCircle className="mr-3 w-5 h-5" />
-            Comments
+            Reviews
           </Link>
           <Link
             className="v_nav_items hover:text-[var(--customColor)] flex items-center"
@@ -250,7 +262,7 @@ export default function VerticalNavigation() {
               <Link className="inner_nav_items" href="/admin/products/stocking">
                 Product Stocking
               </Link>
-              <Link className="inner_nav_items" href="/team/products/stocks">
+              <Link className="inner_nav_items" href="/admin/products/stocks">
                 Stocks
               </Link>
             </div>

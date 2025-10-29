@@ -48,7 +48,7 @@ interface UserState {
   ) => Promise<void>
   massDeleteUsers: (
     url: string,
-    selectedUsers: User[],
+    selectedUsers: Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   resetForm: () => void
@@ -95,6 +95,7 @@ export const UserEmpty = {
   picture: '',
   staffPositions: [],
   staffRanking: 0,
+  totalPurchase: 0,
   username: '',
   status: '',
   newPassword: '',
@@ -165,11 +166,7 @@ export const UserStore = create<UserState>((set) => ({
     }
   },
 
-  massDeleteUsers: async (
-    url: string,
-    selectedUsers: User[],
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
+  massDeleteUsers: async (url, selectedUsers, setMessage) => {
     try {
       set({ loading: true })
       await apiRequest<FetchUserResponse>(url, {
@@ -397,6 +394,7 @@ export interface User {
   picture: string | File
   staffPositions: string[]
   staffRanking: number
+  totalPurchase: number
   status: string
   username: string
   newPassword: string
