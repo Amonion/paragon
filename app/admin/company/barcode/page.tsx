@@ -8,7 +8,7 @@ interface BarcodeItem {
   id: string
 }
 
-const Barcode: FC<{ value: string }> = ({ value }) => {
+const Barcode: FC<{ value: string; height: number }> = ({ value, height }) => {
   const ref = useRef<SVGSVGElement | null>(null)
 
   useEffect(() => {
@@ -17,15 +17,22 @@ const Barcode: FC<{ value: string }> = ({ value }) => {
         format: 'CODE128',
         lineColor: '#000',
         width: 1.5,
-        height: 40,
+        height: height * 1.2, // scale a bit taller than the tag height
         displayValue: false,
         margin: 0,
       })
     }
-  }, [value])
+  }, [value, height])
 
   return (
-    <div className="flex flex-col items-center justify-center p-2">
+    <div
+      className="flex flex-col items-center justify-center"
+      style={{
+        height: `${height}mm`,
+        padding: '4px 0',
+        pageBreakInside: 'avoid',
+      }}
+    >
       <svg ref={ref} />
       <p
         style={{
@@ -45,6 +52,7 @@ const Barcode: FC<{ value: string }> = ({ value }) => {
 const BarcodeDashboard: FC = () => {
   const [codes, setCodes] = useState<BarcodeItem[]>([])
   const [count, setCount] = useState<number>(10)
+  const [tagHeight, setTagHeight] = useState<number>(30) // mm, controls space per tag
 
   const generateCodes = (): void => {
     const newCodes: BarcodeItem[] = Array.from({ length: count }, () => ({
@@ -57,35 +65,52 @@ const BarcodeDashboard: FC = () => {
     const tableElement = document.getElementById('barcode-table')
     if (!tableElement) return
 
-    const canvas = await html2canvas(tableElement, { scale: 2 })
+    const canvas = await html2canvas(tableElement, {
+      scale: 2,
+      useCORS: true,
+    })
     const imgData = canvas.toDataURL('image/png')
 
     const pdf = new jsPDF({
       orientation: 'portrait',
-      unit: 'pt',
+      unit: 'mm',
       format: 'a4',
     })
 
     const pageWidth = pdf.internal.pageSize.getWidth()
-    const imgWidth = pageWidth - 40
+    const imgWidth = pageWidth - 20
     const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-    pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight)
+    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
     pdf.save('barcodes.pdf')
   }
 
   return (
-    <div className="py-3 space-y-4">
+    <div className="py-3 px-2 space-y-4">
       <h1 className="text-2xl font-bold">Barcode Generator Dashboard</h1>
 
       <div className="flex gap-2 flex-wrap">
-        <input
-          type="number"
-          min={1}
-          value={count}
-          onChange={(e) => setCount(Number(e.target.value))}
-          className="border border-gray-300 p-2 rounded outline-none w-24 bg-transparent"
-        />
+        <div className="flex items-center gap-1">
+          <label className="text-sm">Count:</label>
+          <input
+            type="number"
+            min={1}
+            value={count}
+            onChange={(e) => setCount(Number(e.target.value))}
+            className="border border-gray-300 p-2 rounded outline-none w-24 bg-transparent"
+          />
+        </div>
+
+        <div className="flex items-center gap-1">
+          <label className="text-sm">Tag Height (mm):</label>
+          <input
+            type="number"
+            min={10}
+            value={tagHeight}
+            onChange={(e) => setTagHeight(Number(e.target.value))}
+            className="border border-gray-300 p-2 rounded outline-none w-24 bg-transparent"
+          />
+        </div>
 
         <button
           onClick={generateCodes}
@@ -105,18 +130,23 @@ const BarcodeDashboard: FC = () => {
       {codes.length > 0 && (
         <table
           id="barcode-table"
-          className="w-full max-w-[300px] border mt-4 text-sm border-gray-300"
+          className="border mt-4 text-sm border-gray-300"
+          style={{
+            width: '100%',
+            maxWidth: '300px',
+            borderCollapse: 'collapse',
+          }}
         >
           <thead>
-            <tr className="bg-[var(--primary)] border-b">
+            <tr className="bg-[var(--secondary)] border-b">
               <th className="p-2 text-left">Barcode</th>
             </tr>
           </thead>
           <tbody>
             {codes.map((item, i) => (
-              <tr key={i} className="border-b">
+              <tr key={i} className="border-b text-[var(--text-secondary)]">
                 <td className="p-2">
-                  <Barcode value={item.id} />
+                  <Barcode value={item.id} height={tagHeight} />
                 </td>
               </tr>
             ))}
