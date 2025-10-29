@@ -87,32 +87,47 @@ export default function RootLayout({
           `}
         </Script>
 
-        <title>Schooling Social</title>
+        <title>Paragon Farm</title>
 
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="format-detection" content="telephone=no" />
+
         <meta
           name="description"
-          content="Schooling Social is the ultimate student hub — take scholarship exams, connect with peers, and grow academically and socially. Join today and unlock your potential."
+          content="Paragon Farm is your trusted source for premium poultry products — from fresh eggs to healthy broilers. We’re dedicated to sustainable farming and quality you can taste."
+        />
+
+        <meta
+          property="og:title"
+          content="Paragon Farm — Fresh, Healthy Poultry You Can Trust"
         />
         <meta
           property="og:description"
-          content="Ace your future with Schooling Social. Practice scholarship exams, track your progress, and compete with students nationwide — all in one place."
+          content="Experience excellence in poultry farming with Paragon Farm. We raise high-quality broilers and layers with care, ensuring freshness, nutrition, and sustainability."
         />
         <meta
           property="og:image"
-          content="https://schoolingsocial.com/favicon.ico"
+          content="https://paragonfarmsltd.com/images/og-image.jpg"
         />
-        <meta property="twitter:title" content="Schooling Social" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://paragonfarmsltd.com" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          property="twitter:title"
+          content="Paragon Farm — Quality Poultry Farming"
+        />
         <meta
           property="twitter:description"
-          content="Meet and chat with students across the globe. Schooling Social helps you grow your academic circle, join study groups, and make learning fun again."
+          content="Paragon Farm produces premium poultry and eggs through sustainable farming practices. Fresh. Healthy. Reliable."
         />
         <meta
           property="twitter:image"
-          content="https://schoolingsocial.com/favicon.ico"
+          content="https://paragonfarmsltd.com/images/og-image.jpg"
         />
+        <link rel="icon" href="/favicon.ico" />
+
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
