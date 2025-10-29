@@ -3,9 +3,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import Pagination from '@/components/Team/Pagination'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import NotificationStore from '@/src/zustand/notification/NotificationTemplate'
+import Pagination from '@/components/Pagination'
 
 const Emails: React.FC = () => {
   const url = '/notifications/templates/'

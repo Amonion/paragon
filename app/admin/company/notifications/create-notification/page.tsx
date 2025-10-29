@@ -2,10 +2,10 @@
 import Link from 'next/link'
 import { appendForm, validateUsername } from '@/lib/helpers'
 import { validateInputs } from '@/lib/validation'
-import QuillEditor from '@/components/Team/Editor/QuillEditor'
 import { useState, useEffect } from 'react'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import NotificationStore from '@/src/zustand/notification/NotificationTemplate'
+import QuillEditor from '@/components/Admin/QuillEditor'
 
 const CreateNotification: React.FC = () => {
   const url = '/notifications/templates'
