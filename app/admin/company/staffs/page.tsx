@@ -9,7 +9,7 @@ import StaffSheet from '@/components/Admin/StaffSheet'
 
 const Users: React.FC = () => {
   const [page_size] = useState(20)
-  const [sort] = useState('-createdAt')
+  const [sort] = useState('-staffRanking')
   const { setMessage } = MessageStore()
   const {
     users,
@@ -44,7 +44,7 @@ const Users: React.FC = () => {
     getUsers(`${url}${params}`, setMessage)
   }, [page])
 
-  const deleteProductStock = async (id: string, index: number) => {
+  const deleteUserProfile = async (id: string, index: number) => {
     toggleActive(index)
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
@@ -55,25 +55,11 @@ const Users: React.FC = () => {
   const startDelete = (id: string, index: number) => {
     setAlert(
       'Warning',
-      'Are you sure you want to delete this Product Stocking?',
+      'Are you sure you want to delete this User?',
       true,
-      () => deleteProductStock(id, index)
+      () => deleteUserProfile(id, index)
     )
   }
-
-  // const handlesearchFaq = _debounce(
-  //   async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const value = e.target.value
-  //     if (value.trim().length > 0) {
-  //       searchFaq(
-  //         `${url}/search?author=${value}&content=${value}&title=${value}&subtitle=${value}&page_size=${page_size}`
-  //       )
-  //     } else {
-  //       FaqStore.setState({ searchedFaqs: [] })
-  //     }
-  //   },
-  //   1000
-  // )
 
   const deleteFaqs = async () => {
     if (selectedUsers.length === 0) {
@@ -92,58 +78,27 @@ const Users: React.FC = () => {
   }
 
   const makeUser = async (id: string) => {
-    await makeUserStaff(`/make-user/${params}`, { id: id }, setMessage)
+    await makeUserStaff(
+      `${url}/${id}/${params}`,
+      {
+        status: 'User',
+        staffPositions: '',
+        staffRanking: 0,
+      },
+      setMessage
+    )
   }
 
-  const suspend = async (id: string) => {
-    await makeUserStaff(`${url}/suspend/${params}`, { id: id }, setMessage)
+  const suspend = async (id: string, suspend: boolean) => {
+    await makeUserStaff(
+      `${url}/${id}/${params}`,
+      { isSuspended: suspend },
+      setMessage
+    )
   }
 
   return (
     <>
-      {/* <div className="card_body sharp mb-5">
-        <div className="text-lg text-[var(--text-secondary)]">
-          Table of Frequently Asked Questions
-        </div>
-        <div className="relative mb-2">
-          <div className={`input_wrap ml-auto active `}>
-            <input
-              ref={inputRef}
-              type="search"
-              onChange={handlesearchFaq}
-              className={`transparent-input flex-1 `}
-              placeholder="Search Faqs"
-            />
-            {loading ? (
-              <i className="bi bi-opencollective common-icon loading"></i>
-            ) : (
-              <i className="bi bi-search common-icon cursor-pointer"></i>
-            )}
-          </div>
-
-          {searchedFaqs.length > 0 && (
-            <div
-              className={`dropdownList ${
-                searchedFaqs.length > 0
-                  ? 'overflow-auto'
-                  : 'overflow-hidden h-0'
-              }`}
-            >
-              {searchedFaqs.map((item, index) => (
-                <div key={index} className="input_drop_list">
-                  <Link
-                    href={`/school/students/student/${item._id}`}
-                    className="flex-1"
-                  >
-                    {item.question}, {item.category}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div> */}
-
       <div className="overflow-auto mb-5">
         {users.length > 0 ? (
           <table>
@@ -161,7 +116,9 @@ const Users: React.FC = () => {
               {users.map((item, index) => (
                 <tr
                   key={index}
-                  className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
+                  className={`${
+                    item.isSuspended ? 'text-[var(--customRedColor)]' : ''
+                  } ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
                 >
                   <td>
                     <div className="flex items-center">
@@ -197,7 +154,7 @@ const Users: React.FC = () => {
                         </div>
                         <div
                           className="card_list_item"
-                          onClick={() => suspend(item._id)}
+                          onClick={() => suspend(item._id, !item.isSuspended)}
                         >
                           Suspend
                         </div>

@@ -5,78 +5,94 @@ import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 interface BarcodeItem {
-  id: string
+  id: string // 13-digit EAN-13 string (with check digit)
 }
 
+/* ------------------------------------------------------------------ */
+/*  EAN-13 check-digit helper (Luhn algorithm)                        */
+/* ------------------------------------------------------------------ */
+const calculateCheckDigit = (base12: string): string => {
+  const digits = base12.split('').map(Number)
+  let sum = 0
+  for (let i = 0; i < 12; i++) {
+    sum += i % 2 === 0 ? digits[i] : digits[i] * 3
+  }
+  const check = (10 - (sum % 10)) % 10
+  return check.toString()
+}
+
+/* ------------------------------------------------------------------ */
+/*  Single barcode component                                          */
+/* ------------------------------------------------------------------ */
 const Barcode: FC<{ value: string; height: number }> = ({ value, height }) => {
-  const ref = useRef<SVGSVGElement | null>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
-    if (ref.current) {
-      JsBarcode(ref.current, value, {
-        format: 'EAN13', // ✅ Use EAN13 for standard UPC scanners
+    if (svgRef.current) {
+      JsBarcode(svgRef.current, value, {
+        format: 'EAN13',
         lineColor: '#000',
-        width: 1.8,
+        width: 2, // thicker bars = better scan
         height: height * 1.2,
-        displayValue: true, // ✅ Show human-readable text
-        fontSize: 10,
+        displayValue: true,
+        fontSize: 12,
+        textAlign: 'center', // number exactly under the bars
         textMargin: 2,
         margin: 0,
+        flat: true, // removes the extra left/right quiet zone that can push the number
       })
     }
   }, [value, height])
 
   return (
     <div
-      className="flex flex-col items-center justify-center"
-      style={{
-        height: `${height}mm`,
-        padding: '4px 0',
-        pageBreakInside: 'avoid',
-      }}
+      className="flex flex-col items-center"
+      style={{ height: `${height}mm`, pageBreakInside: 'avoid' }}
     >
-      <svg ref={ref} />
+      <svg ref={svgRef} />
     </div>
   )
 }
 
+/* ------------------------------------------------------------------ */
+/*  Dashboard                                                         */
+/* ------------------------------------------------------------------ */
 const BarcodeDashboard: FC = () => {
   const [codes, setCodes] = useState<BarcodeItem[]>([])
   const [count, setCount] = useState<number>(10)
   const [tagHeight, setTagHeight] = useState<number>(30)
 
-  const generateCodes = (): void => {
-    const newCodes: BarcodeItem[] = Array.from({ length: count }, () => {
-      // ✅ Generate a 13-digit numeric EAN13 code (JsBarcode will handle checksum)
-      const base = Math.floor(
-        100000000000 + Math.random() * 900000000000
-      ).toString()
-      return { id: base }
-    })
+  /* -------------------------------------------------------------- */
+  /*  Generate N valid EAN-13 codes                                 */
+  /* -------------------------------------------------------------- */
+  const generateCodes = () => {
+    const newCodes: BarcodeItem[] = []
+
+    for (let i = 0; i < count; i++) {
+      // 12-digit base (you can replace the first 7 digits with a GS1 prefix)
+      const base12 = `1234567${String(i).padStart(5, '0')}` // 123456700000 … 123456700009
+      const check = calculateCheckDigit(base12)
+      newCodes.push({ id: base12 + check })
+    }
     setCodes(newCodes)
   }
 
-  const downloadPDF = async (): Promise<void> => {
-    const tableElement = document.getElementById('barcode-table')
-    if (!tableElement) return
+  /* -------------------------------------------------------------- */
+  /*  Export to PDF (A4, printable)                                 */
+  /* -------------------------------------------------------------- */
+  const downloadPDF = async () => {
+    const el = document.getElementById('barcode-table')
+    if (!el) return
 
-    const canvas = await html2canvas(tableElement, {
-      scale: 2,
-      useCORS: true,
-    })
-    const imgData = canvas.toDataURL('image/png')
+    const canvas = await html2canvas(el, { scale: 3, useCORS: true })
+    const img = canvas.toDataURL('image/png')
 
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    })
+    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' })
+    const pageW = pdf.internal.pageSize.getWidth()
+    const imgW = pageW - 20
+    const imgH = (canvas.height * imgW) / canvas.width
 
-    const pageWidth = pdf.internal.pageSize.getWidth()
-    const imgWidth = pageWidth - 20
-    const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight)
+    pdf.addImage(img, 'PNG', 10, 10, imgW, imgH)
     pdf.save('barcodes.pdf')
   }
 
@@ -84,7 +100,7 @@ const BarcodeDashboard: FC = () => {
     <div className="py-3 px-2 space-y-4">
       <h1 className="text-2xl font-bold">Barcode Generator Dashboard</h1>
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         <div className="flex items-center gap-1">
           <label className="text-sm">Count:</label>
           <input
@@ -92,7 +108,7 @@ const BarcodeDashboard: FC = () => {
             min={1}
             value={count}
             onChange={(e) => setCount(Number(e.target.value))}
-            className="border border-gray-300 p-2 rounded outline-none w-24 bg-transparent"
+            className="border border-gray-300 p-2 rounded w-24 bg-transparent"
           />
         </div>
 
@@ -103,7 +119,7 @@ const BarcodeDashboard: FC = () => {
             min={10}
             value={tagHeight}
             onChange={(e) => setTagHeight(Number(e.target.value))}
-            className="border border-gray-300 p-2 rounded outline-none w-24 bg-transparent"
+            className="border border-gray-300 p-2 rounded w-24 bg-transparent"
           />
         </div>
 
@@ -138,10 +154,10 @@ const BarcodeDashboard: FC = () => {
             </tr>
           </thead>
           <tbody>
-            {codes.map((item, i) => (
-              <tr key={i} className="border-b text-[var(--text-secondary)]">
+            {codes.map((c, i) => (
+              <tr key={i} className="border-b">
                 <td className="p-2">
-                  <Barcode value={item.id} height={tagHeight} />
+                  <Barcode value={c.id} height={tagHeight} />
                 </td>
               </tr>
             ))}

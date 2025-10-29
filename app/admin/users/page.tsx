@@ -4,16 +4,13 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import {
-  formatDateToDDMMYY,
-  formatMoney,
-  formatTimeTo12Hour,
-} from '@/lib/helpers'
-import { UserStore } from '@/src/zustand/user/User'
+import { User, UserStore } from '@/src/zustand/user/User'
+import StaffSheet from '@/components/Admin/StaffSheet'
+import { formatMoney } from '@/lib/helpers'
 
 const Users: React.FC = () => {
   const [page_size] = useState(20)
-  const [sort] = useState('-createdAt')
+  const [sort] = useState('-totalPurchase')
   const { setMessage } = MessageStore()
   const {
     users,
@@ -21,6 +18,8 @@ const Users: React.FC = () => {
     loading,
     count,
     selectedUsers,
+    showProfileSheet,
+    setShowProfileSheet,
     massDeleteUsers,
     makeUserStaff,
     deleteUser,
@@ -46,7 +45,7 @@ const Users: React.FC = () => {
     getUsers(`${url}${params}`, setMessage)
   }, [page])
 
-  const deleteProductStock = async (id: string, index: number) => {
+  const deleteUserProfile = async (id: string, index: number) => {
     toggleActive(index)
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
@@ -57,25 +56,11 @@ const Users: React.FC = () => {
   const startDelete = (id: string, index: number) => {
     setAlert(
       'Warning',
-      'Are you sure you want to delete this Product Stocking?',
+      'Are you sure you want to delete this User?',
       true,
-      () => deleteProductStock(id, index)
+      () => deleteUserProfile(id, index)
     )
   }
-
-  // const handlesearchFaq = _debounce(
-  //   async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const value = e.target.value
-  //     if (value.trim().length > 0) {
-  //       searchFaq(
-  //         `${url}/search?author=${value}&content=${value}&title=${value}&subtitle=${value}&page_size=${page_size}`
-  //       )
-  //     } else {
-  //       FaqStore.setState({ searchedFaqs: [] })
-  //     }
-  //   },
-  //   1000
-  // )
 
   const deleteFaqs = async () => {
     if (selectedUsers.length === 0) {
@@ -86,59 +71,34 @@ const Users: React.FC = () => {
     await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
 
-  const makeStaff = async (id: string) => {
-    await makeUserStaff(`/staffs/make-staff/${params}`, { id: id }, setMessage)
+  const showStaff = async (user: User) => {
+    UserStore.setState({
+      userForm: user,
+    })
+    setShowProfileSheet(true)
   }
 
-  const suspend = async (id: string) => {
-    await makeUserStaff(`${url}/suspend/${params}`, { id: id }, setMessage)
+  const makeUser = async (id: string) => {
+    await makeUserStaff(
+      `${url}/${id}/${params}`,
+      {
+        status: 'Staff',
+        staffRanking: 0,
+      },
+      setMessage
+    )
+  }
+
+  const suspend = async (id: string, suspend: boolean) => {
+    await makeUserStaff(
+      `${url}/${id}/${params}`,
+      { isSuspended: suspend },
+      setMessage
+    )
   }
 
   return (
     <>
-      {/* <div className="card_body sharp mb-5">
-        <div className="text-lg text-[var(--text-secondary)]">
-          Table of Frequently Asked Questions
-        </div>
-        <div className="relative mb-2">
-          <div className={`input_wrap ml-auto active `}>
-            <input
-              ref={inputRef}
-              type="search"
-              onChange={handlesearchFaq}
-              className={`transparent-input flex-1 `}
-              placeholder="Search Faqs"
-            />
-            {loading ? (
-              <i className="bi bi-opencollective common-icon loading"></i>
-            ) : (
-              <i className="bi bi-search common-icon cursor-pointer"></i>
-            )}
-          </div>
-
-          {searchedFaqs.length > 0 && (
-            <div
-              className={`dropdownList ${
-                searchedFaqs.length > 0
-                  ? 'overflow-auto'
-                  : 'overflow-hidden h-0'
-              }`}
-            >
-              {searchedFaqs.map((item, index) => (
-                <div key={index} className="input_drop_list">
-                  <Link
-                    href={`/school/students/student/${item._id}`}
-                    className="flex-1"
-                  >
-                    {item.question}, {item.category}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div> */}
-
       <div className="overflow-auto mb-5">
         {users.length > 0 ? (
           <table>
@@ -148,16 +108,17 @@ const Users: React.FC = () => {
                 <th>Picture</th>
                 <th>Name</th>
                 <th>Purchase</th>
-                <th>Phone</th>
                 <th>Email</th>
-                <th>Time</th>
+                <th>Phone</th>
               </tr>
             </thead>
             <tbody>
               {users.map((item, index) => (
                 <tr
                   key={index}
-                  className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
+                  className={`${
+                    item.isSuspended ? 'text-[var(--customRedColor)]' : ''
+                  } ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
                 >
                   <td>
                     <div className="flex items-center">
@@ -185,16 +146,15 @@ const Users: React.FC = () => {
                         >
                           X
                         </span>
-
                         <div
                           className="card_list_item"
-                          onClick={() => makeStaff(item._id)}
+                          onClick={() => makeUser(item._id)}
                         >
-                          Make Staff
+                          Make User
                         </div>
                         <div
                           className="card_list_item"
-                          onClick={() => suspend(item._id)}
+                          onClick={() => suspend(item._id, !item.isSuspended)}
                         >
                           Suspend
                         </div>
@@ -202,7 +162,7 @@ const Users: React.FC = () => {
                           className="card_list_item"
                           onClick={() => startDelete(item._id, index)}
                         >
-                          Delete Customer
+                          Delete Staff
                         </div>
                       </div>
                     )}
@@ -227,16 +187,15 @@ const Users: React.FC = () => {
                       />
                     </div>
                   </td>
-                  <td>{item.fullName}</td>
-                  <td>₦{formatMoney(item.totalPurchase)}</td>
-
-                  <td>{item.phone}</td>
-                  <td>{item.email}</td>
-
-                  <td>
-                    {formatTimeTo12Hour(item.createdAt)} <br />
-                    {formatDateToDDMMYY(item.createdAt)}
+                  <td
+                    onClick={() => showStaff(item)}
+                    className="cursor-pointer"
+                  >
+                    {item.fullName}
                   </td>
+                  <td>₦{formatMoney(item.totalPurchase)}</td>
+                  <td>{item.email}</td>
+                  <td>{item.phone}</td>
                 </tr>
               ))}
             </tbody>
@@ -287,6 +246,8 @@ const Users: React.FC = () => {
       <div className="card_body sharp">
         <LinkedPagination url="/admin/pages/faq" count={count} page_size={20} />
       </div>
+
+      {showProfileSheet && <StaffSheet />}
     </>
   )
 }

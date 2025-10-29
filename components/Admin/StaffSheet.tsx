@@ -13,7 +13,7 @@ const StaffSheet: React.FC = () => {
     reshuffleResults,
     userForm,
     loading,
-    updateUser,
+    updateStaff,
     setForm,
     setShowProfileSheet,
   } = UserStore()
@@ -21,7 +21,7 @@ const StaffSheet: React.FC = () => {
   const pathname = usePathname()
   const { setAlert } = AlartStore()
   const { user } = AuthStore()
-  const url = '/users'
+  const url = '/users/staff'
 
   useEffect(() => {
     reshuffleResults()
@@ -42,16 +42,10 @@ const StaffSheet: React.FC = () => {
 
     const inputsToValidate = [
       {
-        name: 'staffName',
-        value: userForm?.fullName,
-        rules: { blank: true, minLength: 10, maxLength: 100 },
-        field: 'Staff Name field',
-      },
-      {
         name: 'username',
         value: userForm.username,
-        rules: { blank: true, maxLength: 100 },
-        field: 'Name field',
+        rules: { blank: true, minLength: 1, maxLength: 100 },
+        field: 'Username field',
       },
       {
         name: 'staffRanking',
@@ -100,8 +94,11 @@ const StaffSheet: React.FC = () => {
       'Are you sure you want to update this staff record',
       true,
       () =>
-        updateUser(`${url}/?ordering=-createdAt`, data, setMessage, () =>
-          setShowProfileSheet(false)
+        updateStaff(
+          `${url}/?ordering=-staffRanking&status=Staff`,
+          data,
+          setMessage,
+          () => setShowProfileSheet(false)
         )
     )
   }
@@ -110,7 +107,7 @@ const StaffSheet: React.FC = () => {
     <>
       <div
         onClick={() => setShowProfileSheet(false)}
-        className="fixed h-full w-full z-20 left-0 top-0 bg-black/50 items-center justify-center flex"
+        className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
       >
         <div
           onClick={(e) => {
@@ -128,18 +125,46 @@ const StaffSheet: React.FC = () => {
             </div>
           </div>
           <div className="custom_sm_title text-center">{userForm.fullName}</div>
-          <div className="flex flex-col">
-            <label className="label" htmlFor="">
-              Salary
-            </label>
-            <input
-              className="form-input"
-              name="salary"
-              value={userForm.salary}
-              onChange={handleInputChange}
-              type="number"
-              placeholder="Enter salary"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
+                Ranking
+              </label>
+              <input
+                className="form-input"
+                name="staffRanking"
+                value={userForm.staffRanking}
+                onChange={handleInputChange}
+                type="number"
+                placeholder="Enter rank"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
+                Salary
+              </label>
+              <input
+                className="form-input"
+                name="salary"
+                value={userForm.salary}
+                onChange={handleInputChange}
+                type="number"
+                placeholder="Enter salary"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
+                Positions
+              </label>
+              <input
+                className="form-input"
+                name="staffPositions"
+                value={userForm.staffPositions}
+                onChange={handleInputChange}
+                type="text"
+                placeholder="Enter positions"
+              />
+            </div>
           </div>
 
           <div className="table-action mt-3 flex flex-wrap">

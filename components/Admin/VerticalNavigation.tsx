@@ -297,10 +297,13 @@ export default function VerticalNavigation() {
                 Staffs
               </Link>
 
-              <Link className="inner_nav_items" href="/team/company/expenses">
+              <Link className="inner_nav_items" href="/admin/company/emails">
                 Emails
               </Link>
-              <Link className="inner_nav_items" href="/team/company">
+              <Link
+                className="inner_nav_items"
+                href="/admin/company/notifications"
+              >
                 Notifications
               </Link>
             </div>

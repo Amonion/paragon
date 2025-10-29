@@ -73,10 +73,11 @@ interface UserState {
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
-  updateAuthUser: (
+  updateStaff: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
   ) => Promise<void>
   sendUsersEmail: (
     url: string,
@@ -363,14 +364,19 @@ export const UserStore = create<UserState>((set) => ({
     }
   },
 
-  updateAuthUser: async (url, updatedItem, setMessage) => {
+  updateStaff: async (url, updatedItem, setMessage, redirect) => {
     try {
       set({ autLoading: true })
-      await apiRequest<FetchUser>(url, {
-        method: 'POST',
+      const response = await apiRequest<FetchUserResponse>(url, {
+        method: 'PATCH',
         body: updatedItem,
         setMessage,
       })
+      const data = response.data
+      if (data) {
+        UserStore.getState().setProcessedResults(data.result)
+      }
+      if (redirect) redirect()
     } catch (error) {
       console.log(error)
     } finally {

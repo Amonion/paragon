@@ -1,0 +1,184 @@
+'use client'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { useParams, usePathname } from 'next/navigation'
+import { MessageStore } from '@/src/zustand/notification/Message'
+import EmailStore from '@/src/zustand/notification/Email'
+
+const Emails: React.FC = () => {
+  const url = '/emails/'
+  const { page } = useParams()
+  const [page_size] = useState(20)
+  const [sort] = useState('-createdAt')
+  const { setMessage } = MessageStore()
+  const pathname = usePathname()
+
+  const {
+    getItems,
+    massDelete,
+    deleteItem,
+    toggleAllSelected,
+    toggleChecked,
+    results,
+    isAllChecked,
+    selectedItems,
+    loading,
+    toggleActive,
+    reshuffleResults,
+  } = EmailStore()
+  useEffect(() => {
+    reshuffleResults()
+  }, [pathname])
+
+  useEffect(() => {
+    reshuffleResults()
+    const params = `?page_size=${page_size}&page=${
+      page ? page : 1
+    }&ordering=${sort}`
+    getItems(`${url}${params}`, setMessage)
+  }, [results.length, page])
+
+  const deleteEmail = async (id: string) => {
+    const params = `?page_size=${page_size}&page=${
+      page ? page : 1
+    }&ordering=${sort}`
+    await deleteItem(`${url}${id}/${params}`, url, setMessage)
+  }
+
+  const DeleteItems = async () => {
+    if (selectedItems.length === 0) {
+      setMessage('Please select at least one email to delete', false)
+      return
+    }
+    await massDelete(`${url}mass-delete/`, selectedItems, setMessage)
+  }
+  return (
+    <>
+      <div className="overflow-auto mb-5">
+        {results.length > 0 ? (
+          <table>
+            <thead>
+              <tr className="bg-[var(--primary)] p-2">
+                <th>S/N</th>
+                <th>Picture</th>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Greetings</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((item, index) => (
+                <tr
+                  key={index}
+                  className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
+                >
+                  <td>
+                    <div className="flex items-center">
+                      <div
+                        className={`checkbox ${item.isChecked ? 'active' : ''}`}
+                        onClick={() => toggleChecked(index)}
+                      >
+                        {item.isChecked && (
+                          <i className="bi bi-check text-white text-lg"></i>
+                        )}
+                      </div>
+                      {(page ? Number(page) - 1 : 1 - 1) * page_size +
+                        index +
+                        1}
+                      <i
+                        onClick={() => toggleActive(index)}
+                        className="bi bi-three-dots-vertical text-lg cursor-pointer"
+                      ></i>
+                    </div>
+                    {item.isActive && (
+                      <div className="card_list">
+                        <span
+                          onClick={() => toggleActive(index)}
+                          className="more_close "
+                        >
+                          X
+                        </span>
+                        <Link
+                          className="card_list_item"
+                          href={`/team/messages/emails/create-email?id=${item._id}&name=${item.name}`}
+                        >
+                          Edit Email
+                        </Link>
+                        <div
+                          className="card_list_item"
+                          onClick={() => deleteEmail(item._id)}
+                        >
+                          Delete Email
+                        </div>
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    {item.picture ? (
+                      <Image
+                        alt={`email of ${item.picture}`}
+                        src={String(item.picture)}
+                        width={0}
+                        sizes="100vw"
+                        height={0}
+                        style={{ width: '50px', height: 'auto' }}
+                      />
+                    ) : (
+                      <span>No picture available</span>
+                    )}
+                  </td>
+                  <td>{item.name}</td>
+                  <td>{item.title}</td>
+                  <td>{item.greetings}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="relative flex justify-center">
+            <div className="not_found_text">No Users Found</div>
+            <Image
+              className="max-w-[300px]"
+              alt={`no record`}
+              src="/images/not-found.png"
+              width={0}
+              sizes="100vw"
+              height={0}
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
+        )}
+      </div>
+      {loading && (
+        <div className="flex w-full justify-center py-5">
+          <i className="bi bi-opencollective loading"></i>
+        </div>
+      )}
+      <div className="card_body sharp mb-3">
+        <div className="flex flex-wrap items-center">
+          <div className="grid mr-auto grid-cols-4 gap-2 w-[160px]">
+            <div onClick={toggleAllSelected} className="tableActions">
+              <i
+                className={`bi bi-check2-all ${
+                  isAllChecked ? 'text-[var(--custom)]' : ''
+                }`}
+              ></i>
+            </div>
+            <div onClick={DeleteItems} className="tableActions">
+              <i className="bi bi-trash"></i>
+            </div>
+            {/* <div onClick={() => showForm(true)} className="tableActions">
+                    <i className="bi bi-plus-circle"></i>
+                  </div> */}
+            {/* <div onClick={updateExam} className="tableActions">
+                    <i className="bi bi-table"></i>
+                  </div> */}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default Emails
