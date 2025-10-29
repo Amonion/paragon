@@ -14,11 +14,13 @@ const Barcode: FC<{ value: string; height: number }> = ({ value, height }) => {
   useEffect(() => {
     if (ref.current) {
       JsBarcode(ref.current, value, {
-        format: 'CODE128',
+        format: 'EAN13', // ✅ Use EAN13 for standard UPC scanners
         lineColor: '#000',
-        width: 1.5,
-        height: height * 1.2, // scale a bit taller than the tag height
-        displayValue: false,
+        width: 1.8,
+        height: height * 1.2,
+        displayValue: true, // ✅ Show human-readable text
+        fontSize: 10,
+        textMargin: 2,
         margin: 0,
       })
     }
@@ -34,17 +36,6 @@ const Barcode: FC<{ value: string; height: number }> = ({ value, height }) => {
       }}
     >
       <svg ref={ref} />
-      <p
-        style={{
-          fontSize: '9pt',
-          marginTop: '3px',
-          textAlign: 'center',
-          fontFamily: 'monospace',
-          letterSpacing: '0.5px',
-        }}
-      >
-        {value}
-      </p>
     </div>
   )
 }
@@ -52,12 +43,16 @@ const Barcode: FC<{ value: string; height: number }> = ({ value, height }) => {
 const BarcodeDashboard: FC = () => {
   const [codes, setCodes] = useState<BarcodeItem[]>([])
   const [count, setCount] = useState<number>(10)
-  const [tagHeight, setTagHeight] = useState<number>(30) // mm, controls space per tag
+  const [tagHeight, setTagHeight] = useState<number>(30)
 
   const generateCodes = (): void => {
-    const newCodes: BarcodeItem[] = Array.from({ length: count }, () => ({
-      id: `PGF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-    }))
+    const newCodes: BarcodeItem[] = Array.from({ length: count }, () => {
+      // ✅ Generate a 13-digit numeric EAN13 code (JsBarcode will handle checksum)
+      const base = Math.floor(
+        100000000000 + Math.random() * 900000000000
+      ).toString()
+      return { id: base }
+    })
     setCodes(newCodes)
   }
 

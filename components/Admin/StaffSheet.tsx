@@ -1,0 +1,175 @@
+'use client'
+import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import { appendForm } from '@/lib/helpers'
+import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
+import PictureDisplay from '@/components/PictureDisplay'
+import { validateInputs } from '@/lib/validation'
+import { AuthStore } from '@/src/zustand/user/AuthStore'
+import { UserStore } from '@/src/zustand/user/User'
+
+const StaffSheet: React.FC = () => {
+  const {
+    reshuffleResults,
+    userForm,
+    loading,
+    updateUser,
+    setForm,
+    setShowProfileSheet,
+  } = UserStore()
+  const { setMessage } = MessageStore()
+  const pathname = usePathname()
+  const { setAlert } = AlartStore()
+  const { user } = AuthStore()
+  const url = '/users'
+
+  useEffect(() => {
+    reshuffleResults()
+  }, [pathname])
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setForm(name as keyof typeof userForm, value)
+  }
+
+  const handleSubmit = async () => {
+    if (!user) {
+      setMessage('Please login to continue', false)
+      return
+    }
+
+    const inputsToValidate = [
+      {
+        name: 'staffName',
+        value: userForm?.fullName,
+        rules: { blank: true, minLength: 10, maxLength: 100 },
+        field: 'Staff Name field',
+      },
+      {
+        name: 'username',
+        value: userForm.username,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Name field',
+      },
+      {
+        name: 'staffRanking',
+        value: userForm.staffRanking,
+        rules: { blank: true, minLength: 1, maxLength: 100 },
+        field: 'Amount field',
+      },
+      {
+        name: 'salary',
+        value: userForm.salary,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Name field',
+      },
+      {
+        name: 'staffPositions',
+        value: userForm.staffPositions,
+        rules: { blank: true, maxLength: 100 },
+        field: 'Unit field',
+      },
+    ]
+    const { messages } = validateInputs(inputsToValidate)
+    const getFirstNonEmptyMessage = (
+      messages: Record<string, string>
+    ): string | null => {
+      for (const key in messages) {
+        if (messages[key].trim() !== '') {
+          return messages[key]
+        }
+      }
+      return null
+    }
+
+    const firstNonEmptyMessage = getFirstNonEmptyMessage(messages)
+    if (firstNonEmptyMessage) {
+      setMessage(firstNonEmptyMessage, false)
+      return
+    }
+
+    const data = appendForm(inputsToValidate)
+    alertAndSubmit(data)
+  }
+
+  const alertAndSubmit = (data: FormData) => {
+    setAlert(
+      'Warning',
+      'Are you sure you want to update this staff record',
+      true,
+      () =>
+        updateUser(`${url}/?ordering=-createdAt`, data, setMessage, () =>
+          setShowProfileSheet(false)
+        )
+    )
+  }
+
+  return (
+    <>
+      <div
+        onClick={() => setShowProfileSheet(false)}
+        className="fixed h-full w-full z-20 left-0 top-0 bg-black/50 items-center justify-center flex"
+      >
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          className="card_body sharp w-full max-w-[600px]"
+        >
+          <div className="flex w-full justify-center">
+            <div className="relative my-5 w-full max-w-[200px] h-[150px] rounded-xl  overflow-hidden">
+              {userForm?.picture ? (
+                <PictureDisplay source={String(userForm.picture)} />
+              ) : (
+                <div className="bg-[var(--secondary)] h-full w-full" />
+              )}
+            </div>
+          </div>
+          <div className="custom_sm_title text-center">{userForm.fullName}</div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Salary
+            </label>
+            <input
+              className="form-input"
+              name="salary"
+              value={userForm.salary}
+              onChange={handleInputChange}
+              type="number"
+              placeholder="Enter salary"
+            />
+          </div>
+
+          <div className="table-action mt-3 flex flex-wrap">
+            {loading ? (
+              <button className="custom_btn">
+                <i className="bi bi-opencollective loading"></i>
+                Processing...
+              </button>
+            ) : (
+              <>
+                <button
+                  className="custom_btn mr-3"
+                  onClick={() => handleSubmit()}
+                >
+                  Submit
+                </button>
+
+                <button
+                  className="custom_btn danger ml-auto"
+                  onClick={() => setShowProfileSheet(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default StaffSheet

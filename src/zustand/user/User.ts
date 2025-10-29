@@ -70,7 +70,8 @@ interface UserState {
   updateUser: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
   ) => Promise<void>
   updateAuthUser: (
     url: string,
@@ -99,7 +100,8 @@ export const UserEmpty = {
   isFirstTime: false,
   phone: '',
   picture: '',
-  staffPositions: [],
+  staffPositions: '',
+  salary: 0,
   staffRanking: 0,
   totalPurchase: 0,
   username: '',
@@ -341,7 +343,7 @@ export const UserStore = create<UserState>((set) => ({
     })
   },
 
-  updateUser: async (url, updatedItem, setMessage) => {
+  updateUser: async (url, updatedItem, setMessage, redirect) => {
     try {
       set({ loading: true })
       const response = await apiRequest<FetchUser>(url, {
@@ -353,6 +355,7 @@ export const UserStore = create<UserState>((set) => ({
       if (data) {
         AuthStore.getState().setUser(data.data)
       }
+      if (redirect) redirect()
     } catch (error) {
       console.log(error)
     } finally {
@@ -417,7 +420,8 @@ export interface User {
   isChecked?: boolean
   phone: string
   picture: string | File
-  staffPositions: string[]
+  staffPositions: string
+  salary: number
   staffRanking: number
   totalPurchase: number
   status: string

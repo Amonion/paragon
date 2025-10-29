@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import { UserStore } from '@/src/zustand/user/User'
+import { User, UserStore } from '@/src/zustand/user/User'
+import StaffSheet from '@/components/Admin/StaffSheet'
 
 const Users: React.FC = () => {
   const [page_size] = useState(20)
@@ -16,6 +17,8 @@ const Users: React.FC = () => {
     loading,
     count,
     selectedUsers,
+    showProfileSheet,
+    setShowProfileSheet,
     massDeleteUsers,
     makeUserStaff,
     deleteUser,
@@ -79,6 +82,13 @@ const Users: React.FC = () => {
     }
     const ids = selectedUsers.map((item) => item._id)
     await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
+  }
+
+  const showStaff = async (user: User) => {
+    UserStore.setState({
+      userForm: user,
+    })
+    setShowProfileSheet(true)
   }
 
   const makeUser = async (id: string) => {
@@ -179,7 +189,6 @@ const Users: React.FC = () => {
                         >
                           X
                         </span>
-
                         <div
                           className="card_list_item"
                           onClick={() => makeUser(item._id)}
@@ -221,7 +230,12 @@ const Users: React.FC = () => {
                       />
                     </div>
                   </td>
-                  <td>{item.fullName}</td>
+                  <td
+                    onClick={() => showStaff(item)}
+                    className="cursor-pointer"
+                  >
+                    {item.fullName}
+                  </td>
                   <td>{item.staffPositions}</td>
                   <td>{item.staffRanking}</td>
                   <td>{item.phone}</td>
@@ -275,6 +289,8 @@ const Users: React.FC = () => {
       <div className="card_body sharp">
         <LinkedPagination url="/admin/pages/faq" count={count} page_size={20} />
       </div>
+
+      {showProfileSheet && <StaffSheet />}
     </>
   )
 }
