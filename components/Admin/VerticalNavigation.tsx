@@ -302,7 +302,7 @@ export default function VerticalNavigation() {
               </Link>
               <Link
                 className="inner_nav_items"
-                href="/admin/company/notifications"
+                href="/admin/company/notification-templates"
               >
                 Notifications
               </Link>

@@ -4,10 +4,10 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { MessageStore } from '@/src/zustand/notification/Message'
-import EmailStore from '@/src/zustand/notification/Email'
+import NotificationTemplateStore from '@/src/zustand/notification/NotificationTemplate'
 
-const Emails: React.FC = () => {
-  const url = '/emails/'
+const NotificationTemplates: React.FC = () => {
+  const url = '/emails/templates/'
   const { page } = useParams()
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
@@ -26,7 +26,7 @@ const Emails: React.FC = () => {
     loading,
     toggleActive,
     reshuffleResults,
-  } = EmailStore()
+  } = NotificationTemplateStore()
   useEffect(() => {
     reshuffleResults()
   }, [pathname])
@@ -43,7 +43,7 @@ const Emails: React.FC = () => {
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    await deleteItem(`${url}${id}/${params}`, url, setMessage)
+    await deleteItem(`${url}${id}/${params}`, setMessage)
   }
 
   const DeleteItems = async () => {
@@ -61,7 +61,6 @@ const Emails: React.FC = () => {
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
-                <th>Picture</th>
                 <th>Name</th>
                 <th>Title</th>
                 <th>Greetings</th>
@@ -114,20 +113,7 @@ const Emails: React.FC = () => {
                       </div>
                     )}
                   </td>
-                  <td>
-                    {item.picture ? (
-                      <Image
-                        alt={`email of ${item.picture}`}
-                        src={String(item.picture)}
-                        width={0}
-                        sizes="100vw"
-                        height={0}
-                        style={{ width: '50px', height: 'auto' }}
-                      />
-                    ) : (
-                      <span>No picture available</span>
-                    )}
-                  </td>
+
                   <td>{item.name}</td>
                   <td>{item.title}</td>
                   <td>{item.greetings}</td>
@@ -137,7 +123,7 @@ const Emails: React.FC = () => {
           </table>
         ) : (
           <div className="relative flex justify-center">
-            <div className="not_found_text">No Email Found</div>
+            <div className="not_found_text">No Notifications Found</div>
             <Image
               className="max-w-[300px]"
               alt={`no record`}
@@ -166,7 +152,7 @@ const Emails: React.FC = () => {
               ></i>
             </div>
             <Link
-              href={`/admin/company/emails/create-email`}
+              href={`/admin/company/notification-templates/create-notification`}
               className="tableActions"
             >
               <i className="bi bi-plus-circle"></i>
@@ -187,4 +173,4 @@ const Emails: React.FC = () => {
   )
 }
 
-export default Emails
+export default NotificationTemplates

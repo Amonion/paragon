@@ -5,86 +5,85 @@ import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 interface BarcodeItem {
-  id: string // 13-digit EAN-13 string (with check digit)
+  id: string // 13-digit EAN-13 (including check digit)
 }
 
-/* ------------------------------------------------------------------ */
-/*  EAN-13 check-digit helper (Luhn algorithm)                        */
-/* ------------------------------------------------------------------ */
-const calculateCheckDigit = (base12: string): string => {
-  const digits = base12.split('').map(Number)
+/* --------------------------------------------------------------- */
+/*  EAN-13 check-digit (Luhn)                                      */
+/* --------------------------------------------------------------- */
+const calcCheck = (base12: string): string => {
+  const d = base12.split('').map(Number)
   let sum = 0
-  for (let i = 0; i < 12; i++) {
-    sum += i % 2 === 0 ? digits[i] : digits[i] * 3
-  }
-  const check = (10 - (sum % 10)) % 10
-  return check.toString()
+  for (let i = 0; i < 12; i++) sum += i % 2 === 0 ? d[i] : d[i] * 3
+  return ((10 - (sum % 10)) % 10).toString()
 }
 
-/* ------------------------------------------------------------------ */
-/*  Single barcode component                                          */
-/* ------------------------------------------------------------------ */
-const Barcode: FC<{ value: string; height: number }> = ({ value, height }) => {
-  const svgRef = useRef<SVGSVGElement>(null)
+/* --------------------------------------------------------------- */
+/*  Single barcode (SVG)                                           */
+/* --------------------------------------------------------------- */
+const Barcode: FC<{ value: string; heightMm: number }> = ({
+  value,
+  heightMm,
+}) => {
+  const svg = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
-    if (svgRef.current) {
-      JsBarcode(svgRef.current, value, {
-        format: 'EAN13',
-        lineColor: '#000',
-        width: 2, // thicker bars = better scan
-        height: height * 1.2,
-        displayValue: true,
-        fontSize: 12,
-        textAlign: 'center', // number exactly under the bars
-        textMargin: 2,
-        margin: 0,
-        flat: true, // removes the extra left/right quiet zone that can push the number
-      })
-    }
-  }, [value, height])
+    if (!svg.current) return
+    JsBarcode(svg.current, value, {
+      format: 'EAN13',
+      lineColor: '#000',
+      width: 2.2, // 0.33 mm at 300 dpi → perfect for cheap scanners
+      height: heightMm * 1.4, // a little taller than the label you showed
+      displayValue: true,
+      fontSize: 13,
+      textAlign: 'center', // number exactly under the bars
+      textMargin: 4,
+      margin: 0,
+      marginLeft: 10, // 9-module quiet zone (required)
+      marginRight: 10,
+      flat: false, // keep the guard-pattern extension
+    })
+  }, [value, heightMm])
 
   return (
     <div
-      className="flex flex-col items-center"
-      style={{ height: `${height}mm`, pageBreakInside: 'avoid' }}
+      style={{
+        height: `${heightMm}mm`,
+        pageBreakInside: 'avoid',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
     >
-      <svg ref={svgRef} />
+      <svg ref={svg} />
     </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Dashboard                                                         */
-/* ------------------------------------------------------------------ */
+/* --------------------------------------------------------------- */
+/*  Dashboard                                                      */
+/* --------------------------------------------------------------- */
 const BarcodeDashboard: FC = () => {
   const [codes, setCodes] = useState<BarcodeItem[]>([])
-  const [count, setCount] = useState<number>(10)
-  const [tagHeight, setTagHeight] = useState<number>(30)
+  const [count, setCount] = useState(10)
+  const [height, setHeight] = useState(30)
+  const [prefix, setPrefix] = useState('6934422') // <-- change to your GS1 prefix
 
-  /* -------------------------------------------------------------- */
-  /*  Generate N valid EAN-13 codes                                 */
-  /* -------------------------------------------------------------- */
-  const generateCodes = () => {
-    const newCodes: BarcodeItem[] = []
-
+  const generate = () => {
+    const list: BarcodeItem[] = []
     for (let i = 0; i < count; i++) {
-      // 12-digit base (you can replace the first 7 digits with a GS1 prefix)
-      const base12 = `1234567${String(i).padStart(5, '0')}` // 123456700000 … 123456700009
-      const check = calculateCheckDigit(base12)
-      newCodes.push({ id: base12 + check })
+      const seq = String(i).padStart(5, '0') // 00000 … 99999
+      const base12 = prefix + seq // 12 digits
+      const check = calcCheck(base12)
+      list.push({ id: base12 + check })
     }
-    setCodes(newCodes)
+    setCodes(list)
   }
 
-  /* -------------------------------------------------------------- */
-  /*  Export to PDF (A4, printable)                                 */
-  /* -------------------------------------------------------------- */
   const downloadPDF = async () => {
     const el = document.getElementById('barcode-table')
     if (!el) return
 
-    const canvas = await html2canvas(el, { scale: 3, useCORS: true })
+    const canvas = await html2canvas(el, { scale: 4, useCORS: true })
     const img = canvas.toDataURL('image/png')
 
     const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' })
@@ -92,72 +91,82 @@ const BarcodeDashboard: FC = () => {
     const imgW = pageW - 20
     const imgH = (canvas.height * imgW) / canvas.width
 
-    pdf.addImage(img, 'PNG', 10, 10, imgW, imgH)
-    pdf.save('barcodes.pdf')
+    // 300 dpi → crisp print
+    pdf.addImage(img, 'PNG', 10, 10, imgW, imgH, undefined, 'FAST')
+    pdf.save('EAN13-barcodes.pdf')
   }
 
   return (
-    <div className="py-3 px-2 space-y-4">
-      <h1 className="text-2xl font-bold">Barcode Generator Dashboard</h1>
+    <div className="p-4 space-y-6 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold">EAN-13 Barcode Generator</h1>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex items-center gap-1">
+          <label className="text-sm">Prefix (7 digits):</label>
+          <input
+            type="text"
+            maxLength={7}
+            value={prefix}
+            onChange={(e) =>
+              setPrefix(e.target.value.replace(/\D/g, '').slice(0, 7))
+            }
+            className="border p-2 rounded w-28"
+          />
+        </div>
+
         <div className="flex items-center gap-1">
           <label className="text-sm">Count:</label>
           <input
             type="number"
             min={1}
             value={count}
-            onChange={(e) => setCount(Number(e.target.value))}
-            className="border border-gray-300 p-2 rounded w-24 bg-transparent"
+            onChange={(e) => setCount(Math.max(1, Number(e.target.value)))}
+            className="border p-2 rounded w-20"
           />
         </div>
 
         <div className="flex items-center gap-1">
-          <label className="text-sm">Tag Height (mm):</label>
+          <label className="text-sm">Height (mm):</label>
           <input
             type="number"
-            min={10}
-            value={tagHeight}
-            onChange={(e) => setTagHeight(Number(e.target.value))}
-            className="border border-gray-300 p-2 rounded w-24 bg-transparent"
+            min={15}
+            value={height}
+            onChange={(e) => setHeight(Number(e.target.value))}
+            className="border p-2 rounded w-20"
           />
         </div>
 
         <button
-          onClick={generateCodes}
+          onClick={generate}
           className="bg-green-600 text-white px-4 py-2 rounded"
         >
-          Generate {count} Codes
+          Generate {count}
         </button>
 
         <button
           onClick={downloadPDF}
           className="bg-gray-700 text-white px-4 py-2 rounded"
         >
-          Download PDF
+          PDF
         </button>
       </div>
 
       {codes.length > 0 && (
         <table
           id="barcode-table"
-          className="border mt-4 text-sm border-gray-300"
-          style={{
-            width: '100%',
-            maxWidth: '300px',
-            borderCollapse: 'collapse',
-          }}
+          className="w-full max-w-md border border-gray-300"
+          style={{ borderCollapse: 'collapse' }}
         >
           <thead>
-            <tr className="bg-[var(--secondary)] border-b">
-              <th className="p-2 text-left">Barcode</th>
+            <tr className="bg-gray-100">
+              <th className="p-2 text-left">EAN-13</th>
             </tr>
           </thead>
           <tbody>
             {codes.map((c, i) => (
-              <tr key={i} className="border-b">
+              <tr key={i} className="border-t">
                 <td className="p-2">
-                  <Barcode value={c.id} height={tagHeight} />
+                  <Barcode value={c.id} heightMm={height} />
                 </td>
               </tr>
             ))}

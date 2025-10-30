@@ -51,6 +51,10 @@ interface EmailsState {
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
+  getEmail: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
   setProcessedResults: (data: FetchEmailResponse) => void
   setLoading?: (loading: boolean) => void
   massDelete: (
@@ -66,12 +70,14 @@ interface EmailsState {
   updateItem: (
     url: string,
     updatedItem: FormData,
-    setMessage: (message: string, isError: boolean) => void
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
   ) => Promise<void>
   postItem: (
     url: string,
     updatedItem: FormData,
-    setMessage: (message: string, isError: boolean) => void
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
   ) => Promise<void>
   toggleChecked: (index: number) => void
   toggleActive: (index: number) => void
@@ -162,6 +168,22 @@ const EmailStore = create<EmailsState>((set) => ({
       }
     }
   },
+  getEmail: async (url, setMessage) => {
+    try {
+      const response = await apiRequest<FetchEmailResponse>(url, {
+        setLoading: EmailStore.getState().setLoading,
+        setMessage,
+      })
+      const data = response?.data
+      if (data) {
+        console.log(data)
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    } finally {
+      set({ loading: false })
+    }
+  },
 
   reshuffleResults: async () => {
     set((state) => ({
@@ -230,43 +252,37 @@ const EmailStore = create<EmailsState>((set) => ({
     })
   },
 
-  updateItem: async (
-    url: string,
-    updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
-    set({ loading: true, error: null })
+  updateItem: async (url, updatedItem, setMessage, redirect) => {
+    set({ loading: true })
     const response = await apiRequest<FetchEmailResponse>(url, {
       method: 'PATCH',
       body: updatedItem,
       setMessage,
       setLoading: EmailStore.getState().setLoading,
     })
-    if (response?.status !== 404 && response?.data) {
-      set({ loading: false, error: null })
+    if (response?.data) {
+      set({ loading: false })
       EmailStore.getState().setProcessedResults(response.data)
+      if (redirect) redirect()
     } else {
-      set({ loading: false, error: null })
+      set({ loading: false })
     }
   },
 
-  postItem: async (
-    url: string,
-    updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
-  ) => {
-    set({ loading: true, error: null })
+  postItem: async (url, updatedItem, setMessage, redirect) => {
+    set({ loading: true })
     const response = await apiRequest<FetchEmailResponse>(url, {
       method: 'POST',
       body: updatedItem,
       setMessage,
       setLoading: EmailStore.getState().setLoading,
     })
-    if (response?.status !== 404 && response?.data) {
-      set({ loading: false, error: null })
+    if (response?.data) {
+      set({ loading: false })
       EmailStore.getState().setProcessedResults(response.data)
+      if (redirect) redirect()
     } else {
-      set({ loading: false, error: null })
+      set({ loading: false })
     }
   },
 
