@@ -2,14 +2,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { NavStore } from '@/src/zustand/notification/Navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function MainHeader() {
   const { toggleVNav, setHeaderHeight } = NavStore()
-
   const [showHeader, setShowHeader] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isOutOfView, setIsOutOfView] = useState(false)
   const divRef = useRef<HTMLDivElement | null>(null)
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (divRef.current) {
@@ -55,9 +57,11 @@ export default function MainHeader() {
           <span onClick={toggleVNav} className="headerCircle hfs">
             <i className="bi bi-text-left text-lg text-[var(--text-primary)]"></i>
           </span>
-          <Link href={`/admin/profile`} className="headerCircle top">
-            <i className="bi bi-person common-icon"></i>
-          </Link>
+          {pathname !== '/admin' && (
+            <div onClick={() => router.back()} className="headerCircle top">
+              <i className="bi bi-arrow-left common-icon"></i>
+            </div>
+          )}
           <div className="mr-auto"></div>
 
           <Link href="/" className="block absoluteCenter">

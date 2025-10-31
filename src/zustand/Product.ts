@@ -8,6 +8,30 @@ interface FetchResponse {
   page_size: number
   results: Product[]
   data: Product
+  result: FetchResponse
+}
+
+export interface Cart {
+  _id: string
+  customer: string
+  username: string
+  products: Product[]
+  totalItems: number
+  items: number
+  totalAmount: number
+  createdAt: Date | null | number
+  isChecked?: boolean
+  isActive?: boolean
+}
+export const CartEmpty = {
+  _id: '',
+  customer: '',
+  username: '',
+  products: [],
+  totalItems: 0,
+  items: 0,
+  totalAmount: 0,
+  createdAt: null,
 }
 
 export interface Product {
@@ -15,6 +39,7 @@ export interface Product {
   name: string
   purchaseUnit: string
   discount: number
+  cartUnits: number
   unitPerPurchase: number
   units: number
   costPrice: number
@@ -23,6 +48,7 @@ export interface Product {
   picture: string | File
   createdAt: Date | null | number
   seoTitle: string
+  isBuyable: boolean
   isChecked?: boolean
   isActive?: boolean
 }
@@ -36,16 +62,21 @@ export const ProductEmpty = {
   unitPerPurchase: 1,
   costPrice: 0,
   price: 0,
+  cartUnits: 0,
   description: '',
   picture: '',
   createdAt: 0,
   seoTitle: '',
+  isBuyable: false,
 }
 
 interface ProductState {
   count: number
   page_size: number
+  totalAmount: number
   products: Product[]
+  cartProducts: Product[]
+  cart: Cart
   loading: boolean
   showStocking: boolean
   selectedProducts: Product[]
@@ -53,6 +84,7 @@ interface ProductState {
   isAllChecked: boolean
   productForm: Product
   setForm: (key: keyof Product, value: Product[keyof Product]) => void
+  setToCart: (p: Product, isAdd: boolean) => void
   setShowStocking: (status: boolean) => void
   resetForm: () => void
   getProducts: (
@@ -87,6 +119,12 @@ interface ProductState {
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
+  createTransaction: (
+    url: string,
+    data: FormData | Record<string, unknown>,
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
+  ) => Promise<void>
   postStocking: (
     url: string,
     data: FormData | Record<string, unknown>,
@@ -103,7 +141,10 @@ interface ProductState {
 const ProductStore = create<ProductState>((set) => ({
   count: 0,
   page_size: 0,
+  totalAmount: 0,
+  cart: CartEmpty,
   products: [],
+  cartProducts: [],
   productStockings: [],
   loading: false,
   showStocking: false,
@@ -143,6 +184,65 @@ const ProductStore = create<ProductState>((set) => ({
 
   setLoading: (loadState: boolean) => {
     set({ loading: loadState })
+  },
+
+  setToCart: (p, isAdded) => {
+    set((prev) => {
+      const existing = prev.cartProducts.find((item) => item._id === p._id)
+
+      const updateProductsCartUnits = (id: string, newUnits: number) =>
+        prev.products.map((prod) =>
+          prod._id === id ? { ...prod, cartUnits: newUnits } : prod
+        )
+
+      let updatedCart: typeof prev.cartProducts = []
+
+      if (existing) {
+        const newUnits = isAdded
+          ? existing.cartUnits + 1
+          : existing.cartUnits - 1
+
+        if (!isAdded && newUnits <= 0) {
+          updatedCart = prev.cartProducts.filter((item) => item._id !== p._id)
+          return {
+            cartProducts: updatedCart,
+            products: updateProductsCartUnits(p._id, 0),
+            totalAmount: updatedCart.reduce(
+              (sum, item) => sum + item.cartUnits * (item.price || 0),
+              0
+            ),
+          }
+        }
+
+        updatedCart = prev.cartProducts.map((item) =>
+          item._id === p._id ? { ...item, cartUnits: newUnits } : item
+        )
+
+        return {
+          cartProducts: updatedCart,
+          products: updateProductsCartUnits(p._id, newUnits),
+          totalAmount: updatedCart.reduce(
+            (sum, item) => sum + item.cartUnits * (item.price || 0),
+            0
+          ),
+        }
+      }
+
+      if (isAdded) {
+        updatedCart = [...prev.cartProducts, { ...p, cartUnits: 1 }]
+
+        return {
+          cartProducts: updatedCart,
+          products: updateProductsCartUnits(p._id, 1),
+          totalAmount: updatedCart.reduce(
+            (sum, item) => sum + item.cartUnits * (item.price || 0),
+            0
+          ),
+        }
+      }
+
+      return prev
+    })
   },
 
   setShowStocking: (loadState: boolean) => {
@@ -266,6 +366,26 @@ const ProductStore = create<ProductState>((set) => ({
     }
 
     if (redirect) redirect()
+  },
+
+  createTransaction: async (url, body, setMessage, redirect) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        method: 'POST',
+        body,
+        setMessage,
+      })
+      const data = response?.data
+      if (data) {
+        ProductStore.getState().setProcessedResults(data.result)
+      }
+      if (redirect) {
+        redirect()
+        set({ cartProducts: [], totalAmount: 0 })
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
   },
 
   postStocking: async (url, updatedItem, setMessage, redirect) => {

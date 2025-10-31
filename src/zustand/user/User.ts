@@ -658,6 +658,7 @@ export const UserStore = create<UserState>((set) => ({
           isChecked: false,
           isActive: false,
         }))
+        console.log(updatedResults)
         set({ searchedUsers: updatedResults })
       }
     } catch (error: unknown) {

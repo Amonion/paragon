@@ -124,9 +124,9 @@ export default function PublicNavbar() {
                         ? 'bg-[var(--customRedColor)]'
                         : ''
                     }`}
-                    href={user.status === 'Admin' ? `/admin` : '/dashboard'}
+                    href={user.status === 'Staff' ? `/admin` : '/dashboard'}
                   >
-                    {user.status === 'Admin' ? 'Admin' : 'Dashboard'}
+                    {user.status === 'Staff' ? 'Admin' : 'Dashboard'}
                   </Link>
                 </li>
                 <li onClick={logout} className="cursor-pointer">

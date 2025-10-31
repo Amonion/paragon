@@ -100,20 +100,19 @@ const NotificationTemplates: React.FC = () => {
                         </span>
                         <Link
                           className="card_list_item"
-                          href={`/admin/company/emails/edit-email/${item._id}`}
+                          href={`/admin/company/notification-templates/edit/${item._id}`}
                         >
-                          Edit Email
+                          Edit
                         </Link>
                         <div
                           className="card_list_item"
                           onClick={() => deleteEmail(item._id)}
                         >
-                          Delete Email
+                          Delete
                         </div>
                       </div>
                     )}
                   </td>
-
                   <td>{item.name}</td>
                   <td>{item.title}</td>
                   <td>{item.greetings}</td>
@@ -152,7 +151,7 @@ const NotificationTemplates: React.FC = () => {
               ></i>
             </div>
             <Link
-              href={`/admin/company/notification-templates/create-notification`}
+              href={`/admin/company/notification-templates/create`}
               className="tableActions"
             >
               <i className="bi bi-plus-circle"></i>

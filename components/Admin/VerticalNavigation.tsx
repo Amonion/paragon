@@ -21,9 +21,9 @@ import {
 
 export default function VerticalNavigation() {
   const router = useRouter()
-  const [isPlace, togglePlace] = useState(false)
+  const [isTransaction, toggleTransaction] = useState(false)
   const [isMsgActive, toggleMessages] = useState(false)
-  const [isCompetition, toggleCompetition] = useState(false)
+  const [isActivities, toggleCompetition] = useState(false)
   const [isPagesActive, togglePages] = useState(false)
   const [isSettingsActive, toggleSettings] = useState(false)
   const pathname = usePathname()
@@ -35,7 +35,7 @@ export default function VerticalNavigation() {
     toggleMessages(false)
     toggleCompetition(false)
     togglePages(false)
-    togglePlace(false)
+    toggleTransaction(false)
     clearNav()
   }
 
@@ -185,59 +185,68 @@ export default function VerticalNavigation() {
             </div>
           </div>
 
-          <div className={`v_nav_items ${isPlace ? 'active two' : ''}`}>
-            <div
-              className="flex cursor-pointer items-center py-3"
-              onClick={() => togglePlace((e) => !e)}
-            >
-              <Link className="flex flex-1 items-center" href="/team/places/1">
+          <div className={`v_nav_items ${isTransaction ? 'active two' : ''}`}>
+            <div className="flex cursor-pointer items-center py-3">
+              <Link
+                className="flex flex-1 items-center"
+                href="/admin/transactions"
+              >
                 <CreditCard className="mr-3 w-5 h-5" />
                 Transactions
               </Link>
               <i
+                onClick={() => toggleTransaction((e) => !e)}
                 className={`bi bi-caret-down-fill ml-auto ${
-                  isPlace ? 'active' : ''
+                  isTransaction ? 'active' : ''
                 }`}
               ></i>
             </div>
             <div className="nav_dropdown">
-              <Link className="inner_nav_items" href="/team/places/ads">
-                Pending Order
-              </Link>
-              <Link className="inner_nav_items" href="/team/schools/table">
+              <Link
+                className="inner_nav_items"
+                href="/admin/transactions/complete"
+              >
                 Transaction History
+              </Link>
+              <Link
+                className="inner_nav_items"
+                href="/admin/transactions/pending"
+              >
+                Pending Transactions
               </Link>
             </div>
           </div>
 
-          <div className={`v_nav_items ${isCompetition ? 'active trip' : ''}`}>
+          <div className={`v_nav_items ${isActivities ? 'active trip' : ''}`}>
             <div
-              className="flex cursor-pointer items-center py-3"
+              className={`flex cursor-pointer ${
+                pathname.includes('activities')
+                  ? 'text-[var(--customRedColor)]'
+                  : ''
+              } items-center py-3`}
               onClick={() => toggleCompetition((e) => !e)}
             >
               <ArrowLeftRight className="mr-3 w-5 h-5" />
-              Sell Product
+              Activities
               <i
                 className={`bi bi-caret-down-fill ml-auto ${
-                  isCompetition ? 'active' : ''
+                  isActivities ? 'active' : ''
                 }`}
               ></i>
             </div>
             <div className="nav_dropdown">
-              <Link
-                className="inner_nav_items"
-                href="/team/competitions/weekends"
-              >
-                Purchase Product
+              <Link className="inner_nav_items" href="/admin/activities">
+                Sell Products
               </Link>
               <Link
                 className="inner_nav_items"
-                href="/team/competitions/leagues"
+                href="/admin/activities/purchase"
               >
+                Purchase Products
+              </Link>
+
+              <Link className="inner_nav_items" href="/admin/expenses">
                 Expenses
-              </Link>
-              <Link className="inner_nav_items" href="/team/competitions/exams">
-                Stocks
               </Link>
             </div>
           </div>

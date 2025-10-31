@@ -9,6 +9,7 @@ interface FetchResponse {
   page_size: number
   results: Stocking[]
   data: Stocking
+  summary: { totalLoss: number; totalProfit: number }
 }
 interface StockResponse {
   message: string
@@ -50,7 +51,10 @@ export const StockingEmpty = {
 
 interface ProductState {
   count: number
+  profits: number
+  loss: number
   page_size: number
+  summary: { totalLoss: number; totalProfit: number }
   productStockings: Stocking[]
   stocks: Product[]
   loading: boolean
@@ -108,7 +112,10 @@ interface ProductState {
 
 const StockingStore = create<ProductState>((set) => ({
   count: 0,
+  profits: 0,
+  loss: 0,
   page_size: 0,
+  summary: { totalLoss: 0, totalProfit: 0 },
   stocks: [],
   productStockings: [],
   loading: false,
@@ -163,6 +170,8 @@ const StockingStore = create<ProductState>((set) => ({
       })
       const data = response?.data
       if (data) {
+        console.log(data)
+        set({ summary: data.summary })
         StockingStore.getState().setProcessedResults(data)
       }
     } catch (error: unknown) {

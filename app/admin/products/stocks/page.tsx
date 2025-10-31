@@ -2,21 +2,14 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
-import { formatCount } from '@/lib/helpers'
+import { formatMoney } from '@/lib/helpers'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
 import StockingStore from '@/src/zustand/Stocking'
 
 const Stocks: React.FC = () => {
-  const {
-    getStocks,
-    toggleChecked,
-    toggleActive,
-    reshuffleResults,
-    loading,
-    count,
-    stocks,
-  } = StockingStore()
+  const { getStocks, reshuffleResults, loading, count, stocks } =
+    StockingStore()
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
@@ -37,49 +30,6 @@ const Stocks: React.FC = () => {
 
   return (
     <>
-      {/* <div className="card_body sharp mb-5">
-        <div className="text-lg text-[var(--text-secondary)]">
-          Table of Frequently Asked Questions
-        </div>
-        <div className="relative mb-2">
-          <div className={`input_wrap ml-auto active `}>
-            <input
-              ref={inputRef}
-              type="search"
-              onChange={handlesearchFaq}
-              className={`transparent-input flex-1 `}
-              placeholder="Search Faqs"
-            />
-            {loading ? (
-              <i className="bi bi-opencollective common-icon loading"></i>
-            ) : (
-              <i className="bi bi-search common-icon cursor-pointer"></i>
-            )}
-          </div>
-
-          {searchedFaqs.length > 0 && (
-            <div
-              className={`dropdownList ${
-                searchedFaqs.length > 0
-                  ? 'overflow-auto'
-                  : 'overflow-hidden h-0'
-              }`}
-            >
-              {searchedFaqs.map((item, index) => (
-                <div key={index} className="input_drop_list">
-                  <Link
-                    href={`/school/students/student/${item._id}`}
-                    className="flex-1"
-                  >
-                    {item.question}, {item.category}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div> */}
-
       <div className="overflow-auto mb-5">
         {stocks.length > 0 ? (
           <table>
@@ -101,21 +51,9 @@ const Stocks: React.FC = () => {
                 >
                   <td>
                     <div className="flex items-center">
-                      <div
-                        className={`checkbox ${item.isChecked ? 'active' : ''}`}
-                        onClick={() => toggleChecked(index)}
-                      >
-                        {item.isChecked && (
-                          <i className="bi bi-check text-white text-lg"></i>
-                        )}
-                      </div>
                       {(page ? Number(page) - 1 : 1 - 1) * page_size +
                         index +
                         1}
-                      <i
-                        onClick={() => toggleActive(index)}
-                        className="bi bi-three-dots-vertical text-lg cursor-pointer"
-                      ></i>
                     </div>
                   </td>
                   <td>
@@ -139,7 +77,7 @@ const Stocks: React.FC = () => {
                     </div>
                   </td>
                   <td>{item.name}</td>
-                  <td>{formatCount(item.units)}</td>
+                  <td>{formatMoney(item.units)}</td>
                   <td>
                     {Math.floor(item.units / item.unitPerPurchase)}{' '}
                     {item.purchaseUnit}

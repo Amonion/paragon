@@ -115,6 +115,12 @@ const CreateProduct: React.FC = () => {
         field: 'Picture field',
       },
       {
+        name: 'isBuyable',
+        value: productForm.isBuyable,
+        rules: { blank: false, maxLength: 1000 },
+        field: 'Picture field',
+      },
+      {
         name: 'description',
         value: productForm.description,
         rules: { blank: false, maxSize: 5000 },
@@ -242,6 +248,28 @@ const CreateProduct: React.FC = () => {
               type="text"
               placeholder="Enter purchase unit name"
             />
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <div
+            onClick={() => {
+              ProductStore.setState((prev) => {
+                return {
+                  productForm: {
+                    ...prev.productForm,
+                    isBuyable: !prev.productForm.isBuyable,
+                  },
+                }
+              })
+            }}
+            className={`${
+              productForm.isBuyable
+                ? 'bg-[var(--customRedColor)] text-white'
+                : 'bg-[var(--secondary)] text-[var(--text-secondary)]'
+            } px-2 py-1 cursor-pointer`}
+          >
+            Buyable
           </div>
         </div>
 

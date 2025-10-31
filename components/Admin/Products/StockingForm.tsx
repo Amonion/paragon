@@ -14,6 +14,7 @@ const StockingForm: React.FC = () => {
     stockingFrom,
     loading,
     postStocking,
+    updateStocking,
     setStockingForm,
     setShowStocking,
   } = StockingStore()
@@ -67,7 +68,7 @@ const StockingForm: React.FC = () => {
       },
       {
         name: 'amount',
-        value: stockingFrom.amount,
+        value: stockingFrom.amount * stockingFrom.units,
         rules: { blank: true, minLength: 1, maxLength: 100 },
         field: 'Amount field',
       },
@@ -136,9 +137,16 @@ const StockingForm: React.FC = () => {
       'Are you sure you want to submit this stock record',
       true,
       () =>
-        postStocking(`${url}/?ordering=-createdAt`, data, setMessage, () =>
-          setShowStocking(false)
-        )
+        stockingFrom._id
+          ? updateStocking(
+              `${url}/${stockingFrom._id}/?ordering=-createdAt`,
+              data,
+              setMessage,
+              () => setShowStocking(false)
+            )
+          : postStocking(`${url}/?ordering=-createdAt`, data, setMessage, () =>
+              setShowStocking(false)
+            )
     )
   }
 
@@ -164,18 +172,35 @@ const StockingForm: React.FC = () => {
             </div>
           </div>
           <div className="custom_sm_title text-center">{stockingFrom.name}</div>
-          <div className="flex flex-col">
-            <label className="label" htmlFor="">
-              Units
-            </label>
-            <input
-              className="form-input"
-              name="units"
-              value={stockingFrom.units}
-              onChange={handleInputChange}
-              type="number"
-              placeholder="Enter units"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
+                Units
+              </label>
+              <input
+                className="form-input"
+                name="units"
+                value={stockingFrom.units}
+                onChange={handleInputChange}
+                type="number"
+                placeholder="Enter units"
+              />
+            </div>
+            {stockingFrom._id && (
+              <div className="flex flex-col">
+                <label className="label" htmlFor="">
+                  Amount
+                </label>
+                <input
+                  className="form-input"
+                  name="amount"
+                  value={stockingFrom.amount}
+                  onChange={handleInputChange}
+                  type="number"
+                  placeholder="Enter amount"
+                />
+              </div>
+            )}
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">

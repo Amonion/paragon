@@ -331,22 +331,15 @@ export const cleanQuery = (queryString: string): string => {
   return queryString.endsWith('&') ? queryString.slice(0, -1) : queryString
 }
 
-export function formatMoney(num: number): string {
-  if (num < 100_000) {
-    // Add commas (e.g. 5,000)
-    return num.toLocaleString()
-  } else if (num < 1_000_000) {
-    // Thousands (K)
-    return (num / 1_000).toFixed(num % 1_000 === 0 ? 0 : 1) + 'K'
-  } else if (num < 1_000_000_000) {
-    // Millions (M)
-    return (num / 1_000_000).toFixed(num % 1_000_000 === 0 ? 0 : 1) + 'M'
-  } else {
-    // Billions (B)
-    return (
-      (num / 1_000_000_000).toFixed(num % 1_000_000_000 === 0 ? 0 : 1) + 'B'
-    )
-  }
+export const formatMoney = (value: number | string): string => {
+  if (value === null || value === undefined || value === '') return '0'
+  const num = Number(value)
+  if (isNaN(num)) return '0'
+
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 }
 
 export const formatCount = (num: number): string => {

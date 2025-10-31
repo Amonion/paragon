@@ -18,22 +18,24 @@ const ProductStocking: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
+  const { showStocking, deleteItem, reshuffleResults, toggleActive } =
+    StockingStore()
+
   const {
-    productStockings,
+    period,
+    fromDate,
+    summary,
     loading,
     count,
-    summary,
-    showStocking,
-    deleteItem,
-    reshuffleResults,
-    toggleActive,
-    getProductStockings,
-  } = StockingStore()
-  const { period, fromDate, toDate } = TransactionStore()
+    toDate,
+    transactions,
+    updateTransaction,
+    getTransactions,
+  } = TransactionStore()
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
-  const url = `/products/stocking/?period=${period}&dateFrom=${fromDate}&dateTo=${toDate}`
+  const url = `/transactions?period=${period}&dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
     reshuffleResults()
@@ -43,8 +45,16 @@ const ProductStocking: React.FC = () => {
     const params = `&page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    getProductStockings(`${url}${params}`, setMessage)
+    getTransactions(`${url}${params}`, setMessage)
   }, [page, toDate, fromDate])
+
+  const updateTrnx = (e: boolean, id: string) => {
+    updateTransaction(
+      `/transactions/${id}?ordering=-createdAt`,
+      { status: e ? false : true },
+      setMessage
+    )
+  }
 
   const deleteProductStock = async (id: string, index: number) => {
     toggleActive(index)
@@ -65,23 +75,23 @@ const ProductStocking: React.FC = () => {
 
   return (
     <>
-      <StatDuration title="Product Daily Records" url="" />
+      <StatDuration title="Daily Transactions" url="" />
 
       <div className="overflow-auto mb-5">
-        {productStockings.length > 0 ? (
+        {transactions.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
-                <th>Product</th>
-                <th>Staff</th>
-                <th>Quantity</th>
+                <th>Picture</th>
+                <th>Customer</th>
                 <th>Amount</th>
+                <th>Status</th>
                 <th>Time</th>
               </tr>
             </thead>
             <tbody>
-              {productStockings.map((item, index) => (
+              {transactions.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
@@ -114,8 +124,27 @@ const ProductStocking: React.FC = () => {
                       </div>
                     )}
                   </td>
-                  <td>{item.name}</td>
-                  <td>{item.staffName}</td>
+                  <td>
+                    <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full">
+                      <Image
+                        alt={`email of ${item.picture}`}
+                        src={
+                          item.picture
+                            ? String(item.picture)
+                            : '/images/avatar.jpg'
+                        }
+                        width={0}
+                        sizes="100vw"
+                        height={0}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </div>
+                  </td>
+                  <td>{item.fullName}</td>
                   <td
                     className={`${
                       item.isProfit
@@ -123,17 +152,23 @@ const ProductStocking: React.FC = () => {
                         : 'text-[var(--customRedColor)]'
                     }`}
                   >
-                    {item.units}
+                    ₦{formatMoney(item.totalAmount)}
                   </td>
-                  <td
-                    className={`${
-                      item.isProfit
-                        ? 'text-[var(--success)]'
-                        : 'text-[var(--customRedColor)]'
-                    }`}
-                  >
-                    ₦{formatMoney(item.amount)}
+                  <td>
+                    <div className="flex">
+                      <div
+                        onClick={() => updateTrnx(item.status, item._id)}
+                        className={`${
+                          item.status
+                            ? 'bg-[var(--success)]'
+                            : 'bg-[var(--customRedColor)]'
+                        } px-2 cursor-pointer py-1  text-white`}
+                      >
+                        {item.status ? 'Paid' : 'Pending'}
+                      </div>
+                    </div>
                   </td>
+
                   <td>
                     {formatTimeTo12Hour(item.createdAt)} <br />
                     {formatDateToDDMMYY(item.createdAt)}
@@ -144,7 +179,7 @@ const ProductStocking: React.FC = () => {
           </table>
         ) : (
           <div className="relative flex justify-center">
-            <div className="not_found_text">No Product Stockings Found</div>
+            <div className="not_found_text">No Transactions Found</div>
             <Image
               className="max-w-[300px]"
               alt={`no record`}
@@ -176,7 +211,11 @@ const ProductStocking: React.FC = () => {
       </div>
 
       <div className="card_body sharp">
-        <LinkedPagination url="/admin/pages/faq" count={count} page_size={20} />
+        <LinkedPagination
+          url="/admin/transactions"
+          count={count}
+          page_size={20}
+        />
       </div>
 
       {showStocking && <StockingForm />}

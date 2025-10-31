@@ -166,7 +166,7 @@ const Products: React.FC = () => {
                 </div>
                 {(page ? Number(page) - 1 : 1 - 1) * page_size + index + 1}
               </div>
-              <div className="relative w-[150px] h-[100px] sm:h-[50] sm:w-[100] mb-3 sm:mb-0 overflow-hidden rounded-[5px] sm:mr-3">
+              <div className="relative w-[150px] flex justify-center h-[100px] sm:h-[50] sm:w-[100] mb-3 sm:mb-0 overflow-hidden rounded-[5px] sm:mr-3">
                 {item.picture ? (
                   <Image
                     alt={`email of ${item.picture}`}
@@ -174,10 +174,11 @@ const Products: React.FC = () => {
                     width={0}
                     sizes="100vw"
                     height={0}
+                    className="w-[150px] h-[100px] sm:h-[50] sm:w-[100] sm:mb-0 overflow-hidden rounded-[5px]"
                     style={{
-                      width: '100%',
+                      width: 'auto',
                       height: '100%',
-                      objectFit: 'cover',
+                      objectFit: 'contain',
                     }}
                   />
                 ) : (
