@@ -20,14 +20,10 @@ const ProductStocking: React.FC = () => {
   const { setMessage } = MessageStore()
   const { showStocking, deleteItem, reshuffleResults, toggleActive } =
     StockingStore()
-
   const {
-    period,
-    fromDate,
     summary,
     loading,
     count,
-    toDate,
     transactions,
     updateTransaction,
     getTransactions,
@@ -35,17 +31,33 @@ const ProductStocking: React.FC = () => {
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
-  const url = `/transactions?period=${period}&dateFrom=${fromDate}&dateTo=${toDate}`
+  const defaultFrom = () => {
+    const d = new Date()
+    d.setHours(0, 0, 0, 0)
+    return d
+  }
+
+  const defaultTo = () => {
+    const d = new Date()
+    d.setHours(23, 59, 59, 999)
+    return d
+  }
+
+  const [fromDate, setFromDate] = useState<Date>(defaultFrom)
+  const [toDate, setToDate] = useState<Date>(defaultTo)
+  const url = `/transactions?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
     reshuffleResults()
   }, [pathname])
 
   useEffect(() => {
-    const params = `&page_size=${page_size}&page=${
-      page ? page : 1
-    }&ordering=${sort}`
-    getTransactions(`${url}${params}`, setMessage)
+    if (fromDate && toDate) {
+      const params = `&page_size=${page_size}&page=${
+        page ? page : 1
+      }&ordering=${sort}`
+      getTransactions(`${url}${params}`, setMessage)
+    }
   }, [page, toDate, fromDate])
 
   const updateTrnx = (e: boolean, id: string) => {
@@ -75,7 +87,13 @@ const ProductStocking: React.FC = () => {
 
   return (
     <>
-      <StatDuration title="Daily Transactions" url="" />
+      <StatDuration
+        title="Daily Transactions"
+        fromDate={fromDate}
+        toDate={toDate}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
+      />
 
       <div className="overflow-auto mb-5">
         {transactions.length > 0 ? (

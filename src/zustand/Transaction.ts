@@ -2,11 +2,28 @@ import { create } from 'zustand'
 import apiRequest from '@/lib/axios'
 import { Product } from './Product'
 
-export interface Cart {
-  productImage: string
-  productPrice: 0
-  productName: string
-  productId: string
+export interface Bar {
+  totalSales: number
+  totalPurchases: number
+  date: string | Date
+}
+
+export interface Totals {
+  totalSales: number
+  totalPurchases: number
+  profit: number
+}
+
+export const TotalsEmpty = {
+  totalSales: 0,
+  totalPurchases: 0,
+  profit: 0,
+}
+
+export const BarEmpty = {
+  totalSales: 0,
+  totalPurchases: 0,
+  date: '',
 }
 
 export interface Transaction {
@@ -42,17 +59,22 @@ interface FetchResponse {
   message: string
   page_size: number
   results: Transaction[]
+  bars: Bar[]
   result: FetchResponse
+  totals: Totals
   summary: { totalLoss: number; totalProfit: number }
 }
 
 interface TransactionState {
   loading: boolean
   page_size: number
+  bars: Bar[]
+  totals: Totals
   summary: { totalLoss: number; totalProfit: number }
   count: number
   period: string
   transactions: Transaction[]
+  latest: Transaction[]
   transactionForm: Transaction
   fromDate: Date | null
   toDate: Date | null
@@ -71,6 +93,8 @@ interface TransactionState {
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
+  getLatestTransactions: (url: string) => Promise<void>
+  getTransactionBarchart: (url: string) => Promise<void>
   setProcessedResults: (data: FetchResponse) => void
   setFromDate: (date: Date) => void
   setToDate: (date: Date) => void
@@ -82,6 +106,9 @@ const TransactionStore = create<TransactionState>((set) => ({
   loading: false,
   count: 0,
   page_size: 0,
+  bars: [],
+  latest: [],
+  totals: TotalsEmpty,
   period: 'all',
   transactions: [],
   fromDate: null,
@@ -124,6 +151,33 @@ const TransactionStore = create<TransactionState>((set) => ({
     }
   },
 
+  getTransactionBarchart: async (url: string) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        setLoading: TransactionStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ bars: data.bars, totals: data.totals })
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  getLatestTransactions: async (url: string) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        setLoading: TransactionStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ latest: data.results })
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
   getTransactions: async (url: string, setMessage) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
