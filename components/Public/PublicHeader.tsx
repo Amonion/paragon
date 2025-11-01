@@ -9,6 +9,8 @@ import { useEffect } from 'react'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import CompanyStore from '@/src/zustand/app/Company'
 import ProductStore from '@/src/zustand/Product'
+import { UserStore } from '@/src/zustand/user/User'
+import RatingStore from '@/src/zustand/Rating'
 
 export default function PublicHeader() {
   const { toggleVNav } = NavStore()
@@ -16,15 +18,14 @@ export default function PublicHeader() {
   const { getBanners, getGallery, getBlogs } = BlogStore()
   const { getCompany, companyForm } = CompanyStore()
   const { getProducts } = ProductStore()
-
-  // useEffect(() => {
-  //   if (banners.length === 0) {
-  //     getBanners(`/blogs?category=Home-Banner`, setMessage)
-  //   }
-  // }, [banners])
-
+  const { getUsers } = UserStore()
+  const { getRatings } = RatingStore()
   useEffect(() => {
+    getBanners(`/blogs?category=Home-Banner`, setMessage)
+    getCompany(`/company`, setMessage)
     getProducts(`/products?ordering=-createdAt&page_size=20`, setMessage)
+    getUsers(`/users/?status=Staff&ordering=-staffRanking`, setMessage)
+    getRatings(`/reviews/?ordering=-createdAt`, setMessage)
     getGallery(
       `/blogs?category=Gallery&ordering=-createdAt&page_size=20`,
       setMessage
@@ -33,8 +34,6 @@ export default function PublicHeader() {
       `/blogs?category=Blog&ordering=-createdAt&page_size=20`,
       setMessage
     )
-    getBanners(`/blogs?category=Home-Banner`, setMessage)
-    getCompany(`/company`, setMessage)
   }, [])
   return (
     <header className="bg-[var(--backgroundColor)] text-[var(--primaryTextColor)] py-1 flex justify-center">

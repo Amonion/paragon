@@ -64,11 +64,9 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
-                  pathName === '/designs'
-                    ? 'bg-[var(--custom-light-color)]'
-                    : ''
+                  pathName === '/about' ? 'bg-[var(--custom-light-color)]' : ''
                 }`}
-                href={`/designs`}
+                href={`/about`}
               >
                 About
               </Link>
@@ -76,14 +74,16 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
-                  pathName === '/pages' ? 'bg-[var(--custom-light-color)]' : ''
+                  pathName === '/products'
+                    ? 'bg-[var(--custom-light-color)]'
+                    : ''
                 }`}
-                href={`/pages`}
+                href={`/products`}
               >
-                Pages
+                Products
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 className={`navLinks ${
                   pathName === '/services'
@@ -94,7 +94,7 @@ export default function PublicNavbar() {
               >
                 Services
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link
                 className={`navLinks ${

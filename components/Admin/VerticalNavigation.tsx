@@ -95,7 +95,7 @@ export default function VerticalNavigation() {
           </div>
         </div>
 
-        <div className="flex py-1">{user?.staffPositions}</div>
+        {/* <div className="flex py-1">{user?.staffPositions}</div> */}
 
         <div className="mt-4">
           <Link
@@ -152,7 +152,7 @@ export default function VerticalNavigation() {
               onClick={() => togglePages((e) => !e)}
               className={`flex cursor-pointer ${
                 pathname.includes('pages') ? 'text-[var(--customRedColor)]' : ''
-              } items-center py-3`}
+              } hover:text-[var(--customRedColor)] items-center py-3`}
             >
               <FileArchive className="mr-3 w-5 h-5" />
               Pages
@@ -186,7 +186,9 @@ export default function VerticalNavigation() {
           </div>
 
           <div className={`v_nav_items ${isTransaction ? 'active two' : ''}`}>
-            <div className="flex cursor-pointer items-center py-3">
+            <div
+              className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
+            >
               <Link
                 className="flex flex-1 items-center"
                 href="/admin/transactions"
@@ -219,7 +221,7 @@ export default function VerticalNavigation() {
 
           <div className={`v_nav_items ${isActivities ? 'active trip' : ''}`}>
             <div
-              className={`flex cursor-pointer ${
+              className={`flex hover:text-[var(--customRedColor)] cursor-pointer ${
                 pathname.includes('activities')
                   ? 'text-[var(--customRedColor)]'
                   : ''
@@ -253,7 +255,7 @@ export default function VerticalNavigation() {
 
           <div className={`v_nav_items ${isMsgActive ? 'active trip' : ''}`}>
             <div
-              className={`flex cursor-pointer items-center py-3 ${
+              className={`flex hover:text-[var(--customRedColor)] cursor-pointer items-center py-3 ${
                 pathname.includes('products')
                   ? 'text-[var(--customRedColor)]'
                   : ''

@@ -9,11 +9,12 @@ import Testimonial from '@/components/Public/Testimonial'
 import BlogStore from '@/src/zustand/Blog'
 import ProductStore from '@/src/zustand/Product'
 import { formatMoney } from '@/lib/helpers'
+import { UserStore } from '@/src/zustand/user/User'
 
 export default function Home() {
   const { blogs, gallery } = BlogStore()
   const { products } = ProductStore()
-
+  const { users } = UserStore()
   return (
     <div>
       <Hero />
@@ -21,7 +22,7 @@ export default function Home() {
       {/* ///////WELCOME SECTION//////////// */}
       <Welcome />
 
-      {/* ///////BLOG1 SECTION//////////// */}
+      {/* ///////PRODUCTS SECTION//////////// */}
       <div className="flex justify-center py-[90px] bg-[var(--secondaryCustomColor)]">
         <div className="customContainer">
           <div className="flex flex-col items-center">
@@ -43,7 +44,7 @@ export default function Home() {
                   <Image
                     src={String(item.picture)}
                     sizes="100vw"
-                    className="h-full w-full object-contain bg-[var(--secondaryTextColor)] mb-7"
+                    className="h-[200px] w-full object-contain mb-7"
                     width={0}
                     height={0}
                     alt="real"
@@ -89,8 +90,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* ///////BLOG2 SECTION//////////// */}
 
       <div className="flex justify-center py-[90px] bg-[var(--backgroundColor)]">
         <div className="customContainer">
@@ -262,216 +261,68 @@ export default function Home() {
       <div className="flex justify-center py-[90px] bg-[var(--backgroundColor)]">
         <div className="customContainer">
           <div className="flex flex-col items-center">
-            <div className="flex flex-col text-center max-w-[450px]">
+            <div className="flex flex-col text-center max-w-[450px] mb-10">
               <div className="text-[30px] text-[var(--primaryTextColor)] mb-2 font-bold">
                 Our Team Member
               </div>
-              <div className="text-[16px] text-[var(--secondaryTextColor)] mb-18">
-                Conveniently customize proactive web services for leveraged
-                interfaces without Globally
+              <div className="text-[16px] text-[var(--secondaryTextColor)]">
+                Meet the people who are driven by care and passion in making
+                Paragon Farms freshness a daily reality.
               </div>
             </div>
             <div className="grid md:grid-cols-4 w-full gap-7">
-              <div className="flex flex-col items-center">
-                <div className="h-[250px] w-full mb-4">
-                  <Image
-                    src="/poultryImage20.jpg"
-                    sizes="100vw"
-                    className="h-full w-full object-cover"
-                    width={0}
-                    height={0}
-                    alt="real"
-                  />
-                </div>
-                <div className="flex flex-col items-center shadow w-full rounded pb-[25px]">
-                  <Link
-                    className="text-[var(--primaryTextColor)] text-[20px] font-bold mb-[2px] hover:text-[var(--customColor)]"
-                    href={'/'}
-                  >
-                    Jason Roy
-                  </Link>
+              {users.map((item, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  <div className="h-[250px] w-full mb-4">
+                    <Image
+                      src={String(item.picture)}
+                      sizes="100vw"
+                      className="h-full w-full object-cover"
+                      width={0}
+                      height={0}
+                      alt="real"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center shadow w-full rounded pb-[25px]">
+                    <Link
+                      className="text-[var(--primaryTextColor)] text-[20px] font-bold mb-[2px] hover:text-[var(--customColor)]"
+                      href={'/'}
+                    >
+                      {item.fullName}
+                    </Link>
 
-                  <div className="text-[var(--secondaryTextColor)] mb-3">
-                    Manager
-                  </div>
-                  <div className="grid grid-cols-4 gap-3">
-                    <Link
-                      className="hover:text-[var(--customColor)]"
-                      href={'/'}
-                    >
-                      <i className="bi bi-twitter-x"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-blue-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-facebook"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-green-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-whatsapp"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-red-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-instagram"></i>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="h-[250px] w-full mb-4">
-                  <Image
-                    src="/poultryImage21.jpg"
-                    sizes="100vw"
-                    className="h-full w-full object-cover"
-                    width={0}
-                    height={0}
-                    alt="real"
-                  />
-                </div>
-                <div className="flex flex-col items-center shadow-lg w-full rounded pb-[25px]">
-                  <Link
-                    className="text-[var(--primaryTextColor)] text-[20px] font-bold mb-[2px] hover:text-[var(--customColor)]"
-                    href={'/'}
-                  >
-                    Jason Roy
-                  </Link>
-
-                  <div className="text-[var(--secondaryTextColor)] mb-3">
-                    Manager
-                  </div>
-                  <div className="grid grid-cols-4 gap-3">
-                    <Link
-                      className="hover:text-[var(--customColor)]"
-                      href={'/'}
-                    >
-                      <i className="bi bi-twitter-x"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-blue-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-facebook"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-green-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-whatsapp"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-red-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-instagram"></i>
-                    </Link>
+                    <div className="text-[var(--secondaryTextColor)] mb-3">
+                      {item.staffPositions.split(',')[0].trim()}
+                    </div>
+                    <div className="grid grid-cols-4 gap-3">
+                      <Link
+                        className="hover:text-[var(--customColor)]"
+                        href={'/'}
+                      >
+                        <i className="bi bi-twitter-x"></i>
+                      </Link>
+                      <Link
+                        className="hover:text-[var(--customColor)] text-blue-700"
+                        href={'/'}
+                      >
+                        <i className="bi bi-facebook"></i>
+                      </Link>
+                      <Link
+                        className="hover:text-[var(--customColor)] text-green-700"
+                        href={'/'}
+                      >
+                        <i className="bi bi-whatsapp"></i>
+                      </Link>
+                      <Link
+                        className="hover:text-[var(--customColor)] text-red-700"
+                        href={'/'}
+                      >
+                        <i className="bi bi-instagram"></i>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="h-[250px] w-full mb-4">
-                  <Image
-                    src="/poultryImage22.jpg"
-                    sizes="100vw"
-                    className="h-full w-full object-cover"
-                    width={0}
-                    height={0}
-                    alt="real"
-                  />
-                </div>
-                <div className="flex flex-col items-center shadow-lg w-full rounded pb-[25px]">
-                  <Link
-                    className="text-[var(--primaryTextColor)] text-[20px] font-bold mb-[2px] hover:text-[var(--customColor)]"
-                    href={'/'}
-                  >
-                    Jason Roy
-                  </Link>
-
-                  <div className="text-[var(--secondaryTextColor)] mb-3">
-                    Manager
-                  </div>
-                  <div className="grid grid-cols-4 gap-3">
-                    <Link
-                      className="hover:text-[var(--customColor)]"
-                      href={'/'}
-                    >
-                      <i className="bi bi-twitter-x"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-blue-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-facebook"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-green-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-whatsapp"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-red-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-instagram"></i>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div className="flex relative hover:-top-4 transition-all duration-700 flex-col items-center">
-                <div className="h-[250px] w-full">
-                  <Image
-                    src="/poultryImage23.jpg"
-                    sizes="100vw"
-                    className="h-full w-full object-cover"
-                    width={0}
-                    height={0}
-                    alt="real"
-                  />
-                </div>
-                <div className="flex flex-col items-center transition-all duration-300 shadow hover:shadow-lg w-full rounded py-[25px]">
-                  <Link
-                    className="text-[var(--primaryTextColor)] text-[20px] font-bold mb-[2px] hover:text-[var(--customColor)]"
-                    href={'/'}
-                  >
-                    Jason Roy
-                  </Link>
-
-                  <div className="text-[var(--secondaryTextColor)] mb-3">
-                    Manager
-                  </div>
-                  <div className="grid grid-cols-4 gap-3">
-                    <Link
-                      className="hover:text-[var(--customColor)]"
-                      href={'/'}
-                    >
-                      <i className="bi bi-twitter-x"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-blue-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-facebook"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-green-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-whatsapp"></i>
-                    </Link>
-                    <Link
-                      className="hover:text-[var(--customColor)] text-red-700"
-                      href={'/'}
-                    >
-                      <i className="bi bi-instagram"></i>
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -555,7 +406,7 @@ export default function Home() {
             <SwiperSlide>
               <Link href="/" className="w-full">
                 <Image
-                  src="/poultryImage24.jpg"
+                  src="/images/partner1.png"
                   sizes="100vw"
                   className="h-auto w-[120px]"
                   width={0}
@@ -567,7 +418,7 @@ export default function Home() {
             <SwiperSlide>
               <Link href="/" className="w-full">
                 <Image
-                  src="/poultryImage25.jpg"
+                  src="/images/partner2.png"
                   sizes="100vw"
                   className="h-auto w-[120px]"
                   width={0}
@@ -579,7 +430,7 @@ export default function Home() {
             <SwiperSlide>
               <Link href="/" className="w-full">
                 <Image
-                  src="/poultryImage26.jpg"
+                  src="/images/partner3.png"
                   sizes="100vw"
                   className="h-auto w-[120px]"
                   width={0}
@@ -591,7 +442,7 @@ export default function Home() {
             <SwiperSlide>
               <Link href="/" className="w-full">
                 <Image
-                  src="/poultryImage27.jpg"
+                  src="/images/partner4.png"
                   sizes="100vw"
                   className="h-auto w-[120px]"
                   width={0}
@@ -603,19 +454,7 @@ export default function Home() {
             <SwiperSlide>
               <Link href="/" className="w-full">
                 <Image
-                  src="/poultryImage28.jpg"
-                  sizes="100vw"
-                  className="h-auto w-[120px]"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-              </Link>
-            </SwiperSlide>
-            <SwiperSlide>
-              <Link href="/" className="w-full">
-                <Image
-                  src="/poultryImage28.jpg"
+                  src="/images/partner5.png"
                   sizes="100vw"
                   className="h-auto w-[120px]"
                   width={0}
@@ -633,7 +472,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-5 w-full">
             <div className="flex flex-col items-center  py-20 px-8 border-[3px] border-gray-100/40">
               <Image
-                src="/poultryImage29.jpg"
+                src="/images/range.png"
                 sizes="100vw"
                 className="h-auto w-[65px] mb-3"
                 width={0}
@@ -650,7 +489,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
               <Image
-                src="/poultryImage30.jpg"
+                src="/images/quality.png"
                 sizes="100vw"
                 className="h-auto w-[65px] mb-3"
                 width={0}
@@ -667,7 +506,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
               <Image
-                src="/poultryImage31.jpg"
+                src="/images/shipping.png"
                 sizes="100vw"
                 className="h-auto w-[65px] mb-3"
                 width={0}
@@ -684,7 +523,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
               <Image
-                src="/poultryImage32.jpg"
+                src="/images/card.png"
                 sizes="100vw"
                 className="h-auto w-[65px] mb-3"
                 width={0}
