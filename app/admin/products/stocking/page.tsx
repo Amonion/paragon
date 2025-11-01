@@ -11,7 +11,6 @@ import {
   formatTimeTo12Hour,
 } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
-import TransactionStore from '@/src/zustand/Transaction'
 import StockingForm from '@/components/Admin/Products/StockingForm'
 
 const ProductStocking: React.FC = () => {
@@ -29,11 +28,41 @@ const ProductStocking: React.FC = () => {
     toggleActive,
     getProductStockings,
   } = StockingStore()
-  const { period, fromDate, toDate } = TransactionStore()
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
-  const url = `/products/stocking/?period=${period}&dateFrom=${fromDate}&dateTo=${toDate}`
+
+  const defaultFrom = () => {
+    const d = new Date()
+    const day = d.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+    // Calculate how many days to subtract to get back to Monday
+    const diffToMonday = day === 0 ? 6 : day - 1
+
+    const monday = new Date(d)
+    monday.setDate(d.getDate() - diffToMonday)
+    monday.setHours(0, 0, 0, 0)
+
+    return monday
+  }
+
+  const defaultTo = () => {
+    const d = new Date()
+    const day = d.getDay()
+
+    // Calculate how many days to add to get to Sunday
+    const diffToSunday = day === 0 ? 0 : 7 - day
+
+    const sunday = new Date(d)
+    sunday.setDate(d.getDate() + diffToSunday)
+    sunday.setHours(23, 59, 59, 999)
+
+    return sunday
+  }
+
+  const [fromDate, setFromDate] = useState<Date>(defaultFrom)
+  const [toDate, setToDate] = useState<Date>(defaultTo)
+  const url = `/products/stocking/?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
     reshuffleResults()
@@ -65,7 +94,13 @@ const ProductStocking: React.FC = () => {
 
   return (
     <>
-      <StatDuration title="Product Daily Records" url="" />
+      <StatDuration
+        title="Product Daily Records"
+        fromDate={fromDate}
+        toDate={toDate}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
+      />
 
       <div className="overflow-auto mb-5">
         {productStockings.length > 0 ? (
