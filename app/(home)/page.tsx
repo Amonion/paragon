@@ -291,9 +291,11 @@ export default function Home() {
                       {item.fullName}
                     </Link>
 
-                    <div className="text-[var(--secondaryTextColor)] mb-3">
-                      {item.staffPositions.split(',')[0].trim()}
-                    </div>
+                    {item.staffPositions && (
+                      <div className="text-[var(--secondaryTextColor)] mb-3">
+                        {item.staffPositions.split(',')[0].trim()}
+                      </div>
+                    )}
                     <div className="grid grid-cols-4 gap-3">
                       <Link
                         className="hover:text-[var(--customColor)]"
