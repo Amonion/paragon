@@ -148,8 +148,6 @@ export default function SignInClient() {
             style={{ width: '100%' }}
           >
             <Spinner size={30} />
-
-            <div>Processing...</div>
           </button>
         ) : (
           <button type="submit" className="homeButton">

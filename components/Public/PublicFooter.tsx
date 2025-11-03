@@ -2,9 +2,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import CompanyStore from '@/src/zustand/app/Company'
+import ProductStore from '@/src/zustand/Product'
+import { formatMoney } from '@/lib/helpers'
+import BlogStore from '@/src/zustand/Blog'
 
 export default function PublicFooter() {
   const { companyForm } = CompanyStore()
+  const { products } = ProductStore()
+  const { blogs } = BlogStore()
 
   return (
     <>
@@ -42,10 +47,10 @@ export default function PublicFooter() {
                 <i className="bi bi-telephone-fill mb-2 text-[var(--customColor)] mr-3"></i>
                 <div className="flex flex-col">
                   <div className="text-[var(--secondaryTextColor)]">
-                    +88130-589-745-6987
+                    {companyForm.phone}
                   </div>
                   <div className="text text-[var(--secondaryTextColor)] mb-4">
-                    +1655-456-523
+                    {companyForm.email}
                   </div>
                 </div>
               </div>
@@ -56,7 +61,7 @@ export default function PublicFooter() {
                     Mon - Fri 09:00 - 18:00
                   </div>
                   <div className="text text-[var(--secondaryTextColor)] mb-4">
-                    (except public holidays)
+                    (except public sundays)
                   </div>
                 </div>
               </div>
@@ -64,10 +69,7 @@ export default function PublicFooter() {
                 <i className="bi bi-geo-alt-fill mb-2 text-[var(--customColor)] mr-3"></i>
                 <div className="flex flex-col">
                   <div className="text-[var(--secondaryTextColor)]">
-                    25/2 Lane2 Vokte Street Building
-                  </div>
-                  <div className="text text-[var(--secondaryTextColor)]">
-                    Melborn City
+                    {companyForm.headquaters}
                   </div>
                 </div>
               </div>
@@ -76,96 +78,43 @@ export default function PublicFooter() {
               <div className="text-[var(--primaryTextColor)] text-[26px] font-bold mb-4">
                 Poultry Farm Product
               </div>
-              <div className="flex">
-                <Image
-                  src="/poultryImage3.jpg"
-                  sizes="100vw"
-                  className="h-[70px] w-[85px] mr-3"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <div className="flex flex-col mb-7">
-                  <div className="hover:text-[var(--secondaryTextColor)] text-[var(--primaryTextColor)] font-semibold">
-                    Light Brown Eggs
-                  </div>
-                  <div className="text text-[var(--primaryTextColor)]/70 mb-4">
-                    $25.99
-                  </div>
-                </div>
-              </div>
-              <div className="flex">
-                <Image
-                  src="/poultryImage4.jpg"
-                  sizes="100vw"
-                  className="h-[70px] w-[85px] mr-3"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <div className="flex flex-col">
-                  <div className="hover:text-[var(--secondaryTextColor)] text-[var(--primaryTextColor)] font-semibold">
-                    Little Chicken Broiler
-                  </div>
-                  <div className="text text-[var(--primaryTextColor)]/70 mb-4">
-                    $25.99
+              {products.slice(0, 3).map((item, i) => (
+                <div key={i} className="flex">
+                  <Image
+                    src={String(item.picture)}
+                    sizes="100vw"
+                    className="h-[70px] w-[85px] mr-3 object-contain"
+                    width={0}
+                    height={0}
+                    alt="real"
+                  />
+                  <div className="flex flex-col mb-7">
+                    <div className="hover:text-[var(--secondaryTextColor)] text-[var(--primaryTextColor)] font-semibold">
+                      {item.name}
+                    </div>
+                    <div className="text text-[var(--primaryTextColor)]/70 mb-4">
+                      ₦{formatMoney(item.price)}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
             <div className="flex flex-col">
               <div className="text-[var(--primaryTextColor)] text-[28px] mb-4 font-bold">
                 Instagram Feed
               </div>
               <div className="grid grid-cols-3 md:gap-3 gap-3 w-full">
-                <Image
-                  src="/poultryImage14.jpg"
-                  sizes="100vw"
-                  className="h-[80px] w-full"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <Image
-                  src="/poultryImage19.jpg"
-                  sizes="100vw"
-                  className="h-[80px] w-full"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <Image
-                  src="/poultryImage18.jpg"
-                  sizes="100vw"
-                  className="h-[80px] w-full"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <Image
-                  src="/poultryImage17.jpg"
-                  sizes="100vw"
-                  className="h-[80px] w-full"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <Image
-                  src="/poultryImage16.jpg"
-                  sizes="100vw"
-                  className="h-[80px] w-full"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
-                <Image
-                  src="/poultryImage15.jpg"
-                  sizes="100vw"
-                  className="h-[80px] w-full"
-                  width={0}
-                  height={0}
-                  alt="real"
-                />
+                {blogs.slice(0, 3).map((item, i) => (
+                  <Image
+                    key={i}
+                    src={String(item.picture)}
+                    sizes="100vw"
+                    className="h-[80px] w-full object-cover"
+                    width={0}
+                    height={0}
+                    alt="real"
+                  />
+                ))}
               </div>
             </div>
           </div>

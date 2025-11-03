@@ -7,13 +7,12 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import Welcome from '@/components/Public/Welcome'
 import Testimonial from '@/components/Public/Testimonial'
 import BlogStore from '@/src/zustand/Blog'
-import ProductStore from '@/src/zustand/Product'
-import { formatMoney } from '@/lib/helpers'
 import { UserStore } from '@/src/zustand/user/User'
+import Products from '@/components/Public/Products'
+import Qualities from '@/components/Public/Qualities'
 
 export default function Home() {
   const { blogs, gallery } = BlogStore()
-  const { products } = ProductStore()
   const { users } = UserStore()
   return (
     <div>
@@ -35,52 +34,7 @@ export default function Home() {
                 interfaces without Globally
               </div>
             </div>
-            <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 w-full gap-4 mb-9">
-              {products.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center shadow-[0_2px_6px_rgba(0,0,0,0.1)] rounded-[15px] bg-[var(--backgroundColor)] p-3 md:p-7"
-                >
-                  <Image
-                    src={String(item.picture)}
-                    sizes="100vw"
-                    className="h-[200px] w-full object-contain mb-7"
-                    width={0}
-                    height={0}
-                    alt="real"
-                  />
-                  <div className="flex mb-1 md:text-[20px] text-[17px]">
-                    <i className="bi bi-star text-[var(--customColor)] mr-1"></i>
-                    <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
-                    <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
-                    <i className="bi bi-star text-[var(--customColor)]  mr-1"></i>
-                    <i className="bi bi-star text-[var(--customColor)]"></i>
-                  </div>
-                  <div className="text-[var(--primaryTextColor md:text-[22px]  md:font-bold mb-2 text-center">
-                    {item.name}
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="text-[var(--customColor)] text-[18px] font-bold mr-3">
-                      ₦{formatMoney(item.price)}
-                    </div>
-                    {/* <div className="text-[var(--primaryTextColor)] text-[18px] font-bold line-through mb-3">
-                      $49.99
-                    </div> */}
-                  </div>
-                  <div className="flex w-full justify-evenly">
-                    <div className="flex justify-center h-[30px] w-[35px] cursor-pointer items-center border border-gray-200 rounded-[5px]">
-                      <i className="bi bi-dash text-[var(--primaryTextColor)]"></i>
-                    </div>
-                    <div className="text-[var(--primaryTextColor)] text-[15px]">
-                      9
-                    </div>
-                    <div className="flex justify-center h-[30px] w-[35px] cursor-pointer items-center border border-gray-200 rounded-[5px]">
-                      <i className="bi bi-plus text-[var(--primaryTextColor)]"></i>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Products />
             <Link
               className="text-[20px] text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
               href={'/'}
@@ -469,80 +423,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex py-[120px] bg-[var(--backgroundColor)] justify-center">
-        <div className="customContainer text-center">
-          <div className="grid md:grid-cols-4 gap-5 w-full">
-            <div className="flex flex-col items-center  py-20 px-8 border-[3px] border-gray-100/40">
-              <Image
-                src="/images/range.png"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Products Range
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-            <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
-              <Image
-                src="/images/quality.png"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Quality Matters
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-            <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
-              <Image
-                src="/images/shipping.png"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Products Range
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-            <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
-              <Image
-                src="/images/card.png"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Products Range
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Qualities />
     </div>
   )
 }

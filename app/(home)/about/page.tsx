@@ -1,123 +1,18 @@
 'use client'
-import Link from 'next/link'
 import Image from 'next/image'
 import Welcome from '@/components/Public/Welcome'
 import Testimonial from '@/components/Public/Testimonial'
+import { PageHeader } from '@/components/Public/PageBanner'
+import Qualities from '@/components/Public/Qualities'
 
 export default function Home() {
   return (
     <div>
-      {/* ////About Blog1//// */}
-      <div className="relative">
-        <Image
-          src="/poultryImage34.jpg"
-          sizes="100vw"
-          className="h-full w-full object-cover absolute z-0"
-          width={0}
-          height={0}
-          alt="paragon"
-        />
-        <div className="absolute top-0 left-0 w-full h-full bg-black/70 z-0" />
-        <div className="flex w-full justify-center">
-          <div className="customContainer relative z-10">
-            <div className="flex items-center flex-col z-20 min-h-[45vh] justify-center">
-              <div className="text-white text-[35px] font-bold mb-[8px]">
-                Poultry Farm About us
-              </div>
-              <div className="flex items-center">
-                <Link
-                  href={'/'}
-                  className="text-white text-[17px] mb-[3px] mr-1"
-                >
-                  Home /
-                </Link>
-                <div className="text-[var(--customColor)] text[17px]">
-                  About
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader page="About" title="About Paragon Farms" />
 
-      {/* ///////BLOG3 SECTION//////////// */}
       <Welcome />
 
-      {/* ///About Blog2/// */}
-      <div className="flex bg-[var(--backgroundColor)] justify-center pb-[100px]">
-        <div className="customContainer text-center">
-          <div className="grid grid-cols-4 gap-5 w-full">
-            <div className="flex flex-col items-center  py-20 px-8 border-[3px] border-gray-100/40">
-              <Image
-                src="/poultryImage29.jpg"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Products Range
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-            <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
-              <Image
-                src="/poultryImage30.jpg"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Quality Matters
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-            <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
-              <Image
-                src="/poultryImage31.jpg"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Products Range
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-            <div className="flex flex-col items-center border-[3px] border-gray-100/40 py-20 px-8">
-              <Image
-                src="/poultryImage32.jpg"
-                sizes="100vw"
-                className="h-auto w-[65px] mb-3"
-                width={0}
-                height={0}
-                alt="real"
-              />
-              <div className="text-[var(--primaryTextColor)] text-[20px] hover:text-[var(--customColor)] mb-3 font-bold">
-                Products Range
-              </div>
-              <div className="text-[var(--secondaryTextColor)]">
-                Conveniently customize recaptiualize focused inter without
-                globally
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Qualities />
 
       {/* ///About Blog3/// */}
       <div className="flex py-[100px] bg-[var(--secondaryCustomColor)] justify-center">

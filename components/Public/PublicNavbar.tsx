@@ -28,7 +28,7 @@ export default function PublicNavbar() {
   }
 
   return (
-    <nav className="bg-[var(--customColor)] text-white flex justify-center">
+    <nav className="bg-[var(--customColor)] sm:sticky sm:top-0 z-50 text-white flex justify-center">
       <div className="custom-container">
         <div
           onClick={closeNave}
@@ -36,7 +36,7 @@ export default function PublicNavbar() {
             vNav ? 'left-0' : 'left-[-1000px] md:left-0'
           } md:relative fixed  top-0 h-full bg-black/65 md:bg-transparent w-full z-50`}
         >
-          <ul className="md:flex md:w-full  w-[300px]  h-full">
+          <ul className="md:flex bg-[var(--customColor)] md:w-full  w-[250px]  h-full">
             <li className="md:hidden pt-4 px-3 mb-5">
               <Link href="/" className="sm:w-40 w-32 max-w-40">
                 <Image
@@ -64,7 +64,7 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
-                  pathName === '/about' ? 'bg-[var(--custom-light-color)]' : ''
+                  pathName === '/about' ? 'bg-[var(--customRedColor)]' : ''
                 }`}
                 href={`/about`}
               >
@@ -74,9 +74,7 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
-                  pathName === '/products'
-                    ? 'bg-[var(--custom-light-color)]'
-                    : ''
+                  pathName === '/products' ? 'bg-[var(--customRedColor)]' : ''
                 }`}
                 href={`/products`}
               >
