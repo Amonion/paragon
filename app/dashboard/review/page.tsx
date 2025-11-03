@@ -49,14 +49,14 @@ const BasicSettings: React.FC = () => {
             : ratingForm.rating > 5
             ? 5
             : ratingForm.rating,
-        rules: { blank: true, minLength: 30, maxLength: 100 },
-        field: 'Email field',
+        rules: { blank: false, maxLength: 100 },
+        field: 'Rating field',
       },
       {
         name: 'review',
         value: ratingForm.review,
-        rules: { blank: true, minLength: 30, maxLength: 100 },
-        field: 'Email field',
+        rules: { blank: true, minLength: 20, maxLength: 100 },
+        field: 'Review field',
       },
       {
         name: 'picture',
