@@ -23,26 +23,26 @@ export default function Home() {
                 History
               </div>
               <div className="text-[var(--primaryTextColor)] text-[55px] mb-8 font-bold">
-                30 Years Farm Traditions
+                3 Years Farm Traditions
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-7">
-              <div className="flex flex-col col-span-2 bg-[var(--backgroundColor)] py-6 px-6">
+            <div className="grid md:grid-cols-3 grid-cols-1 gap-7">
+              <div className="flex flex-col sm:col-span-2 bg-[var(--backgroundColor)] py-6 px-6">
                 <Image
-                  src="/poultryImage35.jpg"
+                  src="/images/ceo.jpg"
                   sizes="100vw"
                   className="h-full w-full object-cover mb-4"
                   width={0}
                   height={0}
                   alt="real"
                 />
-                <div className="flex">
+                <div className="flex flex-wrap">
                   <div className="flex flex-col mr-9">
-                    <div className="text-[40px] text-[var(--primaryTextColor)] font-semibold">
+                    <div className="text-[30px] sm:text-[40px] text-[var(--primaryTextColor)] font-semibold">
                       Since
                     </div>
-                    <div className="text-[55px] text-[var(--primaryTextColor)] font-bold">
-                      1985
+                    <div className="text-[35px] sm:text-[55px] text-[var(--primaryTextColor)] font-bold">
+                      2022
                     </div>
                   </div>
                   <div className="text text-[var(--secondaryTextColor)]">
@@ -61,25 +61,25 @@ export default function Home() {
                 <div className="grid grid-cols-2 ">
                   <div className="flex flex-col items-center mb-10">
                     <Image
-                      src="/poultryImage36.jpg"
+                      src="/images/care.png"
                       sizes="100vw"
-                      className="h-auto w-[50px] object-contain mb-3"
+                      className="h-[50px] w-auto object-contain mb-3"
                       width={0}
                       height={0}
                       alt="real"
                     />
                     <div className="text-[20px] text-[var(--primaryTextColor)] font-bold mb-2">
-                      32
+                      24/7
                     </div>
                     <div className="text-[20px] text-[var(--secondaryTextColor)] font-bold">
-                      Customers
+                      Customer Support
                     </div>
                   </div>
                   <div className="flex flex-col items-center">
                     <Image
-                      src="/poultryImage37.jpg"
+                      src="/images/award.png"
                       sizes="100vw"
-                      className="h-auto w-[50px] object-contain mb-3"
+                      className="h-[50px] w-auto object-contain mb-3"
                       width={0}
                       height={0}
                       alt="real"
@@ -93,9 +93,9 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col items-center">
                     <Image
-                      src="/poultryImage38.jpg"
+                      src="/images/customers.png"
                       sizes="100vw"
-                      className="h-auto w-[50px] object-contain mb-3"
+                      className="h-[50px] w-auto object-contain mb-3"
                       width={0}
                       height={0}
                       alt="real"
@@ -109,9 +109,9 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col items-center">
                     <Image
-                      src="/poultryImage39.jpg"
+                      src="/images/birds.png"
                       sizes="100vw"
-                      className="h-auto w-[50px] object-contain mb-3"
+                      className="h-[50px] w-auto object-contain mb-3"
                       width={0}
                       height={0}
                       alt="real"
@@ -131,7 +131,10 @@ export default function Home() {
       </div>
 
       {/* ////TESTIMONIAL SECTION//// */}
-      <Testimonial />
+      <div className="f ">
+        {' '}
+        <Testimonial />
+      </div>
     </div>
   )
 }

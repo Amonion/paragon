@@ -16,7 +16,7 @@ export default function Products() {
             <Image
               src={String(item.picture)}
               sizes="100vw"
-              className="h-[200px] w-full object-contain mb-7"
+              className="sm:h-[200px] h-[100px] w-full object-contain mb-4"
               width={0}
               height={0}
               alt="real"

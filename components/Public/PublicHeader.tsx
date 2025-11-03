@@ -36,7 +36,7 @@ export default function PublicHeader() {
     )
   }, [])
   return (
-    <header className="bg-[var(--backgroundColor)] sticky top-0 sm:relative z-50 text-[var(--primaryTextColor)] py-1 flex justify-center">
+    <header className="bg-[var(--backgroundColor)] border-b border-b-gray-300 sticky top-0 sm:relative z-50 text-[var(--primaryTextColor)] py-1 flex justify-center">
       <div className="custom-container">
         <div className="flex justify-between w-full items-center">
           <Link href="/" className="sm:w-40 w-32 max-w-40">

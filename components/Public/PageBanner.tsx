@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 export const PageHeader = ({
@@ -12,15 +11,25 @@ export const PageHeader = ({
 }) => {
   return (
     <div className="relative">
-      <Image
+      {/* <Image
         src="/images/page-header.jpg"
         sizes="100vw"
         className="h-full w-full object-cover absolute z-0"
         width={0}
         height={0}
         alt="paragon"
-      />
-      <div className="absolute top-0 left-0 w-full h-full bg-black/70 z-0" />
+      /> */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover"
+      >
+        <source src="/videos/poultry-birds.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-0" />
       <div className="flex w-full justify-center">
         <div className="customContainer relative z-10">
           <div className="flex items-center flex-col z-20 min-h-[45vh] justify-center">

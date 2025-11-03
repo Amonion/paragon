@@ -96,6 +96,16 @@ export default function PublicNavbar() {
             <li>
               <Link
                 className={`navLinks ${
+                  pathName === '/faq' ? 'bg-[var(--customRedColor)]' : ''
+                }`}
+                href={`/faq`}
+              >
+                FAQ
+              </Link>
+            </li>
+            <li>
+              <Link
+                className={`navLinks ${
                   pathName === '/contact' ? 'bg-[var(--customRedColor)]' : ''
                 }`}
                 href={`/contact`}

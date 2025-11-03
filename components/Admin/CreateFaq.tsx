@@ -67,7 +67,7 @@ const CreateFaq: React.FC = () => {
       {
         name: 'answer',
         value: faqForm.answer,
-        rules: { blank: true, minLength: 3, maxLength: 100 },
+        rules: { blank: true, minLength: 3, maxLength: 2000 },
         field: 'Answer field',
       },
       {
@@ -97,8 +97,8 @@ const CreateFaq: React.FC = () => {
 
     e.preventDefault()
     const data = appendForm(inputsToValidate)
-    if (id) {
-      updateFaq(`${url}/${id}${queryParams}`, data, setMessage, () =>
+    if (faqForm._id) {
+      updateFaq(`${url}/${faqForm._id}${queryParams}`, data, setMessage, () =>
         showForm(false)
       )
     } else {
@@ -115,7 +115,7 @@ const CreateFaq: React.FC = () => {
         onClick={(e) => {
           e.stopPropagation()
         }}
-        className="card_body sharp"
+        className="card_body sharp max-w-[700px]"
       >
         <div className="custom_sm_title">
           {name ? `Update Faq` : `Create Faq`}

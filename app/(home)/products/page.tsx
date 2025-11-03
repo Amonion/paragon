@@ -2,8 +2,9 @@
 import React from 'react'
 import Link from 'next/link'
 import { PageHeader } from '@/components/Public/PageBanner'
+import Products from '@/components/Public/Products'
 
-function Products() {
+function ProductPage() {
   return (
     <>
       <PageHeader page="Products" title="Paragon Poultry Products" />
@@ -16,8 +17,8 @@ function Products() {
                 Poultry Farm Products
               </div>
               <div className="text-[16px] text-[var(--secondaryTextColor)] mb-18">
-                Conveniently customize proactive web services for leveraged
-                interfaces without Globally
+                Delivering fresh, healthy, and ethically raised poultry products
+                straight from our farm to your table.
               </div>
             </div>
             <Products />
@@ -34,4 +35,4 @@ function Products() {
   )
 }
 
-export default Products
+export default ProductPage

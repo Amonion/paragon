@@ -30,8 +30,8 @@ export default function Home() {
                 Poultry Farm Products
               </div>
               <div className="text-[16px] text-[var(--secondaryTextColor)] ">
-                Conveniently customize proactive web services for leveraged
-                interfaces without Globally
+                Delivering fresh, healthy, and ethically raised poultry products
+                straight from our farm to your table.
               </div>
             </div>
             <Products />
@@ -285,7 +285,10 @@ export default function Home() {
       </div>
 
       {/* ////TESTIMONIAL SECTION//// */}
-      <Testimonial />
+      <div className="bg-[var(--secondaryCustomColor)]">
+        {' '}
+        <Testimonial />
+      </div>
 
       {/* ////BLOG SECTION//// */}
       <div className="flex justify-center py-[90px] bg-[var(--backgroundColor)]">

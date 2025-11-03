@@ -1,15 +1,15 @@
 'use client'
+
+import { PageHeader } from '@/components/Public/PageBanner'
+import CompanyStore from '@/src/zustand/app/Company'
+
 export default function Contact() {
+  const { companyForm } = CompanyStore()
+
   return (
     <div>
       {/* ///////CONTACT SECTION//////////// */}
-      <div className="flex  justify-center bg-[url('/blogImage1.jpg')] bg-fixed bg-cover bg-no-repeat bg-center">
-        <div className="flex w-full bg-green-500/40 py-[100px] justify-center">
-          <div className="customContainer">
-            <div className="flex text-white text-[40px]">Contact</div>
-          </div>
-        </div>
-      </div>
+      <PageHeader page="Contact" title="Contact Paragon Poultry Farms" />
 
       {/* ////CONTACT SECTION2 //// */}
       <div className="flex py-[60px] bg-[var(--widgetBackground)] justify-center">
@@ -72,7 +72,7 @@ export default function Contact() {
                     <div className="text-black text-[15px]">Phone</div>
                   </div>
                   <div className="text-[var(#808080)] pl-9 leading-5 text-[15px]">
-                    +123-456-789
+                    {companyForm.phone}
                   </div>
                 </div>
                 <div className="flex flex-col mb-5">
@@ -83,20 +83,10 @@ export default function Contact() {
                     <div className="text-black text-[15px]">Mobile</div>
                   </div>
                   <div className="text-[var(#808080)] pl-9 leading-5 text-[15px]">
-                    +123-456-789
+                    {companyForm.phone}
                   </div>
                 </div>
-                <div className="flex flex-col mb-5">
-                  <div className="flex">
-                    <div className="t mr-4 text-[var(#808080)]">
-                      <i className="bi bi-fuel-pump-fill"></i>
-                    </div>
-                    <div className="text-black text-[15px]">Fax</div>
-                  </div>
-                  <div className="text-[var(#808080)] pl-9 leading-5 text-[15px]">
-                    +123-456-789
-                  </div>
-                </div>
+
                 <div className="flex flex-col mb-5">
                   <div className="flex">
                     <div className="t mr-4 text-[var(#808080)]">
@@ -105,7 +95,7 @@ export default function Contact() {
                     <div className="text-black text-[15px]">Email</div>
                   </div>
                   <div className="text-[var(#808080)] pl-9 leading-5 text-[15px]">
-                    sales@yourwebsite.com
+                    {companyForm.email}
                   </div>
                 </div>
                 <div className="flex flex-col mb-5">
@@ -116,7 +106,7 @@ export default function Contact() {
                     <div className="text-black text-[15px]">Address</div>
                   </div>
                   <div className="text-[var(#808080)] pl-9 leading-5 text-[15px]">
-                    3015 Grand Ave, Coconut Grove, Merrick Way, FL 12345
+                    {companyForm.headquaters}
                   </div>
                 </div>
               </div>

@@ -73,7 +73,7 @@ export default function RootLayout({
       <UserAlert />
       <PublicHeader />
       <PublicNavbar />
-      {children}
+      <div className="text-[var(--dark)] bg-white"> {children}</div>
       {cartProducts.length > 0 && (
         <Link
           href={'/check-out'}
