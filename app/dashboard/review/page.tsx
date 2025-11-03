@@ -55,7 +55,7 @@ const BasicSettings: React.FC = () => {
       {
         name: 'review',
         value: ratingForm.review,
-        rules: { blank: true, minLength: 20, maxLength: 100 },
+        rules: { blank: true, minLength: 20, maxLength: 1000 },
         field: 'Review field',
       },
       {
