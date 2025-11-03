@@ -28,7 +28,7 @@ export default function PublicNavbar() {
   }
 
   return (
-    <nav className="bg-[var(--customColor)] sm:sticky sm:top-0 z-50 text-white flex justify-center">
+    <nav className="bg-[var(--customColor)] sm:sticky sm:top-0 z-30 text-white flex justify-center">
       <div className="custom-container">
         <div
           onClick={closeNave}

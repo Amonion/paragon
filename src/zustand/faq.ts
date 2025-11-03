@@ -8,6 +8,7 @@ interface FetchResponse {
   page_size: number
   results: Faq[]
   data: Faq
+  result: FetchResponse
 }
 
 export interface Faq {
@@ -213,8 +214,9 @@ const FaqStore = create<FaqState>((set) => ({
       setMessage,
       setLoading: FaqStore.getState().setLoading,
     })
-    if (response?.data) {
-      FaqStore.getState().setProcessedResults(response.data)
+    const data = response.data
+    if (data) {
+      FaqStore.getState().setProcessedResults(data.result)
     }
     if (redirect) redirect()
   },
@@ -227,8 +229,9 @@ const FaqStore = create<FaqState>((set) => ({
       setMessage,
       setLoading: FaqStore.getState().setLoading,
     })
-    if (response?.data) {
-      FaqStore.getState().setProcessedResults(response.data)
+    const data = response.data
+    if (data) {
+      FaqStore.getState().setProcessedResults(data.result)
     }
 
     if (redirect) redirect()

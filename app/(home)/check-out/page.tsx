@@ -1,15 +1,63 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import ProductStore from '@/src/zustand/Product'
 import { formatMoney } from '@/lib/helpers'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 import { PageHeader } from '@/components/Public/PageBanner'
+import { MessageStore } from '@/src/zustand/notification/Message'
+import CompanyStore from '@/src/zustand/app/Company'
+import Spinner from '@/components/LoadingAnimations/Spinner'
+import { useRouter } from 'next/navigation'
 
 function CheckOut() {
-  const { cartProducts, totalAmount, setToCart } = ProductStore()
+  const { cartProducts, loading, totalAmount, setToCart, createTransaction } =
+    ProductStore()
   const { user } = AuthStore()
+  const { setMessage } = MessageStore()
+  const { companyForm } = CompanyStore()
+  const [showCart, setShowCart] = useState(false)
+  const [receipt, setReceipt] = useState<File | null>(null)
+  const [preview, setPreview] = useState('')
+  const router = useRouter()
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null
+    setReceipt(file)
+    if (file) {
+      const localUrl = URL.createObjectURL(file)
+      setPreview(localUrl)
+    }
+  }
+
+  const handleSubmit = async (e: string) => {
+    if (!user) {
+      setMessage('Please select a customer to continue.', false)
+      return
+    }
+    const data = {
+      username: user.username,
+      fullName: user.fullName,
+      picture: user.picture,
+      cartProducts,
+      totalAmount,
+      receipt,
+      payment: e,
+      isProfit: true,
+      status: false,
+    }
+
+    createTransaction(
+      `/transactions?ordering=-createdAt&isBuyable=${false}`,
+      data,
+      setMessage,
+      () => {
+        router.push('/')
+        setShowCart(false)
+      }
+    )
+  }
 
   return (
     <div>
@@ -89,13 +137,21 @@ function CheckOut() {
                 </div>
               </div>
             </div>
-            {user ? (
-              <Link
-                className="text-[20px] text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
-                href={'/'}
-              >
-                Make Payment
-              </Link>
+            {user && cartProducts.length > 0 ? (
+              <div className="flex">
+                <div
+                  className="text-[20px] cursor-pointer mx-2 text-white bg-[var(--success)] rounded py-[10px] px-[30px]"
+                  onClick={() => setShowCart(true)}
+                >
+                  Transfer
+                </div>
+                <div
+                  className="text-[20px] cursor-pointer mx-2 text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
+                  onClick={() => handleSubmit('Cash')}
+                >
+                  Pay Cash
+                </div>
+              </div>
             ) : (
               <Link
                 className="text-[20px] text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
@@ -107,6 +163,94 @@ function CheckOut() {
           </div>
         </div>
       </div>
+
+      {showCart && cartProducts.length > 0 && (
+        <div
+          onClick={() => setShowCart(false)}
+          className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+            className="bg-white p-4 sharp w-full max-w-[600px]"
+          >
+            <div className="flex justify-center mb-4">
+              <Image
+                src="/Icon.png"
+                sizes="100vw"
+                className="h-[100px] w-auto object-contain"
+                width={0}
+                height={0}
+                alt="real"
+              />
+            </div>
+            <div className="overflow-auto flex flex-col items-start max-h-[80vh]">
+              <div className="flex items-center mb-3">
+                <span className="w-[150px]">Bank Name:</span>{' '}
+                <span>{companyForm.bankName}</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <span className="w-[150px]">Account Name:</span>{' '}
+                <span>{companyForm.bankAccountName}</span>
+              </div>
+              <div className="flex items-center mb-3">
+                <span className="w-[150px]">Account Number:</span>{' '}
+                <span>{companyForm.bankAccountNumber}</span>
+              </div>
+            </div>
+
+            {preview && (
+              <div className="flex justify-center">
+                <Image
+                  src={String(preview)}
+                  sizes="100vw"
+                  className="h-[150px] rounded-[5px] w-[100px] object-cover mb-4"
+                  width={0}
+                  height={0}
+                  alt="real"
+                />
+              </div>
+            )}
+
+            <div className="text-center text-[var(--customRedColor)] text-sm">
+              Upload payment receipts and submit
+            </div>
+            {loading ? (
+              <div className="px-2 flex justify-center cursor-pointer py-[8px] bg-[var(--customRedColor)] text-white">
+                <Spinner size={30} />
+              </div>
+            ) : (
+              <div className="bg-[var(--secondaryCustomColor)] p-3 flex items-center flex-wrap">
+                <div className="mr-auto text-[var(--customRedColor)]">
+                  ₦{formatMoney(totalAmount)}
+                </div>
+                <label
+                  htmlFor="picture"
+                  className="px-2 cursor-pointer py-1 bg-[var(--success)] text-white"
+                >
+                  <input
+                    className="input-file"
+                    type="file"
+                    name="picture"
+                    id="picture"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
+                  Receipt
+                </label>
+                <div
+                  onClick={() => handleSubmit('Transfer')}
+                  className="px-2 ml-3 cursor-pointer py-[8px] bg-[var(--success)] text-white"
+                >
+                  Submit Payment
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

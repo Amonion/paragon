@@ -11,6 +11,7 @@ import CompanyStore from '@/src/zustand/app/Company'
 import ProductStore from '@/src/zustand/Product'
 import { UserStore } from '@/src/zustand/user/User'
 import RatingStore from '@/src/zustand/Rating'
+import FaqStore from '@/src/zustand/faq'
 
 export default function PublicHeader() {
   const { toggleVNav } = NavStore()
@@ -20,12 +21,14 @@ export default function PublicHeader() {
   const { getProducts } = ProductStore()
   const { getUsers } = UserStore()
   const { getRatings } = RatingStore()
+  const { getFaqs } = FaqStore()
   useEffect(() => {
     getBanners(`/blogs?category=Home-Banner`, setMessage)
     getCompany(`/company`, setMessage)
     getProducts(`/products?ordering=-createdAt&page_size=20`, setMessage)
     getUsers(`/users/?status=Staff&ordering=-staffRanking`, setMessage)
     getRatings(`/reviews/?ordering=-createdAt`, setMessage)
+    getFaqs(`/faqs/?ordering=-createdAt&page_size=100`, setMessage)
     getGallery(
       `/blogs?category=Gallery&ordering=-createdAt&page_size=20`,
       setMessage
@@ -36,7 +39,7 @@ export default function PublicHeader() {
     )
   }, [])
   return (
-    <header className="bg-[var(--backgroundColor)] border-b border-b-gray-300 sticky top-0 sm:relative z-50 text-[var(--primaryTextColor)] py-1 flex justify-center">
+    <header className="bg-[var(--backgroundColor)] border-b border-b-gray-300 sticky top-0 sm:relative z-30 text-[var(--primaryTextColor)] py-1 flex justify-center">
       <div className="custom-container">
         <div className="flex justify-between w-full items-center">
           <Link href="/" className="sm:w-40 w-32 max-w-40">

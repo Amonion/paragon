@@ -3,8 +3,10 @@ import React from 'react'
 import Link from 'next/link'
 import { PageHeader } from '@/components/Public/PageBanner'
 import Products from '@/components/Public/Products'
+import { AuthStore } from '@/src/zustand/user/AuthStore'
 
 function ProductPage() {
+  const { user } = AuthStore()
   return (
     <>
       <PageHeader page="Products" title="Paragon Poultry Products" />
@@ -22,12 +24,14 @@ function ProductPage() {
               </div>
             </div>
             <Products />
-            <Link
-              className="text-[20px] text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
-              href={'/'}
-            >
-              SIGN IN
-            </Link>
+            {!user && (
+              <Link
+                className="text-[20px] text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
+                href={'/sign-in'}
+              >
+                SIGN IN
+              </Link>
+            )}
           </div>
         </div>
       </div>
