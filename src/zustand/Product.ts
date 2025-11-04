@@ -87,6 +87,7 @@ interface ProductState {
   setToCart: (p: Product, isAdd: boolean) => void
   setShowStocking: (status: boolean) => void
   resetForm: () => void
+  updateCartUnits: (id: string, units: number) => void
   getProducts: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
@@ -242,6 +243,56 @@ const ProductStore = create<ProductState>((set) => ({
       }
 
       return prev
+    })
+  },
+
+  updateCartUnits: (productId: string, newUnits: number) => {
+    set((prev) => {
+      // Ensure units can’t go below 0
+      const units = Math.max(0, newUnits)
+
+      const existing = prev.cartProducts.find((item) => item._id === productId)
+
+      const updateProductsCartUnits = (id: string, newUnits: number) =>
+        prev.products.map((prod) =>
+          prod._id === id ? { ...prod, cartUnits: newUnits } : prod
+        )
+
+      let updatedCart: typeof prev.cartProducts = []
+
+      // If the product exists in the cart
+      if (existing) {
+        if (units === 0) {
+          // Remove item if units go to 0
+          updatedCart = prev.cartProducts.filter(
+            (item) => item._id !== productId
+          )
+        } else {
+          // Update quantity directly
+          updatedCart = prev.cartProducts.map((item) =>
+            item._id === productId ? { ...item, cartUnits: units } : item
+          )
+        }
+      } else if (units > 0) {
+        // Add to cart if not existing and units > 0
+        const product = prev.products.find((p) => p._id === productId)
+        if (product) {
+          updatedCart = [...prev.cartProducts, { ...product, cartUnits: units }]
+        } else {
+          updatedCart = prev.cartProducts
+        }
+      } else {
+        updatedCart = prev.cartProducts
+      }
+
+      return {
+        cartProducts: updatedCart,
+        products: updateProductsCartUnits(productId, units),
+        totalAmount: updatedCart.reduce(
+          (sum, item) => sum + item.cartUnits * (item.price || 0),
+          0
+        ),
+      }
     })
   },
 

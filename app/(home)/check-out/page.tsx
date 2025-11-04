@@ -36,21 +36,23 @@ function CheckOut() {
       setMessage('Please select a customer to continue.', false)
       return
     }
-    const data = {
-      username: user.username,
-      fullName: user.fullName,
-      picture: user.picture,
-      cartProducts,
-      totalAmount,
-      receipt,
-      payment: e,
-      isProfit: true,
-      status: false,
+
+    const form = new FormData()
+    form.append('username', user.username)
+    form.append('fullName', user.fullName)
+    form.append('picture', user.picture)
+    form.append('cartProducts', JSON.stringify(cartProducts))
+    form.append('totalAmount', String(totalAmount))
+    if (receipt) {
+      form.append('receipt', receipt)
     }
+    form.append('payment', String(e))
+    form.append('isProfit', String(true))
+    form.append('status', String(false))
 
     createTransaction(
       `/transactions?ordering=-createdAt&isBuyable=${false}`,
-      data,
+      form,
       setMessage,
       () => {
         router.push('/')

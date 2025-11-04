@@ -15,6 +15,7 @@ const SellProducts: React.FC = () => {
     setToCart,
     reshuffleResults,
     createTransaction,
+    updateCartUnits,
     totalAmount,
     cartProducts,
     loading,
@@ -26,6 +27,7 @@ const SellProducts: React.FC = () => {
   const { setMessage } = MessageStore()
   const { searchedUsers, userForm, searchUser } = UserStore()
   const [showCart, setShowCart] = useState(false)
+  const [partPayment, setPartPayment] = useState(0)
   const pathname = usePathname()
   const { page } = useParams()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -68,20 +70,21 @@ const SellProducts: React.FC = () => {
       setMessage('Please select a customer to continue.', false)
       return
     }
-    const data = {
-      cartProducts: cartProducts,
-      username: userForm.username,
-      fullName: userForm.fullName,
-      picture: userForm.picture,
-      totalAmount: totalAmount,
-      payment: e,
-      isProfit: true,
-      status: true,
-    }
+
+    const form = new FormData()
+    form.append('username', userForm.username)
+    form.append('fullName', userForm.fullName)
+    form.append('picture', userForm.picture)
+    form.append('cartProducts', JSON.stringify(cartProducts))
+    form.append('partPayment', JSON.stringify(partPayment))
+    form.append('totalAmount', String(totalAmount))
+    form.append('payment', String(e))
+    form.append('isProfit', String(true))
+    form.append('status', String(partPayment > 0 ? false : true))
 
     createTransaction(
       `/transactions?ordering=${sort}&isBuyable=${false}`,
-      data,
+      form,
       setMessage,
       () => {
         setShowCart(false)
@@ -210,9 +213,18 @@ const SellProducts: React.FC = () => {
                   >
                     <i className="bi bi-dash text-[var(--text-secondary)]"></i>
                   </div>
-                  <div className="text-[var(--customRedColor)] font-bold mx-2">
-                    {item.cartUnits}
-                  </div>
+
+                  <input
+                    value={item.cartUnits}
+                    onChange={(e) => {
+                      const value = Number(e.target.value)
+                      if (isNaN(value) || value < 0) return
+                      updateCartUnits(item._id, value)
+                    }}
+                    placeholder="Units"
+                    className="bg-[var(--secondary)] mx-2 max-w-[80px] p-1 outline-none border border-[var(--border)]"
+                    type="number"
+                  />
                   <div
                     onClick={() => setToCart(item, true)}
                     className="flex justify-center h-[30px] w-[30px] cursor-pointer items-center bg-[var(--secondary)]"
@@ -317,6 +329,23 @@ const SellProducts: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="flex items-end mb-2">
+              <div className="text-lg text-[var(--customRedColor)] mr-3">
+                Part Payment
+              </div>
+              <input
+                value={partPayment}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  if (isNaN(value) || value < 0 || value > totalAmount) return
+                  setPartPayment(value)
+                }}
+                placeholder="Part payment"
+                className="bg-[var(--secondary)] max-w-[150px] p-1 outline-none border border-[var(--border)]"
+                type="number"
+              />
             </div>
 
             <div className="bg-[var(--secondary)] p-3 flex items-center flex-wrap">
