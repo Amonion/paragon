@@ -88,6 +88,7 @@ const SellProducts: React.FC = () => {
       setMessage,
       () => {
         setShowCart(false)
+        reshuffleResults()
         selectUser(UserEmpty)
       }
     )

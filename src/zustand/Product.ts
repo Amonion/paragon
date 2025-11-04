@@ -342,6 +342,7 @@ const ProductStore = create<ProductState>((set) => ({
         ...item,
         isChecked: false,
         isActive: false,
+        cartUnits: 0,
       })),
     }))
   },

@@ -73,7 +73,7 @@ const Products: React.FC = () => {
       const value = e.target.value
       if (value.trim().length > 0) {
         searchProducts(
-          `${url}/search?author=${value}&content=${value}&title=${value}&subtitle=${value}&page_size=${page_size}`
+          `${url}/search?name=${value}&description=${value}&title=${value}&page_size=${page_size}`
         )
       } else {
         ProductStore.setState({ searchedProducts: [] })
@@ -138,10 +138,7 @@ const Products: React.FC = () => {
             >
               {searchedProducts.map((item, index) => (
                 <div key={index} className="input_drop_list">
-                  <Link
-                    href={`/school/students/student/${item._id}`}
-                    className="flex-1"
-                  >
+                  <Link href={`/admin/products/${item._id}`} className="flex-1">
                     {item.name}
                   </Link>
                 </div>

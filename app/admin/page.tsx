@@ -1,9 +1,9 @@
 'use client'
 import BarGraphGrades from '@/components/Admin/BarGraphGrades'
 import LatestExpenses from '@/components/Admin/LatestExpenses'
-import LatestTransactions from '@/components/Admin/LatestTransactions'
 import PieGraph from '@/components/Admin/PieGraph'
 import StatDuration from '@/components/Admin/StatDuration'
+import LatestTransactions from '@/components/Admin/Transaction/LatestTransactions'
 import TransactionStore from '@/src/zustand/Transaction'
 import { useEffect, useState } from 'react'
 

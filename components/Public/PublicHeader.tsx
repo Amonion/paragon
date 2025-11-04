@@ -25,7 +25,10 @@ export default function PublicHeader() {
   useEffect(() => {
     getBanners(`/blogs?category=Home-Banner`, setMessage)
     getCompany(`/company`, setMessage)
-    getProducts(`/products?ordering=-createdAt&page_size=20`, setMessage)
+    getProducts(
+      `/products?ordering=-createdAt&page_size=20&isBuyable=false`,
+      setMessage
+    )
     getUsers(`/users/?status=Staff&ordering=-staffRanking`, setMessage)
     getRatings(`/reviews/?ordering=-createdAt`, setMessage)
     getFaqs(`/faqs/?ordering=-createdAt&page_size=100`, setMessage)

@@ -74,6 +74,7 @@ interface TransactionState {
   count: number
   period: string
   transactions: Transaction[]
+  userTransactions: Transaction[]
   latest: Transaction[]
   transactionForm: Transaction
   fromDate: Date | null
@@ -90,6 +91,10 @@ interface TransactionState {
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   getTransactions: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  getUserTransactions: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -111,6 +116,7 @@ const TransactionStore = create<TransactionState>((set) => ({
   totals: TotalsEmpty,
   period: 'all',
   transactions: [],
+  userTransactions: [],
   fromDate: null,
   toDate: null,
   transactionForm: TransactionEmpty,
@@ -173,6 +179,21 @@ const TransactionStore = create<TransactionState>((set) => ({
       const data = response?.data
       if (data) {
         set({ latest: data.results })
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  getUserTransactions: async (url: string, setMessage) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        setMessage,
+        setLoading: TransactionStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ userTransactions: data.results })
       }
     } catch (error: unknown) {
       console.log(error)

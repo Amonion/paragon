@@ -1,12 +1,14 @@
 'use client'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import { User, UserStore } from '@/src/zustand/user/User'
+import { UserStore } from '@/src/zustand/user/User'
 import StaffSheet from '@/components/Admin/StaffSheet'
 import { formatMoney } from '@/lib/helpers'
+import Link from 'next/link'
+import _debounce from 'lodash/debounce'
 
 const Users: React.FC = () => {
   const [page_size] = useState(20)
@@ -19,7 +21,8 @@ const Users: React.FC = () => {
     count,
     selectedUsers,
     showProfileSheet,
-    setShowProfileSheet,
+    searchedUsers,
+    searchUser,
     massDeleteUsers,
     makeUserStaff,
     deleteUser,
@@ -32,6 +35,7 @@ const Users: React.FC = () => {
   const pathname = usePathname()
   const { page } = useParams()
   const { setAlert } = AlartStore()
+  const inputRef = useRef<HTMLInputElement>(null)
   const url = '/users'
   const params = `?page_size=${page_size}&page=${
     page ? page : 1
@@ -44,6 +48,20 @@ const Users: React.FC = () => {
   useEffect(() => {
     getUsers(`${url}${params}`, setMessage)
   }, [page])
+
+  const handleSearch = _debounce(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      if (value.trim().length > 0) {
+        searchUser(
+          `${url}/search?fullName=${value}&status=User&username=${value}&page_size=${page_size}`
+        )
+      } else {
+        UserStore.setState({ searchedUsers: [] })
+      }
+    },
+    1000
+  )
 
   const deleteUserProfile = async (id: string, index: number) => {
     toggleActive(index)
@@ -71,13 +89,6 @@ const Users: React.FC = () => {
     await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
 
-  const showStaff = async (user: User) => {
-    UserStore.setState({
-      userForm: user,
-    })
-    setShowProfileSheet(true)
-  }
-
   const makeUser = async (id: string) => {
     await makeUserStaff(
       `${url}/${id}/${params}`,
@@ -99,6 +110,49 @@ const Users: React.FC = () => {
 
   return (
     <>
+      <div className="card_body sharp mb-5">
+        <div className="text-lg text-[var(--text-secondary)]">
+          Table of Users
+        </div>
+        <div className="relative mb-2">
+          <div className={`input_wrap ml-auto active `}>
+            <input
+              ref={inputRef}
+              type="search"
+              onChange={handleSearch}
+              className={`transparent-input flex-1 `}
+              placeholder="Search users"
+            />
+            {loading ? (
+              <i className="bi bi-opencollective common-icon loading"></i>
+            ) : (
+              <i className="bi bi-search common-icon cursor-pointer"></i>
+            )}
+          </div>
+
+          {searchedUsers.length > 0 && (
+            <div
+              className={`dropdownList ${
+                searchedUsers.length > 0
+                  ? 'overflow-auto'
+                  : 'overflow-hidden h-0'
+              }`}
+            >
+              {searchedUsers.map((item, index) => (
+                <div key={index} className="input_drop_list">
+                  <Link
+                    href={`/admin/users/${item.username}`}
+                    className="flex-1"
+                  >
+                    {item.fullName}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="overflow-auto mb-5">
         {users.length > 0 ? (
           <table>
@@ -150,7 +204,7 @@ const Users: React.FC = () => {
                           className="card_list_item"
                           onClick={() => makeUser(item._id)}
                         >
-                          Make User
+                          Make Staff
                         </div>
                         <div
                           className="card_list_item"
@@ -162,7 +216,7 @@ const Users: React.FC = () => {
                           className="card_list_item"
                           onClick={() => startDelete(item._id, index)}
                         >
-                          Delete Staff
+                          Delete User
                         </div>
                       </div>
                     )}
@@ -187,11 +241,10 @@ const Users: React.FC = () => {
                       />
                     </div>
                   </td>
-                  <td
-                    onClick={() => showStaff(item)}
-                    className="cursor-pointer"
-                  >
-                    {item.fullName}
+                  <td className="cursor-pointer">
+                    <Link href={`/admin/users/${item.username}`} className="">
+                      {item.fullName}
+                    </Link>
                   </td>
                   <td>₦{formatMoney(item.totalPurchase)}</td>
                   <td>{item.email}</td>
