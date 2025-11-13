@@ -8,7 +8,7 @@ interface FetchResponse {
   page_size: number
   results: Service[]
   data: Service
-  summary: { totalLoss: number; totalProfit: number }
+  result: FetchResponse
 }
 
 export interface Service {
@@ -16,6 +16,7 @@ export interface Service {
   title: string
   description: string
   username: string
+  video: string | File
   staffName: string
   createdAt: Date | null | number
   isChecked?: boolean
@@ -26,6 +27,7 @@ export const ServiceEmpty = {
   _id: '',
   title: '',
   description: '',
+  video: '',
   staffName: '',
   username: '',
   createdAt: null,
@@ -42,6 +44,7 @@ interface ServiceState {
   serviceForm: Service
   setShowServiceForm: (status: boolean) => void
   resetForm: () => void
+  setForm: (key: keyof Service, value: Service[keyof Service]) => void
   getServices: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
@@ -64,7 +67,6 @@ interface ServiceState {
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
-
   postService: (
     url: string,
     data: FormData | Record<string, unknown>,
@@ -91,6 +93,13 @@ const ServiceStore = create<ServiceState>((set) => ({
     set({
       serviceForm: ServiceEmpty,
     }),
+  setForm: (key, value) =>
+    set((state) => ({
+      serviceForm: {
+        ...state.serviceForm,
+        [key]: value,
+      },
+    })),
 
   setProcessedResults: ({ count, page_size, results }: FetchResponse) => {
     if (results) {
@@ -124,7 +133,7 @@ const ServiceStore = create<ServiceState>((set) => ({
       })
       const data = response?.data
       if (data) {
-        set({ services: data.results })
+        ServiceStore.getState().setProcessedResults(data)
       }
     } catch (error: unknown) {
       console.log(error)
@@ -185,28 +194,43 @@ const ServiceStore = create<ServiceState>((set) => ({
   },
 
   updateService: async (url, updatedItem, setMessage, redirect) => {
-    set({ loading: true })
-    const response = await apiRequest<FetchResponse>(url, {
-      method: 'PATCH',
-      body: updatedItem,
-      setMessage,
-      setLoading: ServiceStore.getState().setLoading,
-    })
-    if (response?.data) {
-      ServiceStore.getState().setProcessedResults(response.data)
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        method: 'PATCH',
+        body: updatedItem,
+        setMessage,
+        setLoading: ServiceStore.getState().setLoading,
+      })
+      const data = response.data
+      if (data) {
+        ServiceStore.getState().setProcessedResults(data.result)
+      }
+      if (redirect) redirect()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      set({ loading: false })
     }
-    if (redirect) redirect()
   },
 
   postService: async (url, updatedItem, setMessage, redirect) => {
-    await apiRequest<FetchResponse>(url, {
-      method: 'POST',
-      body: updatedItem,
-      setMessage,
-      setLoading: ServiceStore.getState().setLoading,
-    })
-
-    if (redirect) redirect()
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        method: 'POST',
+        body: updatedItem,
+        setMessage,
+        setLoading: ServiceStore.getState().setLoading,
+      })
+      const data = response.data
+      if (data) {
+        ServiceStore.getState().setProcessedResults(data.result)
+      }
+      if (redirect) redirect()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      set({ loading: false })
+    }
   },
 
   toggleActive: (index: number) => {

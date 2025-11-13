@@ -75,7 +75,9 @@ interface ProductState {
   page_size: number
   totalAmount: number
   products: Product[]
+  buyingProducts: Product[]
   cartProducts: Product[]
+  buyingCartProducts: Product[]
   cart: Cart
   loading: boolean
   showStocking: boolean
@@ -85,10 +87,16 @@ interface ProductState {
   productForm: Product
   setForm: (key: keyof Product, value: Product[keyof Product]) => void
   setToCart: (p: Product, isAdd: boolean) => void
+  setToBuyCart: (p: Product, isAdd: boolean) => void
   setShowStocking: (status: boolean) => void
   resetForm: () => void
   updateCartUnits: (id: string, units: number) => void
+  updateBuyingCartUnits: (id: string, units: number) => void
   getProducts: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  getBuyingProducts: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -97,6 +105,7 @@ interface ProductState {
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   setProcessedResults: (data: FetchResponse) => void
+  processBuyingProducts: (data: FetchResponse) => void
   setLoading?: (loading: boolean) => void
   massDelete: (
     url: string,
@@ -145,7 +154,9 @@ const ProductStore = create<ProductState>((set) => ({
   totalAmount: 0,
   cart: CartEmpty,
   products: [],
+  buyingProducts: [],
   cartProducts: [],
+  buyingCartProducts: [],
   productStockings: [],
   loading: false,
   showStocking: false,
@@ -179,6 +190,22 @@ const ProductStore = create<ProductState>((set) => ({
         count,
         page_size,
         products: updatedResults,
+      })
+    }
+  },
+
+  processBuyingProducts: ({ count, page_size, results }: FetchResponse) => {
+    if (results) {
+      const updatedResults = results.map((item: Product) => ({
+        ...item,
+        isChecked: false,
+        isActive: false,
+      }))
+
+      set({
+        count,
+        page_size,
+        buyingProducts: updatedResults,
       })
     }
   },
@@ -246,6 +273,69 @@ const ProductStore = create<ProductState>((set) => ({
     })
   },
 
+  setToBuyCart: (p, isAdded) => {
+    set((prev) => {
+      const existing = prev.buyingCartProducts.find(
+        (item) => item._id === p._id
+      )
+
+      const updateProductsCartUnits = (id: string, newUnits: number) =>
+        prev.buyingProducts.map((prod) =>
+          prod._id === id ? { ...prod, cartUnits: newUnits } : prod
+        )
+
+      let updatedCart: typeof prev.buyingCartProducts = []
+
+      if (existing) {
+        const newUnits = isAdded
+          ? existing.cartUnits + 1
+          : existing.cartUnits - 1
+
+        if (!isAdded && newUnits <= 0) {
+          updatedCart = prev.buyingCartProducts.filter(
+            (item) => item._id !== p._id
+          )
+          return {
+            buyingCartProducts: updatedCart,
+            buyingProducts: updateProductsCartUnits(p._id, 0),
+            totalAmount: updatedCart.reduce(
+              (sum, item) => sum + item.cartUnits * (item.price || 0),
+              0
+            ),
+          }
+        }
+
+        updatedCart = prev.buyingCartProducts.map((item) =>
+          item._id === p._id ? { ...item, cartUnits: newUnits } : item
+        )
+
+        return {
+          buyingCartProducts: updatedCart,
+          buyingProducts: updateProductsCartUnits(p._id, newUnits),
+          totalAmount: updatedCart.reduce(
+            (sum, item) => sum + item.cartUnits * (item.price || 0),
+            0
+          ),
+        }
+      }
+
+      if (isAdded) {
+        updatedCart = [...prev.buyingCartProducts, { ...p, cartUnits: 1 }]
+
+        return {
+          buyingCartProducts: updatedCart,
+          buyingProducts: updateProductsCartUnits(p._id, 1),
+          totalAmount: updatedCart.reduce(
+            (sum, item) => sum + item.cartUnits * (item.price || 0),
+            0
+          ),
+        }
+      }
+
+      return prev
+    })
+  },
+
   updateCartUnits: (productId: string, newUnits: number) => {
     set((prev) => {
       // Ensure units can’t go below 0
@@ -296,6 +386,55 @@ const ProductStore = create<ProductState>((set) => ({
     })
   },
 
+  updateBuyingCartUnits: (productId: string, newUnits: number) => {
+    set((prev) => {
+      const units = Math.max(0, newUnits)
+      const existing = prev.buyingCartProducts.find(
+        (item) => item._id === productId
+      )
+
+      const updateProductsCartUnits = (id: string, newUnits: number) =>
+        prev.buyingProducts.map((prod) =>
+          prod._id === id ? { ...prod, cartUnits: newUnits } : prod
+        )
+
+      let updatedCart: typeof prev.buyingCartProducts = []
+
+      if (existing) {
+        if (units === 0) {
+          updatedCart = prev.buyingCartProducts.filter(
+            (item) => item._id !== productId
+          )
+        } else {
+          updatedCart = prev.buyingCartProducts.map((item) =>
+            item._id === productId ? { ...item, cartUnits: units } : item
+          )
+        }
+      } else if (units > 0) {
+        const product = prev.buyingProducts.find((p) => p._id === productId)
+        if (product) {
+          updatedCart = [
+            ...prev.buyingCartProducts,
+            { ...product, cartUnits: units },
+          ]
+        } else {
+          updatedCart = prev.buyingCartProducts
+        }
+      } else {
+        updatedCart = prev.buyingCartProducts
+      }
+
+      return {
+        buyingCartProducts: updatedCart,
+        buyingProducts: updateProductsCartUnits(productId, units),
+        totalAmount: updatedCart.reduce(
+          (sum, item) => sum + item.cartUnits * (item.price || 0),
+          0
+        ),
+      }
+    })
+  },
+
   setShowStocking: (loadState: boolean) => {
     set({ showStocking: loadState })
   },
@@ -312,6 +451,24 @@ const ProductStore = create<ProductState>((set) => ({
       const data = response?.data
       if (data) {
         ProductStore.getState().setProcessedResults(data)
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  getBuyingProducts: async (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        setMessage,
+        setLoading: ProductStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        ProductStore.getState().processBuyingProducts(data)
       }
     } catch (error: unknown) {
       console.log(error)

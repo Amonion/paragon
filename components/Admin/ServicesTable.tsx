@@ -4,17 +4,16 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import StockingStore from '@/src/zustand/Stocking'
 import { formatDateToDDMMYY, formatTimeTo12Hour } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
-import ServiceStore from '@/src/zustand/Service'
+import ServiceStore, { Service } from '@/src/zustand/Service'
+import ServiceForm from './ServiceForm'
 
 const ServicesTable: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
   const { setAlert } = AlartStore()
-  const { toggleActive } = StockingStore()
   const {
     loading,
     count,
@@ -24,6 +23,7 @@ const ServicesTable: React.FC = () => {
     setShowServiceForm,
     deleteItem,
     getServices,
+    toggleActive,
     toggleAllSelected,
     reshuffleResults,
   } = ServiceStore()
@@ -42,17 +42,21 @@ const ServicesTable: React.FC = () => {
   }
   const [fromDate, setFromDate] = useState<Date>(defaultFrom)
   const [toDate, setToDate] = useState<Date>(defaultTo)
-  const url = `/transactions?dateFrom=${fromDate}&dateTo=${toDate}`
+  const url = `/services?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
     if (fromDate && toDate) {
-      const params = `&page_size=${page_size}&username=${username}&page=${
+      const params = `&page_size=${page_size}&page=${
         page ? page : 1
       }&ordering=${sort}`
       getServices(`${url}${params}`, setMessage)
     }
   }, [page, pathname, username, toDate, fromDate])
 
+  const startEdit = (service: Service) => {
+    ServiceStore.setState({ serviceForm: service })
+    displayServiceForm()
+  }
   const startDelete = (id: string) => {
     setAlert(
       'Warning',
@@ -94,7 +98,7 @@ const ServicesTable: React.FC = () => {
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
                 >
-                  <td>
+                  <td className="relative">
                     <div className="flex items-center">
                       {(page ? Number(page) - 1 : 1 - 1) * page_size +
                         index +
@@ -114,7 +118,7 @@ const ServicesTable: React.FC = () => {
                         </span>
                         <div
                           className="card_list_item"
-                          onClick={displayServiceForm}
+                          onClick={() => startEdit(item)}
                         >
                           Edit Services
                         </div>
@@ -167,7 +171,10 @@ const ServicesTable: React.FC = () => {
                 }`}
               ></i>
             </div>
-            <div className="tableActions">
+            <div
+              onClick={() => setShowServiceForm(!showServiceForm)}
+              className="tableActions"
+            >
               <i className="bi bi-plus-circle"></i>
             </div>
           </div>
@@ -180,6 +187,7 @@ const ServicesTable: React.FC = () => {
           page_size={20}
         />
       </div>
+      {showServiceForm && <ServiceForm />}
     </>
   )
 }
