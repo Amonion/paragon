@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import NotificationTemplateStore from '@/src/zustand/notification/NotificationTemplate'
+import LinkedPagination from './LinkedPagination'
 
 const NotificationTemplates: React.FC = () => {
   const url = '/emails/templates/'
@@ -13,17 +14,17 @@ const NotificationTemplates: React.FC = () => {
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
   const pathname = usePathname()
-
   const {
+    results,
+    isAllChecked,
+    selectedItems,
+    loading,
+    count,
     getItems,
     massDelete,
     deleteItem,
     toggleAllSelected,
     toggleChecked,
-    results,
-    isAllChecked,
-    selectedItems,
-    loading,
     toggleActive,
     reshuffleResults,
   } = NotificationTemplateStore()
@@ -167,6 +168,13 @@ const NotificationTemplates: React.FC = () => {
                   </div> */}
           </div>
         </div>
+      </div>
+      <div className="card_body sharp">
+        <LinkedPagination
+          url="/admin/company/notification-templates"
+          count={count}
+          page_size={20}
+        />
       </div>
     </>
   )

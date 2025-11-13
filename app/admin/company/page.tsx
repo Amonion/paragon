@@ -265,9 +265,9 @@ const CreateCompany: React.FC = () => {
               <Link href="/admin/company/staffs" className="custom_btn ml-auto">
                 Staff Table
               </Link>
-              <Link href="/admin/company/barcode" className="custom_btn ml-2">
+              {/* <Link href="/admin/company/barcode" className="custom_btn ml-2">
                 Bar Code
-              </Link>
+              </Link> */}
             </>
           )}
         </div>
