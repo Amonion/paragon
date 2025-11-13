@@ -43,7 +43,7 @@ const Emails: React.FC = () => {
     const params = `?page_size=${page_size}&page=${
       page ? page : 1
     }&ordering=${sort}`
-    await deleteItem(`${url}${id}/${params}`, url, setMessage)
+    await deleteItem(`${url}${id}/${params}`, setMessage)
   }
 
   const DeleteItems = async () => {

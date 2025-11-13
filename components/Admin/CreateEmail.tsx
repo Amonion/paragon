@@ -7,24 +7,24 @@ import { MessageStore } from '@/src/zustand/notification/Message'
 import EmailStore from '@/src/zustand/notification/Email'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 import QuillEditor from '@/components/Admin/QuillEditor'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 const CreateEmail: React.FC = () => {
   const url = '/emails/'
-  const [content, setContent] = useState<string>('')
   const { id } = useParams()
   const [name, setName] = useState('')
   const { setMessage } = MessageStore()
   const {
-    formData,
-    setForm,
-    getEmail,
+    emailForm,
     results,
     loading,
+    setForm,
+    getEmail,
     updateItem,
     postItem,
   } = EmailStore()
   const { user } = AuthStore()
+  const router = useRouter()
 
   useEffect(() => {
     const initialize = async () => {
@@ -32,7 +32,7 @@ const CreateEmail: React.FC = () => {
         setName(String(name))
         const existingItem = results.find((item) => item._id === String(id))
         if (existingItem) {
-          EmailStore.setState({ formData: existingItem })
+          EmailStore.setState({ emailForm: existingItem })
         } else {
           await getEmail(`${url}/${id}`, setMessage)
         }
@@ -46,11 +46,11 @@ const CreateEmail: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setForm(name as keyof typeof formData, value)
+    setForm(name as keyof typeof emailForm, value)
   }
 
   const handleFileChange =
-    (key: keyof typeof formData) =>
+    (key: keyof typeof emailForm) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files ? e.target.files[0] : null
       setForm(key, file)
@@ -60,37 +60,37 @@ const CreateEmail: React.FC = () => {
     const inputsToValidate = [
       {
         name: 'greetings',
-        value: formData.greetings,
+        value: emailForm.greetings,
         rules: { blank: false },
         field: 'Greetings field',
       },
       {
         name: 'content',
-        value: content,
+        value: emailForm.content,
         rules: { blank: false },
         field: 'Email Content field',
       },
       {
         name: 'picture',
-        value: formData.picture,
+        value: emailForm.picture,
         rules: { blank: false, maxSize: 3 },
         field: 'Email banner',
       },
       {
         name: 'title',
-        value: formData.title,
+        value: emailForm.title,
         rules: { blank: false, minLength: 3 },
         field: 'Email title field',
       },
       {
-        name: 'note',
-        value: formData.note,
+        name: 'sendable',
+        value: emailForm.sendable,
         rules: { blank: false },
         field: 'Email note field',
       },
       {
         name: 'name',
-        value: formData.name,
+        value: emailForm.name,
         rules: { blank: true, minLength: 3, maxLength: 1000 },
         field: 'Email name field',
       },
@@ -115,9 +115,9 @@ const CreateEmail: React.FC = () => {
     e.preventDefault()
     const data = appendForm(inputsToValidate)
     if (id) {
-      updateItem(`${url}${id}/`, data, setMessage)
+      updateItem(`${url}${id}/`, data, setMessage, () => router.back())
     } else {
-      await postItem(url, data, setMessage)
+      await postItem(url, data, setMessage, () => router.back())
     }
   }
 
@@ -136,7 +136,7 @@ const CreateEmail: React.FC = () => {
               <input
                 className="form-input"
                 name="name"
-                value={formData.name}
+                value={emailForm.name}
                 onChange={handleInputChange}
                 type="text"
                 placeholder="Enter email name"
@@ -150,7 +150,7 @@ const CreateEmail: React.FC = () => {
               <input
                 className="form-input"
                 name="name"
-                value={formData.name}
+                value={emailForm.name}
                 onChange={handleInputChange}
                 type="text"
                 placeholder="Enter email name"
@@ -165,7 +165,7 @@ const CreateEmail: React.FC = () => {
               className="form-input"
               type="text"
               name="title"
-              value={formData.title}
+              value={emailForm.title}
               onChange={handleInputChange}
               placeholder="Enter email title"
             />
@@ -178,7 +178,7 @@ const CreateEmail: React.FC = () => {
               className="form-input"
               type="text"
               name="greetings"
-              value={formData.greetings}
+              value={emailForm.greetings}
               onChange={handleInputChange}
               placeholder="Enter email greeting"
             />
@@ -187,20 +187,24 @@ const CreateEmail: React.FC = () => {
             <label className="label" htmlFor="">
               Email Note
             </label>
-            <input
-              className="form-input"
-              name="note"
-              value={formData.note}
-              onChange={handleInputChange}
-              type="text"
-              placeholder="Enter email note"
-            />
+            <div className="flex">
+              <div
+                onClick={() => setForm('sendable', !emailForm.sendable)}
+                className={`${
+                  emailForm.sendable
+                    ? 'bg-[var(--customRedColor)] text-white'
+                    : 'bg-[var(--secondary)]'
+                } px-3 py-2 cursor-pointer`}
+              >
+                Email Sendable
+              </div>
+            </div>
           </div>
         </div>
 
         <QuillEditor
-          contentValue={content}
-          onChange={(content) => setContent(content)}
+          contentValue={emailForm.content}
+          onChange={(content) => setForm('content', content)}
         />
 
         <div className="table_action">

@@ -9,9 +9,11 @@ import StaffSheet from '@/components/Admin/StaffSheet'
 import { formatMoney } from '@/lib/helpers'
 import Link from 'next/link'
 import _debounce from 'lodash/debounce'
+import EmailStore, { Email } from '@/src/zustand/notification/Email'
 
 const Users: React.FC = () => {
   const [page_size] = useState(20)
+  const [showEmail, setShowEmail] = useState(false)
   const [sort] = useState('-totalPurchase')
   const { setMessage } = MessageStore()
   const {
@@ -40,14 +42,27 @@ const Users: React.FC = () => {
   const params = `?page_size=${page_size}&page=${
     page ? page : 1
   }&ordering=${sort}&status=User`
+  const { getSocialEmails, sendUsersEmail, emailForm, socialEmails } =
+    EmailStore()
 
   useEffect(() => {
     reshuffleResults()
   }, [pathname])
 
   useEffect(() => {
-    getUsers(`${url}${params}`, setMessage)
+    if (users.length === 0) {
+      getUsers(`${url}${params}`, setMessage)
+    }
   }, [page])
+
+  useEffect(() => {
+    if (socialEmails.length === 0) {
+      getSocialEmails(
+        `/emails/?page_size=5&page=1&ordering=name&sendable=true`,
+        setMessage
+      )
+    }
+  }, [socialEmails.length, page])
 
   const handleSearch = _debounce(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,6 +77,11 @@ const Users: React.FC = () => {
     },
     1000
   )
+
+  const selectEmail = (email: Email) => {
+    EmailStore.setState({ emailForm: email })
+    setShowEmail(false)
+  }
 
   const deleteUserProfile = async (id: string, index: number) => {
     toggleActive(index)
@@ -80,11 +100,39 @@ const Users: React.FC = () => {
     )
   }
 
-  const deleteFaqs = async () => {
+  const startSendingUsersEmail = async () => {
+    if (selectedUsers.length === 0) {
+      setMessage('Please select at least one user to send email', false)
+      return
+    }
+
+    setAlert(
+      'Warning',
+      'Are you sure you want to delete the selected Users?',
+      true,
+      () =>
+        sendUsersEmail(
+          `/email/send/${emailForm._id}`,
+          { selectedUsers },
+          setMessage
+        )
+    )
+  }
+  const startDeleteUsers = async () => {
     if (selectedUsers.length === 0) {
       setMessage('Please select at least one item to delete', false)
       return
     }
+
+    setAlert(
+      'Warning',
+      'Are you sure you want to delete the selected Users?',
+      true,
+      () => deleteManyUsers()
+    )
+  }
+
+  const deleteManyUsers = async () => {
     const ids = selectedUsers.map((item) => item._id)
     await massDeleteUsers(`${url}/mass-delete`, { ids: ids }, setMessage)
   }
@@ -283,15 +331,34 @@ const Users: React.FC = () => {
                 }`}
               ></i>
             </div>
-            <div onClick={deleteFaqs} className="tableActions">
+            <div onClick={startDeleteUsers} className="tableActions">
               <i className="bi bi-trash"></i>
             </div>
-            {/* <div onClick={() => showForm(true)} className="tableActions">
-              <i className="bi bi-plus-circle"></i>
-            </div> */}
-            {/* <div onClick={updateExam} className="tableActions">
-              <i className="bi bi-table"></i>
-            </div> */}
+            <div onClick={startSendingUsersEmail} className="tableActions">
+              <i className="bi bi-envelope"></i>
+            </div>
+          </div>
+          <div className="ml-auto relative">
+            <div
+              onClick={() => setShowEmail(!showEmail)}
+              className="bg-[var(--secondary)] flex justify-between items-center px-3 py-2 cursor-pointer"
+            >
+              {emailForm.name ? emailForm.name : 'Select Email'}{' '}
+              <i className="bi bi-caret-down-fill ml-2"></i>
+            </div>
+            {showEmail && (
+              <div className="bg-[var(--secondary)] max-h-[250px] min-w-[250px] overflow-auto absolute top-[45px] right-0">
+                {socialEmails.map((item, index) => (
+                  <div
+                    key={index}
+                    onClick={() => selectEmail(item)}
+                    className="cursor-pointer px-3 py-2 border-b border-b-[var(--border)] w-full"
+                  >
+                    {item.name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

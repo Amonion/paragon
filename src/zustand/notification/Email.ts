@@ -9,19 +9,19 @@ export interface Email {
   title: string
   name: string
   content: string
-  note: string
+  sendable: boolean
   greetings: string
   isChecked?: boolean
   isActive?: boolean
 }
 
-export const Email = {
+export const EmailEmpty = {
   _id: '',
   picture: '',
   title: '',
   name: '',
   content: '',
-  note: '',
+  sendable: false,
   greetings: '',
 }
 
@@ -37,6 +37,7 @@ interface EmailsState {
   count: number
   page_size: number
   results: Email[]
+  socialEmails: Email[]
   loading: boolean
   error: string | null
   successs?: string | null
@@ -44,11 +45,20 @@ interface EmailsState {
   searchResult: Email[]
   searchedResults: Email[]
   isAllChecked: boolean
-  formData: Email
+  emailForm: Email
   setForm: (key: keyof Email, value: Email[keyof Email]) => void
   resetForm: () => void
   getItems: (
     url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  getSocialEmails: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  sendUsersEmail: (
+    url: string,
+    updatedItem: FormData | Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   getEmail: (
@@ -64,7 +74,6 @@ interface EmailsState {
   ) => Promise<void>
   deleteItem: (
     url: string,
-    refreshUrl: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   updateItem: (
@@ -91,39 +100,25 @@ const EmailStore = create<EmailsState>((set) => ({
   count: 0,
   page_size: 0,
   results: [],
+  socialEmails: [],
   loading: false,
   error: null,
   selectedItems: [],
   searchResult: [],
   searchedResults: [],
   isAllChecked: false,
-  formData: {
-    _id: '',
-    content: '',
-    greetings: '',
-    note: '',
-    title: '',
-    name: '',
-    picture: null,
-  },
+  emailForm: EmailEmpty,
   setForm: (key, value) =>
     set((state) => ({
-      formData: {
-        ...state.formData,
+      emailForm: {
+        ...state.emailForm,
         [key]: value,
       },
     })),
+
   resetForm: () =>
     set({
-      formData: {
-        _id: '',
-        content: '',
-        greetings: '',
-        note: '',
-        title: '',
-        name: '',
-        picture: null,
-      },
+      emailForm: EmailEmpty,
     }),
 
   setLoading: (loadState: boolean) => {
@@ -144,6 +139,38 @@ const EmailStore = create<EmailsState>((set) => ({
         page_size,
         results: updatedResults,
       })
+    }
+  },
+
+  sendUsersEmail: async (url, updatedItem, setMessage) => {
+    try {
+      const response = await apiRequest<FetchEmailResponse>(url, {
+        method: 'PATCH',
+        body: updatedItem,
+        setMessage,
+        setLoading: EmailStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ socialEmails: data.results })
+      }
+    } catch (error: unknown) {
+      console.error('Failed to fetch staff:', error)
+    }
+  },
+
+  getSocialEmails: async (url, setMessage) => {
+    try {
+      const response = await apiRequest<FetchEmailResponse>(url, {
+        setMessage,
+        setLoading: EmailStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ socialEmails: data.results })
+      }
+    } catch (error: unknown) {
+      console.error('Failed to fetch staff:', error)
     }
   },
 
@@ -168,6 +195,7 @@ const EmailStore = create<EmailsState>((set) => ({
       }
     }
   },
+
   getEmail: async (url, setMessage) => {
     try {
       const response = await apiRequest<FetchEmailResponse>(url, {
@@ -239,7 +267,6 @@ const EmailStore = create<EmailsState>((set) => ({
 
   deleteItem: async (
     url: string,
-    refreshUrl: string,
     setMessage: (message: string, isError: boolean) => void
   ) => {
     set({
