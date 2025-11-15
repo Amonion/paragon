@@ -11,9 +11,8 @@ import {
 } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
 import TransactionStore, { TransactionEmpty } from '@/src/zustand/Transaction'
-import ProductStore from '@/src/zustand/Product'
 
-const ProductStocking: React.FC = () => {
+const Transactions: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
@@ -23,27 +22,25 @@ const ProductStocking: React.FC = () => {
     count,
     transactions,
     transactionForm,
+    updatePartPayment,
     setTransactionForm,
-    setPartPayment,
     updateTransaction,
     getTransactions,
   } = TransactionStore()
-  const { createTransaction } = ProductStore()
   const { page } = useParams()
   const defaultFrom = () => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
     return d
   }
-
   const defaultTo = () => {
     const d = new Date()
     d.setHours(23, 59, 59, 999)
     return d
   }
-
   const [fromDate, setFromDate] = useState<Date>(defaultFrom)
   const [toDate, setToDate] = useState<Date>(defaultTo)
+  const [partPayment, setPartPayment] = useState(0)
   const url = `/transactions?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
@@ -66,23 +63,15 @@ const ProductStocking: React.FC = () => {
   const handleSubmit = async (e: string) => {
     const form = new FormData()
     form.append('username', transactionForm.username)
-    form.append('fullName', transactionForm.fullName)
-    form.append(
-      'picture',
-      transactionForm.picture ? transactionForm.picture : ''
-    )
-    form.append('cartProducts', JSON.stringify(transactionForm.cartProducts))
-    form.append('partPayment', JSON.stringify(transactionForm.partPayment))
+    form.append('partPayment', JSON.stringify(partPayment))
     form.append('totalAmount', String(transactionForm.totalAmount))
     form.append('payment', String(e))
-    form.append('isProfit', String(true))
-    form.append(
-      'status',
-      String(transactionForm.partPayment > 0 ? false : true)
-    )
-
-    createTransaction(
-      `/transactions?ordering=${sort}&isBuyable=${false}`,
+    updatePartPayment(
+      `/transactions/part-payment/${
+        transactionForm._id
+      }/?ordering=${sort}&page=${
+        page ? page : 1
+      }&dateFrom=${fromDate}&dateTo=${toDate}`,
       form,
       setMessage,
       () => {
@@ -289,8 +278,11 @@ const ProductStocking: React.FC = () => {
               <div className="text-lg text-[var(--customRedColor)] mr-3">
                 Part Payment
               </div>
+              <div className="text-lg text-[var(--customRedColor)] mr-3">
+                ₦{formatMoney(transactionForm.partPayment)}
+              </div>
               <input
-                value={transactionForm.partPayment}
+                value={partPayment}
                 onChange={(e) => {
                   const value = Number(e.target.value)
                   if (
@@ -337,4 +329,4 @@ const ProductStocking: React.FC = () => {
   )
 }
 
-export default ProductStocking
+export default Transactions

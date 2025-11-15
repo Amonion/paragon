@@ -247,7 +247,10 @@ export default function VerticalNavigation() {
                 Purchase Products
               </Link>
 
-              <Link className="inner_nav_items" href="/admin/expenses">
+              <Link
+                className="inner_nav_items"
+                href="/admin/activities/expenses"
+              >
                 Expenses
               </Link>
             </div>

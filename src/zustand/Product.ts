@@ -4,7 +4,7 @@ import apiRequest from '@/lib/axios'
 import TransactionStore, { Transaction } from './Transaction'
 import NotificationStore, { Notification } from './notification/Notification'
 
-interface NotificationResult {
+export interface NotificationResult {
   notification: Notification
   unread: number
 }

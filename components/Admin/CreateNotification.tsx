@@ -9,7 +9,7 @@ import { useParams, useRouter } from 'next/navigation'
 import NotificationTemplateStore from '@/src/zustand/notification/NotificationTemplate'
 
 const CreateNotification: React.FC = () => {
-  const url = '/emails/templates'
+  const url = '/notifications/templates'
   const { id } = useParams()
   const [name, setName] = useState('')
   const { setMessage } = MessageStore()
@@ -88,7 +88,7 @@ const CreateNotification: React.FC = () => {
     e.preventDefault()
     const data = appendForm(inputsToValidate)
     if (id) {
-      updateItem(`${url}${id}/`, data, setMessage, () => router.back())
+      updateItem(`${url}/${id}`, data, setMessage, () => router.back())
     } else {
       await postItem(url, data, setMessage, () => router.back())
     }

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import apiRequest from '@/lib/axios'
-import { Product } from './Product'
+import { NotificationResult, Product } from './Product'
+import NotificationStore from './notification/Notification'
 
 export interface Bar {
   totalSales: number
@@ -63,9 +64,11 @@ interface FetchResponse {
   message: string
   page_size: number
   results: Transaction[]
+  transaction: Transaction
   bars: Bar[]
   result: FetchResponse
   totals: Totals
+  notificationResult: NotificationResult
   summary: { totalLoss: number; totalProfit: number }
 }
 
@@ -92,7 +95,14 @@ interface TransactionState {
   updateTransaction: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
-    setMessage: (message: string, isError: boolean) => void
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
+  ) => Promise<void>
+  updatePartPayment: (
+    url: string,
+    updatedItem: FormData | Record<string, unknown>,
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
   ) => Promise<void>
   getTransactions: (
     url: string,
@@ -215,6 +225,7 @@ const TransactionStore = create<TransactionState>((set) => ({
       console.log(error)
     }
   },
+
   getTransactions: async (url: string, setMessage) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
@@ -231,7 +242,39 @@ const TransactionStore = create<TransactionState>((set) => ({
     }
   },
 
-  updateTransaction: async (url, body, setMessage) => {
+  updatePartPayment: async (url, body, setMessage, redirect) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        method: 'PATCH',
+        body,
+        setMessage,
+      })
+      const data = response?.data
+      if (data) {
+        if (data.transaction) {
+          TransactionStore.getState().setProcessedResults(data.result)
+        }
+        if (data.notificationResult) {
+          NotificationStore.setState((prev) => {
+            return {
+              unread: data.notificationResult.unread,
+              notifications: [
+                data.notificationResult.notification,
+                ...prev.notifications,
+              ],
+            }
+          })
+        }
+      }
+      if (redirect) {
+        redirect()
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  updateTransaction: async (url, body, setMessage, redirect) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
         method: 'PATCH',
@@ -242,10 +285,12 @@ const TransactionStore = create<TransactionState>((set) => ({
       if (data) {
         TransactionStore.getState().setProcessedResults(data.result)
       }
+      if (redirect) redirect()
     } catch (error: unknown) {
       console.log(error)
     }
   },
+
   createTransaction: async (url, body, setMessage, redirect) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
