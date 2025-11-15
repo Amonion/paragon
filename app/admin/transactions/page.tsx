@@ -1,36 +1,35 @@
 'use client'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { useParams, usePathname } from 'next/navigation'
-import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
+import { useParams } from 'next/navigation'
+import { MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import StockingStore from '@/src/zustand/Stocking'
 import {
   formatDateToDDMMYY,
   formatMoney,
   formatTimeTo12Hour,
 } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
-import TransactionStore from '@/src/zustand/Transaction'
-import StockingForm from '@/components/Admin/Products/StockingForm'
+import TransactionStore, { TransactionEmpty } from '@/src/zustand/Transaction'
+import ProductStore from '@/src/zustand/Product'
 
 const ProductStocking: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
-  const { showStocking, deleteItem, reshuffleResults, toggleActive } =
-    StockingStore()
   const {
     summary,
     loading,
     count,
     transactions,
+    transactionForm,
+    setTransactionForm,
+    setPartPayment,
     updateTransaction,
     getTransactions,
   } = TransactionStore()
-  const pathname = usePathname()
+  const { createTransaction } = ProductStore()
   const { page } = useParams()
-  const { setAlert } = AlartStore()
   const defaultFrom = () => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
@@ -46,10 +45,6 @@ const ProductStocking: React.FC = () => {
   const [fromDate, setFromDate] = useState<Date>(defaultFrom)
   const [toDate, setToDate] = useState<Date>(defaultTo)
   const url = `/transactions?dateFrom=${fromDate}&dateTo=${toDate}`
-
-  useEffect(() => {
-    reshuffleResults()
-  }, [pathname])
 
   useEffect(() => {
     if (fromDate && toDate) {
@@ -68,20 +63,31 @@ const ProductStocking: React.FC = () => {
     )
   }
 
-  const deleteProductStock = async (id: string, index: number) => {
-    toggleActive(index)
-    const params = `?page_size=${page_size}&page=${
-      page ? page : 1
-    }&ordering=${sort}`
-    await deleteItem(`/products/stocking/${id}/${params}`, setMessage)
-  }
+  const handleSubmit = async (e: string) => {
+    const form = new FormData()
+    form.append('username', transactionForm.username)
+    form.append('fullName', transactionForm.fullName)
+    form.append(
+      'picture',
+      transactionForm.picture ? transactionForm.picture : ''
+    )
+    form.append('cartProducts', JSON.stringify(transactionForm.cartProducts))
+    form.append('partPayment', JSON.stringify(transactionForm.partPayment))
+    form.append('totalAmount', String(transactionForm.totalAmount))
+    form.append('payment', String(e))
+    form.append('isProfit', String(true))
+    form.append(
+      'status',
+      String(transactionForm.partPayment > 0 ? false : true)
+    )
 
-  const startDelete = (id: string, index: number) => {
-    setAlert(
-      'Warning',
-      'Are you sure you want to delete this Product Stocking?',
-      true,
-      () => deleteProductStock(id, index)
+    createTransaction(
+      `/transactions?ordering=${sort}&isBuyable=${false}`,
+      form,
+      setMessage,
+      () => {
+        setTransactionForm(TransactionEmpty)
+      }
     )
   }
 
@@ -101,8 +107,8 @@ const ProductStocking: React.FC = () => {
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
-                <th>Picture</th>
                 <th>Customer</th>
+                <th>Products</th>
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Time</th>
@@ -119,50 +125,16 @@ const ProductStocking: React.FC = () => {
                       {(page ? Number(page) - 1 : 1 - 1) * page_size +
                         index +
                         1}
-                      <i
-                        onClick={() => toggleActive(index)}
-                        className="bi bi-three-dots-vertical text-lg cursor-pointer"
-                      ></i>
-                    </div>
-                    {item.isActive && (
-                      <div className="card_list">
-                        <span
-                          onClick={() => toggleActive(index)}
-                          className="more_close "
-                        >
-                          X
-                        </span>
-
-                        <div
-                          className="card_list_item"
-                          onClick={() => startDelete(item._id, index)}
-                        >
-                          Delete Record
-                        </div>
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full">
-                      <Image
-                        alt={`email of ${item.picture}`}
-                        src={
-                          item.picture
-                            ? String(item.picture)
-                            : '/images/avatar.jpg'
-                        }
-                        width={0}
-                        sizes="100vw"
-                        height={0}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
                     </div>
                   </td>
                   <td>{item.fullName}</td>
+                  <td>
+                    {item.cartProducts.map((p, i) => (
+                      <div key={i} className="flex text-sm">
+                        {p.cartUnits} {p.purchaseUnit} of {p.name}
+                      </div>
+                    ))}
+                  </td>
                   <td
                     className={`${
                       item.isProfit
@@ -174,16 +146,25 @@ const ProductStocking: React.FC = () => {
                   </td>
                   <td>
                     <div className="flex">
-                      <div
-                        onClick={() => updateTrnx(item.status, item._id)}
-                        className={`${
-                          item.status
-                            ? 'bg-[var(--success)]'
-                            : 'bg-[var(--customRedColor)]'
-                        } px-2 cursor-pointer py-1  text-white`}
-                      >
-                        {item.status ? 'Paid' : 'Pending'}
-                      </div>
+                      {!item.status && item.partPayment ? (
+                        <div
+                          onClick={() => setTransactionForm(item)}
+                          className={`bg-[var(--customRedColor)] px-2 cursor-pointer py-1  text-white`}
+                        >
+                          {item.status ? 'Paid' : 'Pending'}
+                        </div>
+                      ) : (
+                        <div
+                          onClick={() => updateTrnx(item.status, item._id)}
+                          className={`${
+                            item.status
+                              ? 'bg-[var(--success)]'
+                              : 'bg-[var(--customRedColor)]'
+                          } px-2 cursor-pointer py-1  text-white`}
+                        >
+                          {item.status ? 'Paid' : 'Pending'}
+                        </div>
+                      )}
                     </div>
                   </td>
 
@@ -236,7 +217,122 @@ const ProductStocking: React.FC = () => {
         />
       </div>
 
-      {showStocking && <StockingForm />}
+      {transactionForm._id && (
+        <div
+          onClick={() => setTransactionForm(TransactionEmpty)}
+          className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+            className="card_body sharp w-full max-w-[600px]"
+          >
+            <div className="overflow-auto max-h-[80vh]">
+              {transactionForm.cartProducts.map((item, index) => (
+                <div key={index} className="card_body sharp mb-1">
+                  <div className="">
+                    <div className="flex flex-wrap sm:flex-nowrap relative items-start mb-3">
+                      <div className="flex items-center mr-3">{index + 1}</div>
+                      <div className="relative w-[70px] h-[50px] mb-3 sm:mb-0 overflow-hidden rounded-[5px] sm:mr-3">
+                        {item.picture ? (
+                          <Image
+                            alt={`email of ${item.picture}`}
+                            src={String(item.picture)}
+                            width={0}
+                            sizes="100vw"
+                            height={0}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        ) : (
+                          <span>N/A</span>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-start w-full sm:w-auto">
+                        <div className="text-[var(--text-secondary)] mb-1">
+                          {item.name}
+                        </div>{' '}
+                        <div className="flex text-sm">
+                          <div className="flex mr-3">
+                            Qty:
+                            <span className="text-[var(--text-secondary)] ml-1">
+                              {item.cartUnits}
+                            </span>
+                          </div>
+                          <div className="flex">
+                            Price:
+                            <span className="text-[var(--text-secondary)] ml-1">
+                              ₦{formatMoney(item.price)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex">
+                      <div className="flex mr-3">
+                        Price:
+                        <span className="text-[var(--text-secondary)] ml-1">
+                          ₦{formatMoney(item.price * item.cartUnits)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-end mb-2">
+              <div className="text-lg text-[var(--customRedColor)] mr-3">
+                Part Payment
+              </div>
+              <input
+                value={transactionForm.partPayment}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  if (
+                    isNaN(value) ||
+                    value < 0 ||
+                    value > transactionForm.totalAmount
+                  )
+                    return
+                  setPartPayment(value)
+                }}
+                placeholder="Part payment"
+                className="bg-[var(--secondary)] max-w-[150px] p-1 outline-none border border-[var(--border)]"
+                type="number"
+              />
+            </div>
+
+            <div className="bg-[var(--secondary)] p-3 flex items-center flex-wrap">
+              <div className="mr-auto text-[var(--customRedColor)]">
+                ₦{formatMoney(transactionForm.totalAmount)}
+              </div>
+              <div
+                onClick={() => handleSubmit('Transfer')}
+                className="px-2 cursor-pointer py-1 bg-[var(--success)] text-[var(--text-secondary)] mr-3"
+              >
+                Transfer
+              </div>
+              <div
+                onClick={() => handleSubmit('Cash')}
+                className="px-3 cursor-pointer py-1 bg-[var(--customRedColor)] text-[var(--text-secondary)] mr-3"
+              >
+                Cash
+              </div>
+              <div
+                onClick={() => handleSubmit('POS')}
+                className="px-3 cursor-pointer py-1 bg-[var(--customColor)] text-[var(--text-secondary)] mr-3"
+              >
+                POS
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

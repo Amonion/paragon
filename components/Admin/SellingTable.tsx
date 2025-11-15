@@ -72,7 +72,7 @@ const SellingTable: React.FC = () => {
     const form = new FormData()
     form.append('username', userForm.username)
     form.append('fullName', userForm.fullName)
-    form.append('picture', userForm.picture)
+    form.append('picture', userForm.picture ? userForm.picture : '')
     form.append('cartProducts', JSON.stringify(cartProducts))
     form.append('partPayment', JSON.stringify(partPayment))
     form.append('totalAmount', String(totalAmount))

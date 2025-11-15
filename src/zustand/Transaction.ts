@@ -30,10 +30,12 @@ export interface Transaction {
   _id: string
   totalAmount: number
   payment: string
+  partPayment: number
   total: number
-  products: Product[]
+  cartProducts: Product[]
   picture: string
   fullName: string
+  username: string
   status: boolean
   isProfit: boolean
   createdAt: Date | null
@@ -45,10 +47,12 @@ export const TransactionEmpty = {
   _id: '',
   totalAmount: 0,
   payment: '',
+  partPayment: 0,
   picture: '',
   total: 0,
-  products: [],
+  cartProducts: [],
   createdAt: null,
+  username: '',
   fullName: '',
   status: false,
   isProfit: false,
@@ -104,6 +108,8 @@ interface TransactionState {
   setFromDate: (date: Date) => void
   setToDate: (date: Date) => void
   setPeriod: () => void
+  setTransactionForm: (data: Transaction) => void
+  setPartPayment: (value: number) => void
   setLoading?: (loading: boolean) => void
 }
 
@@ -134,6 +140,16 @@ const TransactionStore = create<TransactionState>((set) => ({
     set({ fromDate: date, period: '' })
   },
 
+  setPartPayment: (value) => {
+    set((prev) => {
+      return {
+        transactionForm: { ...prev.transactionForm, partPayment: value },
+      }
+    })
+  },
+  setTransactionForm: (data) => {
+    set({ transactionForm: data })
+  },
   setToDate: (date: Date) => {
     set({ toDate: date, period: '' })
   },

@@ -2,22 +2,38 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { NavStore } from '@/src/zustand/notification/Navigation'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
+import NotificationStore from '@/src/zustand/notification/Notification'
+import { MessageStore } from '@/src/zustand/notification/Message'
 
 export default function MainHeader() {
   const { toggleVNav, setHeaderHeight } = NavStore()
+  const { page_size, notifications, getNotifications } = NotificationStore()
+  const { unread } = NotificationStore()
+  const [sort] = useState('-createdAt')
+  const { setMessage } = MessageStore()
   const [showHeader, setShowHeader] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isOutOfView, setIsOutOfView] = useState(false)
   const divRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const pathname = usePathname()
+  const { page } = useParams()
 
   useEffect(() => {
     if (divRef.current) {
       setHeaderHeight(divRef.current.offsetHeight)
     }
   }, [])
+
+  useEffect(() => {
+    if (notifications.length === 0) {
+      const params = `?page_size=${page_size}&page=${
+        page ? page : 1
+      }&ordering=${sort}`
+      getNotifications(`/notifications/${params}`, setMessage)
+    }
+  }, [page])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,12 +93,12 @@ export default function MainHeader() {
             />
           </Link>
 
-          <Link href="/home/notifications" className="headerCircle">
-            {/* {unread > 0 && (
+          <Link href="/admin/notifications" className="headerCircle">
+            {unread > 0 && (
               <span className="dot_notification">
                 {unread > 9 ? '9+' : unread}
               </span>
-            )} */}
+            )}
             <i className="bi bi-bell common-icon"></i>
           </Link>
         </div>

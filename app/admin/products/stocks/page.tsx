@@ -39,7 +39,7 @@ const Stocks: React.FC = () => {
                 <th>Picture</th>
                 <th>Product</th>
                 <th>Units</th>
-                <th>Purchase Units</th>
+                <th>Sales Units</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -82,7 +82,27 @@ const Stocks: React.FC = () => {
                     {Math.floor(item.units / item.unitPerPurchase)}{' '}
                     {item.purchaseUnit}
                   </td>
-                  <td>{item.units}</td>
+                  <td>
+                    <div className="flex">
+                      {Math.floor(item.units / item.unitPerPurchase) >= 10 ? (
+                        <div className="px-3 py-1 bg-[var(--success)] text-white">
+                          Enough
+                        </div>
+                      ) : Math.floor(item.units / item.unitPerPurchase) >= 5 ? (
+                        <div className="px-3 py-1 bg-[var(--warning)] text-white">
+                          Warning
+                        </div>
+                      ) : Math.floor(item.units / item.unitPerPurchase) >= 1 ? (
+                        <div className="px-3 py-1 bg-[var(--customRedColor)] text-white">
+                          Danger
+                        </div>
+                      ) : (
+                        <div className="px-3 py-1 bg-[var(--secondary)] text-[var(--customRedColor)]">
+                          Finished
+                        </div>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

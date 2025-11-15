@@ -1,6 +1,13 @@
 import { create } from 'zustand'
 import _debounce from 'lodash/debounce'
 import apiRequest from '@/lib/axios'
+import TransactionStore, { Transaction } from './Transaction'
+import NotificationStore, { Notification } from './notification/Notification'
+
+interface NotificationResult {
+  notification: Notification
+  unread: number
+}
 
 interface FetchResponse {
   message: string
@@ -9,6 +16,8 @@ interface FetchResponse {
   results: Product[]
   data: Product
   result: FetchResponse
+  transaction: Transaction
+  notificationResult: NotificationResult
 }
 
 export interface Cart {
@@ -587,6 +596,24 @@ const ProductStore = create<ProductState>((set) => ({
       const data = response?.data
       if (data) {
         ProductStore.getState().setProcessedResults(data.result)
+        if (data.transaction) {
+          TransactionStore.setState((prev) => {
+            return {
+              transactions: [data.transaction, ...prev.transactions],
+            }
+          })
+        }
+        if (data.notificationResult) {
+          NotificationStore.setState((prev) => {
+            return {
+              unread: data.notificationResult.unread,
+              notifications: [
+                data.notificationResult.notification,
+                ...prev.notifications,
+              ],
+            }
+          })
+        }
       }
       if (redirect) {
         redirect()
