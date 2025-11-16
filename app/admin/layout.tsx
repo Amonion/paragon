@@ -10,6 +10,17 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import VerticalNavigation from '@/components/Admin/VerticalNavigation'
 import MainHeader from '@/components/Admin/MainHeader'
+import useSocket from '@/src/useSocket'
+import TransactionStore, { Transaction } from '@/src/zustand/Transaction'
+import NotificationStore, {
+  Notification,
+} from '@/src/zustand/notification/Notification'
+
+interface NotificationResponse {
+  notification: Notification
+  transaction: Transaction
+  unread: number
+}
 
 export default function RootLayout({
   children,
@@ -21,6 +32,7 @@ export default function RootLayout({
   const { headerHeight } = NavStore()
   const [isMd, setIsMd] = useState(false)
   const pathname = usePathname()
+  const socket = useSocket()
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 990px)')
@@ -32,6 +44,25 @@ export default function RootLayout({
     return () => media.removeEventListener('change', handler)
   }, [pathname])
 
+  useEffect(() => {
+    if (!socket) return
+    socket.on(`admin`, (data: NotificationResponse) => {
+      TransactionStore.setState((prev) => {
+        return {
+          transactions: [data.transaction, ...prev.transactions],
+        }
+      })
+      NotificationStore.setState((prev) => {
+        return {
+          notifications: [data.notification, ...prev.notifications],
+          unread: data.unread,
+        }
+      })
+    })
+    return () => {
+      socket.off(`admin`)
+    }
+  }, [socket])
   return (
     <>
       {message !== null && <Response />}

@@ -43,7 +43,7 @@ function CheckOut() {
     form.append('picture', user.picture)
     form.append('cartProducts', JSON.stringify(cartProducts))
     form.append('partPayment', JSON.stringify(0))
-
+    form.append('from', 'User')
     form.append('totalAmount', String(totalAmount))
     if (receipt) {
       form.append('receipt', receipt)

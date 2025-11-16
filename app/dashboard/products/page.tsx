@@ -90,6 +90,7 @@ const Products: React.FC = () => {
     }
     form.append('payment', String(e))
     form.append('isProfit', String(true))
+    form.append('from', 'User')
     form.append('status', String(partPayment > 0 ? false : true))
 
     createTransaction(
