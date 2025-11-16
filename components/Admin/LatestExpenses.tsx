@@ -1,17 +1,17 @@
 'use client'
 import Image from 'next/image'
-import TransactionStore from '@/src/zustand/Transaction'
 import { formatMoney, formatTimeTo12Hour } from '@/lib/helpers'
+import ExpenseStore from '@/src/zustand/Expenses'
 
 export default function LatestExpenses() {
-  const { latest } = TransactionStore()
+  const { latestExpenses } = ExpenseStore()
 
   return (
     <div className="card_body w-full min-w-[300px] flex-1 sm:mr-4 mb-2 sm:mb-0 p-4 sharp overflow-x-auto">
       <h2 className="mb-2 text-lg font-semibold">Latest Expenses</h2>
 
       <div className="overflow-auto w-full mb-5">
-        {latest.length > 0 ? (
+        {latestExpenses.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--secondary)] p-2">
@@ -22,7 +22,7 @@ export default function LatestExpenses() {
               </tr>
             </thead>
             <tbody>
-              {latest.slice(0, 5).map((item, index) => (
+              {latestExpenses.slice(0, 5).map((item, index) => (
                 <tr
                   key={index}
                   className={`text-[12px] ${
@@ -35,17 +35,11 @@ export default function LatestExpenses() {
 
                   <td>
                     <div className="line-clamp-1 overflow-ellipsis">
-                      {item.fullName}
+                      {item.staffName}
                     </div>
                   </td>
-                  <td
-                    className={`${
-                      item.isProfit
-                        ? 'text-[var(--success)]'
-                        : 'text-[var(--customRedColor)]'
-                    }`}
-                  >
-                    ₦{formatMoney(item.totalAmount)}
+                  <td className={`text-[var(--customRedColor)]`}>
+                    ₦{formatMoney(item.amount)}
                   </td>
 
                   <td>{formatTimeTo12Hour(item.createdAt)}</td>

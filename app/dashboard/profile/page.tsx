@@ -3,7 +3,7 @@ import UserReview from '@/components/Dashboard/UserReview'
 import PictureDisplay from '@/components/PictureDisplay'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 
-const Dashboard: React.FC = () => {
+const Profile: React.FC = () => {
   const { user } = AuthStore()
 
   return (
@@ -51,4 +51,4 @@ const Dashboard: React.FC = () => {
   )
 }
 
-export default Dashboard
+export default Profile

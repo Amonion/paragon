@@ -7,7 +7,7 @@ import PictureDisplay from '@/components/PictureDisplay'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 import RatingStore from '@/src/zustand/Rating'
 
-const BasicSettings: React.FC = () => {
+const UserReview: React.FC = () => {
   const url = '/reviews'
   const { ratingForm, setForm, loading, getRating, updateRating } =
     RatingStore()
@@ -162,4 +162,4 @@ const BasicSettings: React.FC = () => {
   )
 }
 
-export default BasicSettings
+export default UserReview

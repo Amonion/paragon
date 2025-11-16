@@ -5,10 +5,12 @@ import { NavStore } from '@/src/zustand/notification/Navigation'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import NotificationStore from '@/src/zustand/notification/Notification'
 import { MessageStore } from '@/src/zustand/notification/Message'
+import ExpenseStore from '@/src/zustand/Expenses'
 
 export default function MainHeader() {
   const { toggleVNav, setHeaderHeight } = NavStore()
   const { page_size, notifications, getNotifications } = NotificationStore()
+  const { latestExpenses, getLatestExpenses } = ExpenseStore()
   const { unread } = NotificationStore()
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
@@ -23,6 +25,12 @@ export default function MainHeader() {
   useEffect(() => {
     if (divRef.current) {
       setHeaderHeight(divRef.current.offsetHeight)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (latestExpenses.length === 0) {
+      getLatestExpenses(`/expenses?page_size=5&ordering=-createdAt`)
     }
   }, [])
 

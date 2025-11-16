@@ -6,13 +6,12 @@ import { useSwipeable } from 'react-swipeable'
 import { NavStore } from '@/src/zustand/notification/Navigation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 import {
-  Gauge, // Dashboard
-  User, // Profile
-  MessageCircle,
+  Gauge,
+  User,
   ArrowLeftRight,
   Boxes,
   Settings,
-  Bell, // Comments
+  Bell,
 } from 'lucide-react'
 import ThemeToggle from '../Admin/ThemeToggle'
 
@@ -115,13 +114,13 @@ export default function DashboardNavigation() {
             <Boxes className="mr-3 w-5 h-5" />
             Products
           </Link>
-          <Link
+          {/* <Link
             className="v_nav_items hover:text-[var(--customColor)] flex items-center"
             href="/dashboard/review"
           >
             <MessageCircle className="mr-3 w-5 h-5" />
             Make Review
-          </Link>
+          </Link> */}
 
           <Link
             className="v_nav_items hover:text-[var(--customColor)] flex items-center"
