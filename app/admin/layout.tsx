@@ -3,6 +3,7 @@ import '../../styles/team/team.css'
 import '../../styles/users/main.css'
 import '../../styles/utility.css'
 import Response from '../../components/Messages/Response'
+import { playPopSound } from '@/lib/sound'
 import UserAlert from '@/components/Messages/UserAlert'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import { NavStore } from '@/src/zustand/notification/Navigation'
@@ -27,7 +28,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // const { display } = uploadStore()
+  const { transactions, isNotification } = TransactionStore()
   const { message } = MessageStore()
   const { headerHeight } = NavStore()
   const [isMd, setIsMd] = useState(false)
@@ -43,6 +44,30 @@ export default function RootLayout({
 
     return () => media.removeEventListener('change', handler)
   }, [pathname])
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+
+    const shouldRing =
+      pathname !== '/admin/transactions' &&
+      transactions.some((item) => item.status === false) &&
+      !isNotification
+
+    if (shouldRing) {
+      interval = setInterval(() => {
+        playPopSound()
+      }, 5000)
+    } else {
+      // Optional: turn off notification flag when on the transaction page
+      if (pathname === '/admin/transactions') {
+        TransactionStore.setState({ isNotification: false })
+      }
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [pathname, transactions, isNotification])
 
   useEffect(() => {
     if (!socket) return

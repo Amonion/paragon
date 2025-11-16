@@ -76,6 +76,7 @@ interface FetchResponse {
 
 interface TransactionState {
   loading: boolean
+  isNotification: boolean
   page_size: number
   bars: Bar[]
   totals: Totals
@@ -127,6 +128,7 @@ interface TransactionState {
 
 const TransactionStore = create<TransactionState>((set) => ({
   loading: false,
+  isNotification: false,
   count: 0,
   page_size: 0,
   bars: [],
