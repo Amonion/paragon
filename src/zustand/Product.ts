@@ -588,6 +588,8 @@ const ProductStore = create<ProductState>((set) => ({
 
   createTransaction: async (url, body, setMessage, redirect) => {
     try {
+      set({ loading: true })
+
       const response = await apiRequest<FetchResponse>(url, {
         method: 'POST',
         body,
@@ -621,6 +623,8 @@ const ProductStore = create<ProductState>((set) => ({
       }
     } catch (error: unknown) {
       console.log(error)
+    } finally {
+      set({ loading: false })
     }
   },
 

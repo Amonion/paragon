@@ -33,7 +33,7 @@ function CheckOut() {
 
   const handleSubmit = async (e: string) => {
     if (!user) {
-      setMessage('Please select a customer to continue.', false)
+      setMessage('Please login to your account to continue.', false)
       return
     }
 
@@ -42,6 +42,8 @@ function CheckOut() {
     form.append('fullName', user.fullName)
     form.append('picture', user.picture)
     form.append('cartProducts', JSON.stringify(cartProducts))
+    form.append('partPayment', JSON.stringify(0))
+
     form.append('totalAmount', String(totalAmount))
     if (receipt) {
       form.append('receipt', receipt)
@@ -51,7 +53,7 @@ function CheckOut() {
     form.append('status', String(false))
 
     createTransaction(
-      `/transactions?ordering=-createdAt&isBuyable=${false}`,
+      `/transactions?ordering=-createdAt&isBuyable=false`,
       form,
       setMessage,
       () => {
@@ -140,19 +142,25 @@ function CheckOut() {
               </div>
             </div>
             {user && cartProducts.length > 0 ? (
-              <div className="flex">
-                <div
-                  className="text-[20px] cursor-pointer mx-2 text-white bg-[var(--success)] rounded py-[10px] px-[30px]"
-                  onClick={() => setShowCart(true)}
-                >
-                  Transfer
-                </div>
-                <div
-                  className="text-[20px] cursor-pointer mx-2 text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
-                  onClick={() => handleSubmit('Cash')}
-                >
-                  Pay Cash
-                </div>
+              <div className="flex items-center">
+                {loading ? (
+                  <Spinner size={30} />
+                ) : (
+                  <>
+                    <div
+                      className="text-[20px] cursor-pointer mx-2 text-white bg-[var(--success)] rounded py-[10px] px-[30px]"
+                      onClick={() => setShowCart(true)}
+                    >
+                      Transfer
+                    </div>
+                    <div
+                      className="text-[20px] cursor-pointer mx-2 text-white bg-[var(--customColor)] rounded py-[10px] px-[30px]"
+                      onClick={() => handleSubmit('Cash')}
+                    >
+                      Pay Cash
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <Link

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { NavStore } from '@/src/zustand/notification/Navigation'
 import NotificationStore from '@/src/zustand/notification/Notification'
 import { MessageStore } from '@/src/zustand/notification/Message'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 import TransactionStore from '@/src/zustand/Transaction'
 
@@ -20,6 +20,7 @@ export default function DashboardHeader() {
   const [isOutOfView, setIsOutOfView] = useState(false)
   const divRef = useRef<HTMLDivElement | null>(null)
   const { page } = useParams()
+  const router = useRouter()
 
   useEffect(() => {
     if (divRef.current) {
@@ -82,9 +83,9 @@ export default function DashboardHeader() {
           <span onClick={toggleVNav} className="headerCircle hfs">
             <i className="bi bi-text-left text-lg text-[var(--text-primary)]"></i>
           </span>
-          <Link href={`/dashboard/profile`} className="headerCircle top">
-            <i className="bi bi-person common-icon"></i>
-          </Link>
+          <div onClick={() => router.back()} className="headerCircle top">
+            <i className="bi bi-arrow-left common-icon"></i>
+          </div>
           <div className="mr-auto"></div>
 
           <Link href="/" className="block absoluteCenter">

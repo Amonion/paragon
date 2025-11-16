@@ -34,6 +34,8 @@ const Products: React.FC = () => {
   const pathname = usePathname()
   const { page } = useParams()
   const inputRef = useRef<HTMLInputElement>(null)
+  const [receipt, setReceipt] = useState<File | null>(null)
+  const [preview, setPreview] = useState('')
   const url = '/products'
 
   useEffect(() => {
@@ -61,6 +63,15 @@ const Products: React.FC = () => {
     1000
   )
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null
+    setReceipt(file)
+    if (file) {
+      const localUrl = URL.createObjectURL(file)
+      setPreview(localUrl)
+    }
+  }
+
   const handleSubmit = async (e: string) => {
     if (!user?.username) {
       setMessage('Please select a customer to continue.', false)
@@ -74,6 +85,9 @@ const Products: React.FC = () => {
     form.append('cartProducts', JSON.stringify(cartProducts))
     form.append('partPayment', JSON.stringify(partPayment))
     form.append('totalAmount', String(totalAmount))
+    if (receipt) {
+      form.append('receipt', receipt)
+    }
     form.append('payment', String(e))
     form.append('isProfit', String(true))
     form.append('status', String(partPayment > 0 ? false : true))
@@ -321,6 +335,23 @@ const Products: React.FC = () => {
               ))}
             </div>
 
+            {preview && (
+              <div className="flex justify-center">
+                <Image
+                  src={String(preview)}
+                  sizes="100vw"
+                  className="h-[150px] rounded-[5px] w-[100px] object-cover mb-4"
+                  width={0}
+                  height={0}
+                  alt="real"
+                />
+              </div>
+            )}
+
+            <div className="text-center text-[var(--customRedColor)] text-sm">
+              Upload payment receipts and submit
+            </div>
+
             <div className="flex items-end mb-2">
               <div className="text-lg text-[var(--customRedColor)] mr-3">
                 Part Payment
@@ -336,6 +367,21 @@ const Products: React.FC = () => {
                 className="bg-[var(--secondary)] max-w-[150px] p-1 outline-none border border-[var(--border)]"
                 type="number"
               />
+              <label
+                htmlFor="picture"
+                className="px-2 cursor-pointer ml-3 bg-[var(--success)] text-white"
+              >
+                <input
+                  className="input-file"
+                  type="file"
+                  name="picture"
+                  id="picture"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
+                Receipt
+              </label>
             </div>
 
             <div className="bg-[var(--secondary)] p-3 flex items-center flex-wrap">

@@ -8,6 +8,7 @@ import { MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
 import ProductStore from '@/src/zustand/Product'
 import { User, UserEmpty, UserStore } from '@/src/zustand/user/User'
+import { AuthStore } from '@/src/zustand/user/AuthStore'
 
 const SellingTable: React.FC = () => {
   const {
@@ -25,6 +26,7 @@ const SellingTable: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-name')
   const { setMessage } = MessageStore()
+  const { user } = AuthStore()
   const { searchedUsers, userForm, searchUser } = UserStore()
   const [showCart, setShowCart] = useState(false)
   const [partPayment, setPartPayment] = useState(0)
@@ -72,6 +74,7 @@ const SellingTable: React.FC = () => {
     const form = new FormData()
     form.append('username', userForm.username)
     form.append('fullName', userForm.fullName)
+    form.append('staffName', String(user?.fullName))
     form.append('picture', userForm.picture ? userForm.picture : '')
     form.append('cartProducts', JSON.stringify(cartProducts))
     form.append('partPayment', JSON.stringify(partPayment))

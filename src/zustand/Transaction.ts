@@ -31,6 +31,7 @@ export interface Transaction {
   _id: string
   totalAmount: number
   payment: string
+  staffName: string
   partPayment: number
   total: number
   cartProducts: Product[]
@@ -48,6 +49,7 @@ export const TransactionEmpty = {
   _id: '',
   totalAmount: 0,
   payment: '',
+  staffName: '',
   partPayment: 0,
   picture: '',
   total: 0,

@@ -118,7 +118,12 @@ const Transactions: React.FC = () => {
                         1}
                     </div>
                   </td>
-                  <td>{item.fullName}</td>
+                  <td>
+                    {item.fullName}
+                    {item.staffName && (
+                      <div className="text-[12px]">{item.staffName}</div>
+                    )}
+                  </td>
                   <td>
                     {item.cartProducts.map((p, i) => (
                       <div key={i} className="flex text-sm">
