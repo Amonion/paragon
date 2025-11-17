@@ -206,9 +206,9 @@ export default function VerticalNavigation() {
             <div className="nav_dropdown">
               <Link
                 className="inner_nav_items"
-                href="/admin/transactions/complete"
+                href="/admin/transactions/status"
               >
-                Transaction History
+                Transaction Status
               </Link>
               <Link
                 className="inner_nav_items"

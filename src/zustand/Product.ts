@@ -24,6 +24,7 @@ export interface Cart {
   _id: string
   customer: string
   username: string
+  delivery: string
   products: Product[]
   totalItems: number
   items: number
@@ -32,10 +33,12 @@ export interface Cart {
   isChecked?: boolean
   isActive?: boolean
 }
+
 export const CartEmpty = {
   _id: '',
   customer: '',
   username: '',
+  delivery: 'Instant',
   products: [],
   totalItems: 0,
   items: 0,
@@ -53,6 +56,7 @@ export interface Product {
   units: number
   costPrice: number
   price: number
+  adjustedPrice: number
   description: string
   picture: string | File
   createdAt: Date | null | number
@@ -70,6 +74,7 @@ export const ProductEmpty = {
   units: 0,
   unitPerPurchase: 1,
   costPrice: 0,
+  adjustedPrice: 0,
   price: 0,
   cartUnits: 0,
   description: '',
@@ -113,6 +118,7 @@ interface ProductState {
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
+  updateUnitPrice: (value: number, price: number) => void
   setProcessedResults: (data: FetchResponse) => void
   processBuyingProducts: (data: FetchResponse) => void
   setLoading?: (loading: boolean) => void
@@ -186,6 +192,17 @@ const ProductStore = create<ProductState>((set) => ({
     set({
       productForm: ProductEmpty,
     }),
+
+  updateUnitPrice: (value, index) => {
+    set((state) => {
+      const updated = [...state.cartProducts]
+      updated[index] = {
+        ...updated[index],
+        adjustedPrice: value,
+      }
+      return { cartProducts: updated }
+    })
+  },
 
   setProcessedResults: ({ count, page_size, results }: FetchResponse) => {
     if (results) {

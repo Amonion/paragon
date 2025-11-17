@@ -28,6 +28,7 @@ interface UserState {
   count: number
   isAllChecked: boolean
   loading: boolean
+  showUserForm: boolean
   autLoading: boolean
   page: number
   page_size: number
@@ -69,6 +70,7 @@ interface UserState {
   setSearchedUserResult: () => void
   setProcessedResults: (data: FetchUserResponse) => void
   setShowProfileSheet: (status: boolean) => void
+  setShowUserForm: (status: boolean) => void
   toggleChecked: (index: number) => void
   toggleActive: (index: number) => void
   toggleAllSelected: () => void
@@ -105,6 +107,7 @@ export const UserEmpty = {
   isSuspended: false,
   isFirstTime: false,
   phone: '',
+  address: '',
   picture: '',
   staffPositions: '',
   salary: 0,
@@ -123,6 +126,7 @@ export const UserStore = create<UserState>((set) => ({
   count: 0,
   isAllChecked: false,
   loading: false,
+  showUserForm: false,
   autLoading: false,
   page: 1,
   page_size: 20,
@@ -293,6 +297,9 @@ export const UserStore = create<UserState>((set) => ({
     })
   },
 
+  setShowUserForm: (status: boolean) => {
+    set({ showUserForm: status })
+  },
   setShowProfileSheet: (status: boolean) => {
     set({ showProfileSheet: status })
   },
@@ -440,6 +447,7 @@ export interface User {
   createdAt: Date
   fullName: string
   email: string
+  address: string
   isSuspended: boolean
   isFirstTime: boolean
   isTwoFactor: boolean

@@ -7,7 +7,7 @@ import LinkedPagination from '@/components/Admin/LinkedPagination'
 import { formatDateToDDMMYY, formatTimeTo12Hour } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
 import ServiceStore, { Service } from '@/src/zustand/Service'
-import ServiceForm from './ServiceForm'
+import ServiceForm from './PopUps/ServiceForm'
 
 const ServicesTable: React.FC = () => {
   const [page_size] = useState(20)

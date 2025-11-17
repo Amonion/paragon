@@ -2,13 +2,11 @@
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { formatDateToDDMMYY, formatTimeTo12Hour } from '@/lib/helpers'
-import { AuthStore } from '@/src/zustand/user/AuthStore'
 import NotificationStore from '@/src/zustand/notification/Notification'
 import { useParams } from 'next/navigation'
 
 const Notifications: React.FC = () => {
   const { notifications, updateNotification } = NotificationStore()
-  const { user } = AuthStore()
   const { page } = useParams()
 
   useEffect(() => {
@@ -61,7 +59,7 @@ const Notifications: React.FC = () => {
               </div>
               <div className="flex">
                 <div className="mr-2">
-                  {item.greetings} {user?.fullName}
+                  {item.greetings} {item.fullName}
                 </div>
               </div>
               <div className="flex items-center">

@@ -30,17 +30,28 @@ export const BarEmpty = {
 export interface Transaction {
   _id: string
   totalAmount: number
+  adjustedTotal: number
   payment: string
   staffName: string
+  phone: string
+  invoiceNumber: string
+  distance: number
+  fuel: number
   partPayment: number
   total: number
   cartProducts: Product[]
   picture: string
   fullName: string
   username: string
+  delivery: string
+  startingLocation: string
+  remark: string
+  address: string
   status: boolean
   isProfit: boolean
   createdAt: Date | null
+  startedAt: null | Date
+  endedAt: null | Date
   isActive?: boolean
   isChecked?: boolean
 }
@@ -48,13 +59,24 @@ export interface Transaction {
 export const TransactionEmpty = {
   _id: '',
   totalAmount: 0,
+  adjustedTotal: 0,
   payment: '',
   staffName: '',
+  phone: '',
   partPayment: 0,
   picture: '',
+  address: '',
+  remark: '',
+  delivery: 'Instant',
+  startingLocation: '',
+  invoiceNumber: '',
   total: 0,
+  distance: 0,
+  fuel: 0,
   cartProducts: [],
   createdAt: null,
+  startedAt: null,
+  endedAt: null,
   username: '',
   fullName: '',
   status: false,
@@ -77,13 +99,16 @@ interface FetchResponse {
 interface TransactionState {
   loading: boolean
   isNotification: boolean
+  isAllChecked: boolean
   page_size: number
   bars: Bar[]
   totals: Totals
   summary: { totalLoss: number; totalProfit: number }
   count: number
   period: string
+  selectedTransactions: Transaction[]
   transactions: Transaction[]
+  deliveries: Transaction[]
   userTransactions: Transaction[]
   latest: Transaction[]
   transactionForm: Transaction
@@ -101,6 +126,12 @@ interface TransactionState {
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
+  updateDelivery: (
+    url: string,
+    updatedItem: FormData | Record<string, unknown>,
+    setMessage: (message: string, isError: boolean) => void,
+    redirect?: () => void
+  ) => Promise<void>
   updatePartPayment: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
@@ -111,8 +142,17 @@ interface TransactionState {
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
+  getDeliveries: (
+    url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
   getUserTransactions: (
     url: string,
+    setMessage: (message: string, isError: boolean) => void
+  ) => Promise<void>
+  massDeleteTransactions: (
+    url: string,
+    selectedTransactions: Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   getLatestTransactions: (url: string) => Promise<void>
@@ -121,18 +161,23 @@ interface TransactionState {
   setFromDate: (date: Date) => void
   setToDate: (date: Date) => void
   setPeriod: () => void
+  toggleAllSelected: () => void
   setTransactionForm: (data: Transaction) => void
   setPartPayment: (value: number) => void
   setLoading?: (loading: boolean) => void
+  toggleChecked: (index: number) => void
 }
 
 const TransactionStore = create<TransactionState>((set) => ({
   loading: false,
   isNotification: false,
+  isAllChecked: false,
   count: 0,
   page_size: 0,
   bars: [],
+  deliveries: [],
   latest: [],
+  selectedTransactions: [],
   totals: TotalsEmpty,
   period: 'all',
   transactions: [],
@@ -161,6 +206,7 @@ const TransactionStore = create<TransactionState>((set) => ({
       }
     })
   },
+
   setTransactionForm: (data) => {
     set({ transactionForm: data })
   },
@@ -195,6 +241,20 @@ const TransactionStore = create<TransactionState>((set) => ({
       const data = response?.data
       if (data) {
         set({ bars: data.bars, totals: data.totals })
+      }
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  getDeliveries: async (url: string) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        setLoading: TransactionStore.getState().setLoading,
+      })
+      const data = response?.data
+      if (data) {
+        set({ deliveries: data.results, count: data.count })
       }
     } catch (error: unknown) {
       console.log(error)
@@ -278,6 +338,23 @@ const TransactionStore = create<TransactionState>((set) => ({
     }
   },
 
+  updateDelivery: async (url, body, setMessage, redirect) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        method: 'PATCH',
+        body,
+        setMessage,
+      })
+      const data = response?.data
+      if (data) {
+        set({ deliveries: data.result.results, count: data.count })
+      }
+      if (redirect) redirect()
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
   updateTransaction: async (url, body, setMessage, redirect) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
@@ -290,6 +367,22 @@ const TransactionStore = create<TransactionState>((set) => ({
         TransactionStore.getState().setProcessedResults(data.result)
       }
       if (redirect) redirect()
+    } catch (error: unknown) {
+      console.log(error)
+    }
+  },
+
+  massDeleteTransactions: async (url, body, setMessage) => {
+    try {
+      const response = await apiRequest<FetchResponse>(url, {
+        method: 'PATCH',
+        body,
+        setMessage,
+      })
+      const data = response?.data
+      if (data) {
+        TransactionStore.getState().setProcessedResults(data.result)
+      }
     } catch (error: unknown) {
       console.log(error)
     }
@@ -310,6 +403,48 @@ const TransactionStore = create<TransactionState>((set) => ({
     } catch (error: unknown) {
       console.log(error)
     }
+  },
+
+  toggleChecked: (index: number) => {
+    set((state) => {
+      const updatedResults = state.transactions.map((tertiary, idx) =>
+        idx === index
+          ? { ...tertiary, isChecked: !tertiary.isChecked }
+          : tertiary
+      )
+
+      const selectedTransactions = updatedResults.filter(
+        (tertiary) => tertiary.isChecked
+      )
+      const isAllChecked = updatedResults.every(
+        (tertiary) => tertiary.isChecked
+      )
+
+      return {
+        transactions: updatedResults,
+        selectedTransactions,
+        isAllChecked,
+      }
+    })
+  },
+
+  toggleAllSelected: () => {
+    set((state) => {
+      const isAllChecked =
+        state.transactions.length === 0 ? false : !state.isAllChecked
+      const updatedResults = state.transactions.map((item) => ({
+        ...item,
+        isChecked: isAllChecked,
+      }))
+
+      const updatedSelectedProducts = isAllChecked ? updatedResults : []
+
+      return {
+        transactions: updatedResults,
+        selectedTransactions: updatedSelectedProducts,
+        isAllChecked,
+      }
+    })
   },
 }))
 

@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { MessageStore } from '@/src/zustand/notification/Message'
+import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
 import {
   formatDateToDDMMYY,
@@ -16,12 +16,18 @@ const Transactions: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
+  const { setAlert } = AlartStore()
   const {
     summary,
     loading,
     count,
     transactions,
     transactionForm,
+    isAllChecked,
+    selectedTransactions,
+    toggleChecked,
+    toggleAllSelected,
+    massDeleteTransactions,
     updatePartPayment,
     setTransactionForm,
     updateTransaction,
@@ -80,6 +86,31 @@ const Transactions: React.FC = () => {
     )
   }
 
+  const startDeleteTransactions = async () => {
+    if (selectedTransactions.length === 0) {
+      setMessage('Please select at least one transaction to delete', false)
+      return
+    }
+
+    setAlert(
+      'Warning',
+      'Are you sure you want to delete the selected transactions?',
+      true,
+      () => deleteManyTransactions()
+    )
+  }
+
+  const deleteManyTransactions = async () => {
+    const ids = selectedTransactions.map((item) => item._id)
+    await massDeleteTransactions(
+      `/transactions/mass-delete?dateFrom=${fromDate}&dateTo=${toDate}&page_size=${page_size}&page=${
+        page ? page : 1
+      }&ordering=${sort}`,
+      { ids: ids },
+      setMessage
+    )
+  }
+
   return (
     <>
       <StatDuration
@@ -97,10 +128,12 @@ const Transactions: React.FC = () => {
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
                 <th>Customer</th>
+                <th>Staff</th>
                 <th>Products</th>
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Time</th>
+                <th>Remark</th>
               </tr>
             </thead>
             <tbody>
@@ -111,16 +144,43 @@ const Transactions: React.FC = () => {
                 >
                   <td>
                     <div className="flex items-center">
+                      <div
+                        className={`checkbox ${item.isChecked ? 'active' : ''}`}
+                        onClick={() => toggleChecked(index)}
+                      >
+                        {item.isChecked && (
+                          <i className="bi bi-check text-white text-lg"></i>
+                        )}
+                      </div>
                       {(page ? Number(page) - 1 : 1 - 1) * page_size +
                         index +
                         1}
                     </div>
                   </td>
-                  <td>{item.fullName}</td>
+                  <td>
+                    {item.fullName}
+                    <br />
+                    {item.phone}
+                  </td>
+                  <td>
+                    {item.staffName}
+                    <div className="cursor-pointer text-[var(--customRedColor)]">
+                      {item.invoiceNumber}
+                    </div>
+                  </td>
                   <td>
                     {item.cartProducts.map((p, i) => (
-                      <div key={i} className="flex text-sm">
-                        {p.cartUnits} {p.purchaseUnit} of {p.name}
+                      <div
+                        key={i}
+                        className={`${
+                          p.adjustedPrice ? 'text-[var(--customRedColor)]' : ''
+                        } flex`}
+                      >
+                        ₦
+                        {p.adjustedPrice
+                          ? formatMoney(p.adjustedPrice)
+                          : formatMoney(p.price)}{' '}
+                        x {p.cartUnits} {p.purchaseUnit} of {p.name}
                       </div>
                     ))}
                   </td>
@@ -132,6 +192,11 @@ const Transactions: React.FC = () => {
                     }`}
                   >
                     ₦{formatMoney(item.totalAmount)}
+                    {item.adjustedTotal !== item.totalAmount && (
+                      <div className="text-[var(--customRedColor)]">
+                        ₦{formatMoney(item.adjustedTotal)}
+                      </div>
+                    )}
                   </td>
                   <td>
                     <div className="flex">
@@ -155,12 +220,13 @@ const Transactions: React.FC = () => {
                         </div>
                       )}
                     </div>
+                    <div className="text-sm">{item.payment}</div>
                   </td>
-
                   <td>
                     {formatTimeTo12Hour(item.createdAt)} <br />
                     {formatDateToDDMMYY(item.createdAt)}
                   </td>
+                  <td className="max-w-[120px]">{item.remark}</td>
                 </tr>
               ))}
             </tbody>
@@ -186,7 +252,17 @@ const Transactions: React.FC = () => {
         </div>
       )}
       <div className="card_body sharp mb-3">
-        <div className="flex flex-wrap items-center">
+        <div className="flex flex-wrap gap-3 items-center">
+          <div onClick={toggleAllSelected} className="tableActions">
+            <i
+              className={`bi bi-check2-all ${
+                isAllChecked ? 'text-[var(--customRedColor)]' : ''
+              }`}
+            ></i>
+          </div>
+          <div onClick={startDeleteTransactions} className="tableActions">
+            <i className="bi bi-trash"></i>
+          </div>
           <div className="ml-auto flex items-center">
             <div className="text-[var(--success)] mr-3">
               ₦{formatMoney(summary.totalProfit)}

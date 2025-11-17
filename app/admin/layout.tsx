@@ -58,7 +58,6 @@ export default function RootLayout({
         playPopSound()
       }, 5000)
     } else {
-      // Optional: turn off notification flag when on the transaction page
       if (pathname === '/admin/transactions') {
         TransactionStore.setState({ isNotification: false })
       }
@@ -96,7 +95,7 @@ export default function RootLayout({
       <UserAlert />
 
       <div className="body-content w-full flex justify-center">
-        <div className="custom_container">
+        <div className="w-full">
           <div className="flex w-full">
             <VerticalNavigation />
             <div className="flex-1 md:pb-0 md:pl-5 overflow-x-auto md:overflow-visible">
@@ -107,7 +106,7 @@ export default function RootLayout({
                   marginTop: isMd ? 0 : `${headerHeight}px`,
                   minHeight: `calc(100vh - ${headerHeight}px)`,
                 }}
-                className={`md:pt-5   flex flex-col flex-1`}
+                className={`md:pt-5 sm:mr-3  flex flex-col flex-1`}
               >
                 {children}
               </div>
