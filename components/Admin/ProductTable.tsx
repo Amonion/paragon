@@ -199,20 +199,24 @@ const ProductTable: React.FC = () => {
                       ₦{formatMoney(item.costPrice)}
                     </span>
                   </div>
-                  <div className="flex">
-                    Selling Price:{' '}
-                    <span className="text-[var(--text-secondary)] ml-1">
-                      ₦{formatMoney(item.price)}
-                    </span>
-                  </div>
+                  {!item.isBuyable && (
+                    <div className="flex">
+                      Selling Price:{' '}
+                      <span className="text-[var(--text-secondary)] ml-1">
+                        ₦{formatMoney(item.price)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="absolute top-[-10px] right-0 flex items-center">
-                <Package
-                  onClick={() => setStockingForm(item)}
-                  className="cursor-pointer"
-                  size={18}
-                />
+                {!item.isBuyable && (
+                  <Package
+                    onClick={() => setStockingForm(item)}
+                    className="cursor-pointer"
+                    size={18}
+                  />
+                )}
                 <Link
                   className="mx-3"
                   href={`/admin/products/edit-product/${item._id}`}

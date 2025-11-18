@@ -53,7 +53,7 @@ const Transactions: React.FC = () => {
     if (fromDate && toDate) {
       const params = `&page_size=${page_size}&page=${
         page ? page : 1
-      }&ordering=${sort}`
+      }&ordering=${sort}&isProfit=true`
       getTransactions(`${url}${params}`, setMessage)
     }
   }, [page, toDate, fromDate])
@@ -77,7 +77,7 @@ const Transactions: React.FC = () => {
         transactionForm._id
       }/?ordering=${sort}&page=${
         page ? page : 1
-      }&dateFrom=${fromDate}&dateTo=${toDate}`,
+      }&dateFrom=${fromDate}&dateTo=${toDate}&isProfit=true`,
       form,
       setMessage,
       () => {
@@ -105,7 +105,7 @@ const Transactions: React.FC = () => {
     await massDeleteTransactions(
       `/transactions/mass-delete?dateFrom=${fromDate}&dateTo=${toDate}&page_size=${page_size}&page=${
         page ? page : 1
-      }&ordering=${sort}`,
+      }&ordering=${sort}&isProfit=true`,
       { ids: ids },
       setMessage
     )

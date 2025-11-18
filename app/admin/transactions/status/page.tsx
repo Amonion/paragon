@@ -34,7 +34,7 @@ const Deliveries: React.FC = () => {
     if (fromDate && toDate) {
       const params = `&page_size=${page_size}&page=${
         page ? page : 1
-      }&ordering=${sort}`
+      }&ordering=${sort}&isProfit=true`
       getDeliveries(`${url}${params}`, setMessage)
     }
   }, [page, toDate, fromDate])
@@ -44,7 +44,7 @@ const Deliveries: React.FC = () => {
       updateDelivery(
         `/transactions/${id}?dateFrom=${fromDate}&dateTo=${toDate}&page_size=${page_size}&page=${
           page ? page : 1
-        }&ordering=${sort}`,
+        }&ordering=${sort}&isProfit=true`,
         { startedAt: new Date(), startingLocation },
         setMessage
       )
@@ -52,7 +52,7 @@ const Deliveries: React.FC = () => {
       updateDelivery(
         `/transactions/${id}?dateFrom=${fromDate}&dateTo=${toDate}&page_size=${page_size}&page=${
           page ? page : 1
-        }&ordering=${sort}`,
+        }&ordering=${sort}&isProfit=true`,
         { endedAt: new Date() },
         setMessage
       )

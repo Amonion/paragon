@@ -49,6 +49,10 @@ export const CartEmpty = {
 export interface Product {
   _id: string
   name: string
+  supName: string
+  remark: string
+  supAddress: string
+  supPhone: string
   purchaseUnit: string
   discount: number
   cartUnits: number
@@ -69,7 +73,11 @@ export interface Product {
 export const ProductEmpty = {
   _id: '',
   name: '',
+  supName: '',
+  supAddress: '',
+  supPhone: '',
   purchaseUnit: '',
+  remark: '',
   discount: 0,
   units: 0,
   unitPerPurchase: 1,
@@ -104,6 +112,7 @@ interface ProductState {
   setToBuyCart: (p: Product, isAdd: boolean) => void
   setShowStocking: (status: boolean) => void
   resetForm: () => void
+  updateBuyingProducts: () => void
   updateCartUnits: (id: string, units: number) => void
   updateBuyingCartUnits: (id: string, units: number) => void
   getProducts: (
@@ -201,6 +210,16 @@ const ProductStore = create<ProductState>((set) => ({
         adjustedPrice: value,
       }
       return { cartProducts: updated }
+    })
+  },
+
+  updateBuyingProducts: () => {
+    set((state) => {
+      const products = state.buyingProducts.map((item) => ({
+        ...item,
+        cartUnits: 0,
+      }))
+      return { buyingProducts: products }
     })
   },
 
@@ -636,7 +655,7 @@ const ProductStore = create<ProductState>((set) => ({
       }
       if (redirect) {
         redirect()
-        set({ cartProducts: [], totalAmount: 0 })
+        set({ cartProducts: [], buyingCartProducts: [], totalAmount: 0 })
       }
     } catch (error: unknown) {
       console.log(error)

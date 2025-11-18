@@ -9,7 +9,7 @@ import ProductStore from '@/src/zustand/Product'
 import QuillEditor from '../QuillEditor'
 import PictureDisplay from '@/components/PictureDisplay'
 
-const CreateProduct: React.FC = () => {
+const CreateBuyProduct: React.FC = () => {
   const {
     getProduct,
     setForm,
@@ -71,8 +71,8 @@ const CreateProduct: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     const inputsToValidate = [
       {
-        name: 'name',
-        value: productForm.name,
+        name: 'supName',
+        value: productForm.supName,
         rules: { blank: true, maxLength: 100 },
         field: 'Name field',
       },
@@ -83,32 +83,32 @@ const CreateProduct: React.FC = () => {
         field: 'Cost price field',
       },
       {
-        name: 'price',
-        value: productForm.price,
-        rules: { blank: true, maxLength: 100 },
-        field: 'Price field',
-      },
-      {
-        name: 'unitPerPurchase',
-        value: productForm.unitPerPurchase,
+        name: 'supAddress',
+        value: productForm.supAddress,
         rules: { blank: false, maxLength: 100 },
-        field: 'Unit field',
+        field: 'Address field',
       },
       {
-        name: 'purchaseUnit',
-        value: productForm.purchaseUnit,
+        name: 'supPhone',
+        value: productForm.supPhone,
         rules: { blank: true, maxLength: 100 },
-        field: 'Purchase Unit field',
+        field: 'Phone number field',
       },
       {
-        name: 'seoTitle',
-        value: productForm.seoTitle,
+        name: 'name',
+        value: productForm.name,
         rules: { blank: false, maxLength: 100 },
-        field: 'SEO title field',
+        field: 'Name title field',
       },
       {
         name: 'picture',
         value: productForm.picture,
+        rules: { blank: false, maxLength: 1000 },
+        field: 'Picture field',
+      },
+      {
+        name: 'isBuyable',
+        value: true,
         rules: { blank: false, maxLength: 1000 },
         field: 'Picture field',
       },
@@ -119,6 +119,7 @@ const CreateProduct: React.FC = () => {
         field: 'Description file',
       },
     ]
+
     const { messages } = validateInputs(inputsToValidate)
     const getFirstNonEmptyMessage = (
       messages: Record<string, string>
@@ -141,12 +142,10 @@ const CreateProduct: React.FC = () => {
     const data = appendForm(inputsToValidate)
     if (id) {
       updateProduct(`${url}/${id}${queryParams}`, data, setMessage, () =>
-        router.push(`/admin/products`)
+        router.back()
       )
     } else {
-      postProduct(`${url}${queryParams}`, data, setMessage, () =>
-        router.push(`/admin/products`)
-      )
+      postProduct(`${url}${queryParams}`, data, setMessage, () => router.back())
     }
   }
 
@@ -157,10 +156,50 @@ const CreateProduct: React.FC = () => {
           {id ? `Update Product` : `Create Product`}
         </div>
 
-        <div className="grid-2 grid-lay">
+        <div className="grid-3 grid-lay">
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Name
+              Supplier Name
+            </label>
+            <input
+              className="form-input"
+              name="supName"
+              value={productForm.supName}
+              onChange={handleInputChange}
+              type="text"
+              placeholder="Enter suppliers name"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Supplier Address
+            </label>
+            <input
+              className="form-input"
+              name="supAddress"
+              value={productForm.supAddress}
+              onChange={handleInputChange}
+              type="text"
+              placeholder="Enter suppliers address"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Supplier Phone
+            </label>
+            <input
+              className="form-input"
+              name="supPhone"
+              value={productForm.supPhone}
+              onChange={handleInputChange}
+              type="text"
+              placeholder="Enter suppliers phone"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Product Name
             </label>
             <input
               className="form-input"
@@ -168,27 +207,13 @@ const CreateProduct: React.FC = () => {
               value={productForm.name}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter name"
+              placeholder="Enter product name"
             />
           </div>
 
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Title
-            </label>
-            <input
-              className="form-input"
-              name="seoTitle"
-              value={productForm.seoTitle}
-              onChange={handleInputChange}
-              type="text"
-              placeholder="Enter title"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="label" htmlFor="">
-              Cost Price
+              Unit Price
             </label>
             <input
               className="form-input"
@@ -199,38 +224,9 @@ const CreateProduct: React.FC = () => {
               placeholder="Enter cost price"
             />
           </div>
-
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Unit Per Purchase
-            </label>
-            <input
-              className="form-input"
-              name="unitPerPurchase"
-              value={productForm.unitPerPurchase}
-              onChange={handleInputChange}
-              type="number"
-              placeholder="Enter cost price"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="label" htmlFor="">
-              Price
-            </label>
-            <input
-              className="form-input"
-              name="price"
-              value={productForm.price}
-              onChange={handleInputChange}
-              type="number"
-              placeholder="Enter price"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="label" htmlFor="">
-              Purchase Unit
+              Product Unit Name
             </label>
             <input
               className="form-input"
@@ -242,7 +238,6 @@ const CreateProduct: React.FC = () => {
             />
           </div>
         </div>
-
         <div className="flex w-full justify-center">
           <div className="relative my-5 w-full max-w-[200px] h-[150px] rounded-xl  overflow-hidden">
             {preview ? (
@@ -295,4 +290,4 @@ const CreateProduct: React.FC = () => {
   )
 }
 
-export default CreateProduct
+export default CreateBuyProduct

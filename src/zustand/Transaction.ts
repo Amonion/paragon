@@ -27,6 +27,28 @@ export const BarEmpty = {
   date: '',
 }
 
+const ProductEmpty = {
+  _id: '',
+  name: '',
+  supName: '',
+  supAddress: '',
+  supPhone: '',
+  purchaseUnit: '',
+  remark: '',
+  discount: 0,
+  units: 0,
+  unitPerPurchase: 1,
+  costPrice: 0,
+  adjustedPrice: 0,
+  price: 0,
+  cartUnits: 0,
+  description: '',
+  picture: '',
+  createdAt: 0,
+  seoTitle: '',
+  isBuyable: false,
+}
+
 export interface Transaction {
   _id: string
   totalAmount: number
@@ -40,10 +62,14 @@ export interface Transaction {
   partPayment: number
   total: number
   cartProducts: Product[]
+  product: Product
   picture: string
   fullName: string
   username: string
   delivery: string
+  supPhone: string
+  supAddress: string
+  supName: string
   startingLocation: string
   remark: string
   address: string
@@ -63,6 +89,9 @@ export const TransactionEmpty = {
   payment: '',
   staffName: '',
   phone: '',
+  supPhone: '',
+  supAddress: '',
+  supName: '',
   partPayment: 0,
   picture: '',
   address: '',
@@ -72,6 +101,7 @@ export const TransactionEmpty = {
   invoiceNumber: '',
   total: 0,
   distance: 0,
+  product: ProductEmpty,
   fuel: 0,
   cartProducts: [],
   createdAt: null,

@@ -25,6 +25,7 @@ export default function VerticalNavigation() {
   const [isMsgActive, toggleMessages] = useState(false)
   const [isActivities, toggleCompetition] = useState(false)
   const [isPagesActive, togglePages] = useState(false)
+  const [isService, toggleService] = useState(false)
   const [isSettingsActive, toggleSettings] = useState(false)
   const pathname = usePathname()
   const { toggleVNav, vNav, clearNav } = NavStore()
@@ -35,6 +36,7 @@ export default function VerticalNavigation() {
     toggleMessages(false)
     toggleCompetition(false)
     togglePages(false)
+    toggleService(false)
     toggleTransaction(false)
     clearNav()
   }
@@ -139,13 +141,6 @@ export default function VerticalNavigation() {
             <MessageCircle className="mr-3 w-5 h-5" />
             Reviews
           </Link>
-          <Link
-            className="v_nav_items hover:text-[var(--customRedColor)] flex items-center"
-            href="/admin/services"
-          >
-            <Wrench className="mr-3 w-5 h-5" />
-            Services
-          </Link>
 
           <div className={`v_nav_items ${isPagesActive ? 'active trip' : ''}`}>
             <div
@@ -185,6 +180,40 @@ export default function VerticalNavigation() {
             </div>
           </div>
 
+          <div className={`v_nav_items ${isService ? 'active two' : ''}`}>
+            <div
+              className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
+            >
+              <Link
+                className="flex flex-1 items-center"
+                href="/admin/operations"
+              >
+                <Wrench className="mr-3 w-5 h-5" />
+                Operations
+              </Link>
+              <i
+                onClick={() => toggleService((e) => !e)}
+                className={`bi bi-caret-down-fill ml-auto ${
+                  isService ? 'active' : ''
+                }`}
+              ></i>
+            </div>
+            <div className="nav_dropdown">
+              <Link
+                className="inner_nav_items"
+                href="/admin/operations/services"
+              >
+                Services
+              </Link>
+              <Link
+                className="inner_nav_items"
+                href="/admin/operations/expenses"
+              >
+                Expenses
+              </Link>
+            </div>
+          </div>
+
           <div className={`v_nav_items ${isTransaction ? 'active two' : ''}`}>
             <div
               className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
@@ -212,14 +241,14 @@ export default function VerticalNavigation() {
               </Link>
               <Link
                 className="inner_nav_items"
-                href="/admin/transactions/pending"
+                href="/admin/transactions/purchases"
               >
-                Pending Transactions
+                Purchase Transactions
               </Link>
             </div>
           </div>
 
-          <div className={`v_nav_items ${isActivities ? 'active trip' : ''}`}>
+          <div className={`v_nav_items ${isActivities ? 'active two' : ''}`}>
             <div
               className={`flex hover:text-[var(--customRedColor)] cursor-pointer ${
                 pathname.includes('activities')
@@ -229,7 +258,7 @@ export default function VerticalNavigation() {
               onClick={() => toggleCompetition((e) => !e)}
             >
               <ArrowLeftRight className="mr-3 w-5 h-5" />
-              Activities
+              Sell-Purchase
               <i
                 className={`bi bi-caret-down-fill ml-auto ${
                   isActivities ? 'active' : ''
@@ -246,17 +275,10 @@ export default function VerticalNavigation() {
               >
                 Purchase Products
               </Link>
-
-              <Link
-                className="inner_nav_items"
-                href="/admin/activities/expenses"
-              >
-                Expenses
-              </Link>
             </div>
           </div>
 
-          <div className={`v_nav_items ${isMsgActive ? 'active trip' : ''}`}>
+          <div className={`v_nav_items ${isMsgActive ? 'active two' : ''}`}>
             <div
               className={`flex hover:text-[var(--customRedColor)] cursor-pointer items-center py-3 ${
                 pathname.includes('products')
@@ -276,9 +298,6 @@ export default function VerticalNavigation() {
             <div className="nav_dropdown">
               <Link className="inner_nav_items" href="/admin/products">
                 Product Settings
-              </Link>
-              <Link className="inner_nav_items" href="/admin/products/stocking">
-                Product Stocking
               </Link>
               <Link className="inner_nav_items" href="/admin/products/stocks">
                 Stocks
