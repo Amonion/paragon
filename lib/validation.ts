@@ -1,4 +1,19 @@
-import { Input, ValidationRules } from '@/src/interface'
+export interface Input {
+  name: string
+  value: string | number | null | File | Date | boolean
+  rules: ValidationRules
+  field: string
+}
+
+export interface ValidationRules {
+  type?: 'image' | 'audio' | 'video' | 'doc'
+  blank?: boolean
+  minLength?: number
+  maxLength?: number
+  maxSize?: number
+  maxTime?: number
+  zero?: boolean
+}
 
 const fileTypeMapping: Record<string, string[]> = {
   image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
@@ -10,23 +25,6 @@ const fileTypeMapping: Record<string, string[]> = {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ],
 }
-
-// type ValidationRules = {
-//   type?: "image" | "audio" | "video" | "doc";
-//   blank?: boolean;
-//   minLength?: number;
-//   maxLength?: number;
-//   maxSize?: number;
-//   maxTime?: number;
-//   zero?: boolean;
-// };
-
-// type Input = {
-//   name: string;
-//   value: string | number | null | File | Date | boolean;
-//   rules: ValidationRules;
-//   field: string;
-// };
 
 type ValidationResult = {
   valid: boolean

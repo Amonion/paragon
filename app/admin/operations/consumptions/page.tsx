@@ -4,16 +4,12 @@ import { useState, useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
-import {
-  formatDateToDDMMYY,
-  formatMoney,
-  formatTimeTo12Hour,
-} from '@/lib/helpers'
+import { formatDateToDDMMYY } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
-import ServiceStore, { Service } from '@/src/zustand/Service'
-import ServiceForm from './PopUps/ServiceForm'
+import ConsumptionForm from '@/components/Admin/PopUps/ConsumptionForm'
+import ConsumptionStore, { Consumption } from '@/src/zustand/Consumption'
 
-const ServicesTable: React.FC = () => {
+const Consumptions: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
@@ -21,17 +17,15 @@ const ServicesTable: React.FC = () => {
   const {
     loading,
     count,
-    services,
+    consumptions,
     isAllChecked,
-    showServiceForm,
-    updateService,
-    setShowServiceForm,
+    showConsumptionForm,
+    setShowConsumptionForm,
     deleteItem,
-    getServices,
+    getConsumptions,
     toggleActive,
     toggleAllSelected,
-    reshuffleResults,
-  } = ServiceStore()
+  } = ConsumptionStore()
   const pathname = usePathname()
   const { page, username } = useParams()
   const defaultFrom = () => {
@@ -47,20 +41,20 @@ const ServicesTable: React.FC = () => {
   }
   const [fromDate, setFromDate] = useState<Date>(defaultFrom)
   const [toDate, setToDate] = useState<Date>(defaultTo)
-  const url = `/services?dateFrom=${fromDate}&dateTo=${toDate}`
+  const url = `/consumptions?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
     if (fromDate && toDate) {
       const params = `&page_size=${page_size}&page=${
         page ? page : 1
       }&ordering=${sort}`
-      getServices(`${url}${params}`, setMessage)
+      getConsumptions(`${url}${params}`, setMessage)
     }
   }, [page, pathname, username, toDate, fromDate])
 
-  const startEdit = (service: Service) => {
-    ServiceStore.setState({ serviceForm: service })
-    displayServiceForm()
+  const startEdit = (consumption: Consumption) => {
+    ConsumptionStore.setState({ consumptionForm: consumption })
+    setShowConsumptionForm(true)
   }
 
   const startDelete = (id: string) => {
@@ -68,39 +62,14 @@ const ServicesTable: React.FC = () => {
       'Warning',
       'Are you sure you want to delete this Service?',
       true,
-      () => deleteItem(`/services/${id}`, setMessage)
+      () => deleteItem(`/consumptions/${id}`, setMessage)
     )
-  }
-
-  const displayServiceForm = () => {
-    setShowServiceForm(!showServiceForm)
-    reshuffleResults()
-  }
-
-  const startDelivery = (id: string, status: boolean) => {
-    if (status) {
-      updateService(
-        `/services/${id}?dateFrom=${fromDate}&dateTo=${toDate}&page_size=${page_size}&page=${
-          page ? page : 1
-        }&ordering=${sort}`,
-        { startedAt: new Date() },
-        setMessage
-      )
-    } else {
-      updateService(
-        `/services/${id}?dateFrom=${fromDate}&dateTo=${toDate}&page_size=${page_size}&page=${
-          page ? page : 1
-        }&ordering=${sort}`,
-        { endedAt: new Date() },
-        setMessage
-      )
-    }
   }
 
   return (
     <>
       <StatDuration
-        title={`Daily Services`}
+        title={`Daily Consumptions`}
         fromDate={fromDate}
         toDate={toDate}
         setFromDate={setFromDate}
@@ -108,23 +77,24 @@ const ServicesTable: React.FC = () => {
       />
 
       <div className="overflow-auto mb-5">
-        {services.length > 0 ? (
+        {consumptions.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
-                <th>Title</th>
-                <th>Client</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Amount</th>
-                <th>Duration</th>
-                <th>Time</th>
+                <th>Class</th>
+                <th>Age</th>
+                <th>Birds</th>
+                <th>Consumption</th>
+                <th>Feed</th>
+                <th>Weight</th>
+                <th>Date</th>
+                <th>Remark</th>
               </tr>
             </thead>
 
             <tbody>
-              {services.map((item, index) => (
+              {consumptions.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
@@ -151,70 +121,34 @@ const ServicesTable: React.FC = () => {
                           className="card_list_item"
                           onClick={() => startEdit(item)}
                         >
-                          Edit Services
+                          Edit consumptions
                         </div>
                         <div
                           className="card_list_item"
                           onClick={() => startDelete(item._id)}
                         >
-                          Delete Services
+                          Delete consumptions
                         </div>
                       </div>
                     )}
                   </td>
-                  <td>{item.title}</td>
+                  <td>{item.birdClass}</td>
+                  <td>{item.birdAge}</td>
+                  <td>{item.birds}</td>
                   <td>
-                    {item.clientName ? item.clientName : 'Company Staff'}
-                    <div className="text-[var(--customRedColor)] text-sm mt-2">
-                      Staff: {item.staffName}
-                    </div>
+                    {item.consumption} {item.consumptionUnit}
                   </td>
-                  <td>{item.clientAddress ? item.clientAddress : 'Company'}</td>
-                  <td>{item.clientPhone ? item.clientPhone : 'Company'}</td>
-                  <td>₦{formatMoney(item.amount)}</td>
-                  <td>
-                    {item.startedAt && (
-                      <div className="text-[var(--customRedColor)]">
-                        {formatTimeTo12Hour(item.startedAt)}
-                      </div>
-                    )}
-                    {item.endedAt && (
-                      <div className="text-[var(--success)]">
-                        {formatTimeTo12Hour(item.endedAt)}
-                      </div>
-                    )}
-                    <div className="flex">
-                      {!item.startedAt ? (
-                        <div
-                          onClick={() => startDelivery(item._id, true)}
-                          className={`bg-[var(--success)] px-2 cursor-pointer py-1  text-white`}
-                        >
-                          Start
-                        </div>
-                      ) : (
-                        item.startedAt &&
-                        !item.endedAt && (
-                          <div
-                            onClick={() => startDelivery(item._id, false)}
-                            className={`bg-[var(--customRedColor)] px-2 cursor-pointer py-1  text-white`}
-                          >
-                            Stop
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    {formatTimeTo12Hour(item.createdAt)} <br />
-                    {formatDateToDDMMYY(item.createdAt)}
-                  </td>
+                  <td>{item.feed}</td>
+                  <td>{item.weight}</td>
+                  <td>{formatDateToDDMMYY(item.createdAt)}</td>
+                  <td>{item.remark}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
           <div className="relative flex justify-center">
-            <div className="not_found_text">No Services Found</div>
+            <div className="not_found_text">No consumptions Found</div>
             <Image
               className="max-w-[300px]"
               alt={`no record`}
@@ -243,7 +177,7 @@ const ServicesTable: React.FC = () => {
               ></i>
             </div>
             <div
-              onClick={() => setShowServiceForm(!showServiceForm)}
+              onClick={() => setShowConsumptionForm(!showConsumptionForm)}
               className="tableActions"
             >
               <i className="bi bi-plus-circle"></i>
@@ -258,9 +192,9 @@ const ServicesTable: React.FC = () => {
           page_size={20}
         />
       </div>
-      {showServiceForm && <ServiceForm />}
+      {showConsumptionForm && <ConsumptionForm />}
     </>
   )
 }
 
-export default ServicesTable
+export default Consumptions

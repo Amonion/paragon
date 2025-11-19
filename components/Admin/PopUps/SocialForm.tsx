@@ -1,59 +1,38 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { appendForm } from '@/lib/helpers'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import { validateInputs } from '@/lib/validation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
-import ServiceStore from '@/src/zustand/Service'
+import SocialStore from '@/src/zustand/Social'
 
-const ServiceForm: React.FC = () => {
+const SocialForm: React.FC = () => {
   const {
-    serviceForm,
+    socialForm,
     loading,
-    updateService,
-    postService,
+    updateSocial,
+    postSocial,
     setForm,
     resetForm,
-    setShowServiceForm,
-    reshuffleResults,
-  } = ServiceStore()
+    setShowSocialForm,
+  } = SocialStore()
   const { setMessage } = MessageStore()
-  const pathname = usePathname()
   const { setAlert } = AlartStore()
   const { user } = AuthStore()
-  const defaultFrom = () => {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
-  }
+  const url = `/socials/`
 
-  const defaultTo = () => {
-    const d = new Date()
-    d.setHours(23, 59, 59, 999)
-    return d
-  }
-  const [fromDate] = useState<Date>(defaultFrom)
-  const [toDate] = useState<Date>(defaultTo)
-  const url = `/services?dateFrom=${fromDate}&dateTo=${toDate}`
-
-  useEffect(() => {
-    reshuffleResults()
-  }, [pathname])
+  const handleFileChange =
+    (key: keyof typeof socialForm) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files ? e.target.files[0] : null
+      setForm(key, file)
+    }
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setForm(name as keyof typeof serviceForm, value)
+    setForm(name as keyof typeof socialForm, value)
   }
-
-  const handleFileChange =
-    (key: keyof typeof serviceForm) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files ? e.target.files[0] : null
-      setForm(key, file)
-    }
 
   const handleSubmit = async () => {
     if (!user) {
@@ -69,52 +48,47 @@ const ServiceForm: React.FC = () => {
         field: 'Staff Name field',
       },
       {
-        name: 'title',
-        value: serviceForm.title,
+        name: 'socialType',
+        value: socialForm.socialType,
+        rules: { blank: false },
+        field: 'Social type field',
+      },
+      {
+        name: 'name',
+        value: socialForm.name,
+        rules: { blank: false },
+        field: 'Name field',
+      },
+      {
+        name: 'post',
+        value: socialForm.post,
         rules: { blank: true },
-        field: 'Name field',
+        field: 'Post field',
       },
       {
-        name: 'clientName',
-        value: serviceForm.clientName,
+        name: 'picture',
+        value: socialForm.picture,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Picture field',
       },
+
       {
-        name: 'clientPhone',
-        value: serviceForm.clientPhone,
+        name: 'likes',
+        value: socialForm.likes,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Like field',
       },
       {
-        name: 'clientAddress',
-        value: serviceForm.clientAddress,
+        name: 'comments',
+        value: socialForm.comments,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Feed field',
       },
       {
-        name: 'amount',
-        value: serviceForm.amount,
+        name: 'url',
+        value: socialForm.url,
         rules: { blank: false },
-        field: 'Name field',
-      },
-      {
-        name: 'video',
-        value: serviceForm.video,
-        rules: { blank: false },
-        field: 'Video field',
-      },
-      {
-        name: 'receipt',
-        value: serviceForm.receipt,
-        rules: { blank: false },
-        field: 'Receipt field',
-      },
-      {
-        name: 'description',
-        value: serviceForm.description,
-        rules: { blank: true, minLength: 10 },
-        field: 'Amount field',
+        field: 'Url field',
       },
     ]
     const { messages } = validateInputs(inputsToValidate)
@@ -142,21 +116,21 @@ const ServiceForm: React.FC = () => {
   const alertAndSubmit = (data: FormData) => {
     setAlert(
       'Warning',
-      'Are you sure you want to submit this service record',
+      'Are you sure you want to submit this consumption record',
       true,
       () =>
-        serviceForm._id
-          ? updateService(
-              `/services/${serviceForm._id}/?ordering=-createdAt`,
+        socialForm._id
+          ? updateSocial(
+              `/consumptions/${socialForm._id}/?ordering=-createdAt`,
               data,
               setMessage,
               () => {
-                setShowServiceForm(false)
+                setShowSocialForm(false)
                 resetForm()
               }
             )
-          : postService(`${url}&ordering=-createdAt`, data, setMessage, () => {
-              setShowServiceForm(false)
+          : postSocial(`${url}?ordering=-createdAt`, data, setMessage, () => {
+              setShowSocialForm(false)
               resetForm()
             })
     )
@@ -165,7 +139,7 @@ const ServiceForm: React.FC = () => {
   return (
     <>
       <div
-        onClick={() => setShowServiceForm(false)}
+        onClick={() => setShowSocialForm(false)}
         className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
       >
         <div
@@ -177,67 +151,67 @@ const ServiceForm: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-2">
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Service Title
+                Name
               </label>
               <input
                 className="form-input"
-                name="title"
-                value={serviceForm.title}
+                name="name"
+                value={socialForm.name}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter service title"
+                placeholder="Enter number of name"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Name
+                Social Type
               </label>
               <input
                 className="form-input"
-                name="clientName"
-                value={serviceForm.clientName}
+                name="socialType"
+                value={socialForm.socialType}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client name"
+                placeholder="Enter social type"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Phone
+                Likes
               </label>
               <input
                 className="form-input"
-                name="clientPhone"
-                value={serviceForm.clientPhone}
+                name="likes"
+                value={socialForm.likes}
                 onChange={handleInputChange}
-                type="text"
-                placeholder="Enter client phone"
+                type="number"
+                placeholder="Enter likes"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Address
+                Comments
               </label>
               <input
                 className="form-input"
-                name="clientAddress"
-                value={serviceForm.clientAddress}
+                name="comments"
+                value={socialForm.comments}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client address"
+                placeholder="Enter comments"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Amount
+                Post URL
               </label>
               <input
                 className="form-input"
-                name="amount"
-                value={serviceForm.amount}
+                name="url"
+                value={socialForm.url}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter amount"
+                placeholder="Enter url"
               />
             </div>
             <div className="flex flex-col">
@@ -249,13 +223,13 @@ const ServiceForm: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Service Description
+              Post
             </label>
             <textarea
-              placeholder="Write the description/observation of the service"
+              placeholder="Write the post"
               className="form-input"
-              name="description"
-              value={serviceForm.description}
+              name="post"
+              value={socialForm.post}
               onChange={handleInputChange}
             ></textarea>
           </div>
@@ -271,34 +245,21 @@ const ServiceForm: React.FC = () => {
                 <button className="custom_btn" onClick={handleSubmit}>
                   Submit
                 </button>
-                <label htmlFor="receipt" className="custom_btn ">
+                <label htmlFor="picture" className="custom_btn ">
                   <input
                     className="input-file"
                     type="file"
-                    name="receipt"
-                    id="receipt"
+                    name="picture"
+                    id="picture"
                     accept="image/*"
-                    onChange={handleFileChange('receipt')}
+                    onChange={handleFileChange('picture')}
                   />
                   <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
-                  Receipt
+                  Picture
                 </label>
-                <label htmlFor="video" className="custom_btn ">
-                  <input
-                    className="input-file"
-                    type="file"
-                    name="video"
-                    id="video"
-                    accept="video/*"
-                    onChange={handleFileChange('video')}
-                  />
-                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
-                  Video
-                </label>
-
                 <button
                   className="custom_btn danger ml-auto"
-                  onClick={() => setShowServiceForm(false)}
+                  onClick={() => setShowSocialForm(false)}
                 >
                   Close
                 </button>
@@ -311,4 +272,4 @@ const ServiceForm: React.FC = () => {
   )
 }
 
-export default ServiceForm
+export default SocialForm

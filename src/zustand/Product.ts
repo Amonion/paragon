@@ -54,6 +54,7 @@ export interface Product {
   supAddress: string
   supPhone: string
   purchaseUnit: string
+  consumptionUnit: string
   discount: number
   cartUnits: number
   unitPerPurchase: number
@@ -81,6 +82,7 @@ export const ProductEmpty = {
   discount: 0,
   units: 0,
   unitPerPurchase: 1,
+  consumptionUnit: '',
   costPrice: 0,
   adjustedPrice: 0,
   price: 0,

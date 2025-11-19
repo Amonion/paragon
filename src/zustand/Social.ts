@@ -1,65 +1,57 @@
 import { create } from 'zustand'
-import _debounce from 'lodash/debounce'
 import apiRequest from '@/lib/axios'
 
 interface FetchResponse {
   message: string
   count: number
   page_size: number
-  results: Service[]
-  data: Service
+  results: Social[]
+  data: Social
   result: FetchResponse
 }
 
-export interface Service {
+export interface Social {
   _id: string
-  title: string
-  description: string
-  username: string
-  clientName: string
-  clientPhone: string
-  clientAddress: string
-  amount: number
-  startedAt: null | Date | number
-  endedAt: null | Date | number
-  receipt: string
-  video: string | File
+  name: string
+  post: string
+  socialType: string
+  picture: string | File
+  likes: number
+  comments: number
+  url: string
   staffName: string
   createdAt: Date | null | number
+  updatedAt: Date | null | number
   isChecked?: boolean
   isActive?: boolean
 }
 
-export const ServiceEmpty = {
+export const SocialEmpty = {
   _id: '',
-  title: '',
-  description: '',
-  clientName: '',
-  clientPhone: '',
-  clientAddress: '',
-  amount: 0,
-  startedAt: null,
-  endedAt: null,
-  receipt: '',
-  video: '',
+  name: '',
+  post: '',
+  socialType: '',
+  picture: '',
+  likes: 0,
+  comments: 0,
+  url: '',
   staffName: '',
-  username: '',
+  updatedAt: null,
   createdAt: null,
 }
 
-interface ServiceState {
+interface SocialState {
   count: number
   page_size: number
-  services: Service[]
-  searchedServices: Service[]
+  socials: Social[]
   loading: boolean
-  showServiceForm: boolean
+  showSocialForm: boolean
   isAllChecked: boolean
-  serviceForm: Service
-  setShowServiceForm: (status: boolean) => void
+  socialForm: Social
+  setShowSocialForm: (status: boolean) => void
   resetForm: () => void
-  setForm: (key: keyof Service, value: Service[keyof Service]) => void
-  getServices: (
+  setForm: (key: keyof Social, value: Social[keyof Social]) => void
+  getSocials: (
     url: string,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
@@ -67,7 +59,7 @@ interface ServiceState {
   setLoading?: (loading: boolean) => void
   massDelete: (
     url: string,
-    selectedServices: Record<string, unknown>,
+    selectedSocials: Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void
   ) => Promise<void>
   deleteItem: (
@@ -75,13 +67,13 @@ interface ServiceState {
     setMessage: (message: string, isError: boolean) => void,
     setLoading?: (loading: boolean) => void
   ) => Promise<void>
-  updateService: (
+  updateSocial: (
     url: string,
     updatedItem: FormData | Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void,
     redirect?: () => void
   ) => Promise<void>
-  postService: (
+  postSocial: (
     url: string,
     data: FormData | Record<string, unknown>,
     setMessage: (message: string, isError: boolean) => void,
@@ -91,33 +83,31 @@ interface ServiceState {
   toggleActive: (index: number) => void
   toggleAllSelected: () => void
   reshuffleResults: () => void
-  searchServices: (url: string) => void
 }
 
-const ServiceStore = create<ServiceState>((set) => ({
+const SocialStore = create<SocialState>((set) => ({
   count: 0,
   page_size: 0,
-  services: [],
-  searchedServices: [],
+  socials: [],
   loading: false,
-  showServiceForm: false,
+  showSocialForm: false,
   isAllChecked: false,
-  serviceForm: ServiceEmpty,
+  socialForm: SocialEmpty,
   resetForm: () =>
     set({
-      serviceForm: ServiceEmpty,
+      socialForm: SocialEmpty,
     }),
   setForm: (key, value) =>
     set((state) => ({
-      serviceForm: {
-        ...state.serviceForm,
+      socialForm: {
+        ...state.socialForm,
         [key]: value,
       },
     })),
 
   setProcessedResults: ({ count, page_size, results }: FetchResponse) => {
     if (results) {
-      const updatedResults = results.map((item: Service) => ({
+      const updatedResults = results.map((item: Social) => ({
         ...item,
         isChecked: false,
         isActive: false,
@@ -126,7 +116,7 @@ const ServiceStore = create<ServiceState>((set) => ({
       set({
         count,
         page_size,
-        services: updatedResults,
+        socials: updatedResults,
       })
     }
   },
@@ -135,19 +125,19 @@ const ServiceStore = create<ServiceState>((set) => ({
     set({ loading: loadState })
   },
 
-  setShowServiceForm: (loadState: boolean) => {
-    set({ showServiceForm: loadState })
+  setShowSocialForm: (loadState: boolean) => {
+    set({ showSocialForm: loadState })
   },
 
-  getServices: async (url, setMessage) => {
+  getSocials: async (url, setMessage) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
         setMessage,
-        setLoading: ServiceStore.getState().setLoading,
+        setLoading: SocialStore.getState().setLoading,
       })
       const data = response?.data
       if (data) {
-        ServiceStore.getState().setProcessedResults(data)
+        SocialStore.getState().setProcessedResults(data)
       }
     } catch (error: unknown) {
       console.log(error)
@@ -156,7 +146,7 @@ const ServiceStore = create<ServiceState>((set) => ({
 
   reshuffleResults: async () => {
     set((state) => ({
-      services: state.services.map((item: Service) => ({
+      socials: state.socials.map((item: Social) => ({
         ...item,
         isChecked: false,
         isActive: false,
@@ -164,30 +154,20 @@ const ServiceStore = create<ServiceState>((set) => ({
     }))
   },
 
-  searchServices: _debounce(async (url: string) => {
-    const response = await apiRequest<FetchResponse>(url, {
-      setLoading: ServiceStore.getState().setLoading,
-    })
-    const results = response?.data.results
-    if (results) {
-      set({ searchedServices: results })
-    }
-  }, 1000),
-
   massDelete: async (
     url,
-    selectedServices,
+    selectedSocials,
     setMessage: (message: string, isError: boolean) => void
   ) => {
     const response = await apiRequest<FetchResponse>(url, {
       method: 'PATCH',
-      body: selectedServices,
+      body: selectedSocials,
       setMessage,
-      setLoading: ServiceStore.getState().setLoading,
+      setLoading: SocialStore.getState().setLoading,
     })
     const data = response?.data
     if (data) {
-      ServiceStore.getState().setProcessedResults(data)
+      SocialStore.getState().setProcessedResults(data)
     }
   },
 
@@ -203,21 +183,21 @@ const ServiceStore = create<ServiceState>((set) => ({
     })
     const data = response?.data
     if (data) {
-      ServiceStore.getState().setProcessedResults(data)
+      SocialStore.getState().setProcessedResults(data)
     }
   },
 
-  updateService: async (url, updatedItem, setMessage, redirect) => {
+  updateSocial: async (url, updatedItem, setMessage, redirect) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
         method: 'PATCH',
         body: updatedItem,
         setMessage,
-        setLoading: ServiceStore.getState().setLoading,
+        setLoading: SocialStore.getState().setLoading,
       })
       const data = response.data
       if (data) {
-        ServiceStore.getState().setProcessedResults(data.result)
+        SocialStore.getState().setProcessedResults(data.result)
       }
       if (redirect) redirect()
     } catch (error) {
@@ -227,17 +207,17 @@ const ServiceStore = create<ServiceState>((set) => ({
     }
   },
 
-  postService: async (url, updatedItem, setMessage, redirect) => {
+  postSocial: async (url, updatedItem, setMessage, redirect) => {
     try {
       const response = await apiRequest<FetchResponse>(url, {
         method: 'POST',
         body: updatedItem,
         setMessage,
-        setLoading: ServiceStore.getState().setLoading,
+        setLoading: SocialStore.getState().setLoading,
       })
       const data = response.data
       if (data) {
-        ServiceStore.getState().setProcessedResults(data.result)
+        SocialStore.getState().setProcessedResults(data.result)
       }
       if (redirect) redirect()
     } catch (error) {
@@ -249,20 +229,20 @@ const ServiceStore = create<ServiceState>((set) => ({
 
   toggleActive: (index: number) => {
     set((state) => {
-      const isCurrentlyActive = state.services[index]?.isActive
-      const updatedResults = state.services.map((tertiary, idx) => ({
+      const isCurrentlyActive = state.socials[index]?.isActive
+      const updatedResults = state.socials.map((tertiary, idx) => ({
         ...tertiary,
         isActive: idx === index ? !isCurrentlyActive : false,
       }))
       return {
-        services: updatedResults,
+        socials: updatedResults,
       }
     })
   },
 
   toggleChecked: (index: number) => {
     set((state) => {
-      const updatedResults = state.services.map((tertiary, idx) =>
+      const updatedResults = state.socials.map((tertiary, idx) =>
         idx === index
           ? { ...tertiary, isChecked: !tertiary.isChecked }
           : tertiary
@@ -273,7 +253,7 @@ const ServiceStore = create<ServiceState>((set) => ({
       )
 
       return {
-        services: updatedResults,
+        socials: updatedResults,
         isAllChecked,
       }
     })
@@ -282,18 +262,18 @@ const ServiceStore = create<ServiceState>((set) => ({
   toggleAllSelected: () => {
     set((state) => {
       const isAllChecked =
-        state.services.length === 0 ? false : !state.isAllChecked
-      const updatedResults = state.services.map((item) => ({
+        state.socials.length === 0 ? false : !state.isAllChecked
+      const updatedResults = state.socials.map((item) => ({
         ...item,
         isChecked: isAllChecked,
       }))
 
       return {
-        services: updatedResults,
+        socials: updatedResults,
         isAllChecked,
       }
     })
   },
 }))
 
-export default ServiceStore
+export default SocialStore

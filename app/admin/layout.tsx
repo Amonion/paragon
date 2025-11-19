@@ -16,6 +16,7 @@ import TransactionStore, { Transaction } from '@/src/zustand/Transaction'
 import NotificationStore, {
   Notification,
 } from '@/src/zustand/notification/Notification'
+import ProductStore from '@/src/zustand/Product'
 
 interface NotificationResponse {
   notification: Notification
@@ -29,11 +30,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   const { transactions, isNotification } = TransactionStore()
-  const { message } = MessageStore()
+  const { buyingProducts, getBuyingProducts } = ProductStore()
+  const { message, setMessage } = MessageStore()
   const { headerHeight } = NavStore()
   const [isMd, setIsMd] = useState(false)
   const pathname = usePathname()
   const socket = useSocket()
+
+  useEffect(() => {
+    if (buyingProducts.length === 0) {
+      const params = `?page_size=20&page=1&ordering=name&isBuyable=true`
+      getBuyingProducts(`/products/${params}`, setMessage)
+    }
+  }, [pathname])
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 990px)')

@@ -45,10 +45,12 @@ const ProductTable: React.FC = () => {
   }, [pathname])
 
   useEffect(() => {
-    const params = `?page_size=${page_size}&page=${
-      page ? page : 1
-    }&ordering=${sort}`
-    getProducts(`${url}${params}`, setMessage)
+    if (products.length === 0) {
+      const params = `?page_size=${page_size}&page=${
+        page ? page : 1
+      }&ordering=${sort}`
+      getProducts(`${url}${params}`, setMessage)
+    }
   }, [page])
 
   const deleteProduct = async (id: string, index: number) => {
@@ -219,7 +221,11 @@ const ProductTable: React.FC = () => {
                 )}
                 <Link
                   className="mx-3"
-                  href={`/admin/products/edit-product/${item._id}`}
+                  href={
+                    item.isBuyable
+                      ? `/admin/products/edit-buy-product/${item._id}`
+                      : `/admin/products/edit-product/${item._id}`
+                  }
                 >
                   <Edit className="cursor-pointer" size={18} />
                 </Link>
@@ -265,6 +271,12 @@ const ProductTable: React.FC = () => {
               className="tableActions"
             >
               <i className="bi bi-plus-circle"></i>
+            </Link>
+            <Link
+              href={`/admin/products/create-buy-product`}
+              className="tableActions"
+            >
+              <i className="bi bi-backpack"></i>
             </Link>
             {/* <div onClick={updateExam} className="tableActions">
               <i className="bi bi-table"></i>

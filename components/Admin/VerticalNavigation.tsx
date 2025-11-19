@@ -16,11 +16,13 @@ import {
   ArrowLeftRight,
   Boxes,
   Settings,
-  Wrench, // Comments
+  Wrench,
+  HeartHandshake, // Comments
 } from 'lucide-react'
 
 export default function VerticalNavigation() {
   const router = useRouter()
+  const [isSocial, toggleSocial] = useState(false)
   const [isTransaction, toggleTransaction] = useState(false)
   const [isMsgActive, toggleMessages] = useState(false)
   const [isActivities, toggleCompetition] = useState(false)
@@ -38,6 +40,7 @@ export default function VerticalNavigation() {
     togglePages(false)
     toggleService(false)
     toggleTransaction(false)
+    toggleSocial(false)
     clearNav()
   }
 
@@ -142,6 +145,30 @@ export default function VerticalNavigation() {
             Reviews
           </Link>
 
+          <div className={`v_nav_items ${isSocial ? 'active two' : ''}`}>
+            <div
+              className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
+            >
+              <Link className="flex flex-1 items-center" href="/admin/socials">
+                <HeartHandshake className="mr-3 w-5 h-5" />
+                Socials
+              </Link>
+              <i
+                onClick={() => toggleSocial((e) => !e)}
+                className={`bi bi-caret-down-fill ml-auto ${
+                  isSocial ? 'active' : ''
+                }`}
+              ></i>
+            </div>
+            <div className="nav_dropdown">
+              <Link className="inner_nav_items" href="/admin/socials">
+                Social Reports
+              </Link>
+              <Link className="inner_nav_items" href="/admin/socials/marketing">
+                Marketing Reports
+              </Link>
+            </div>
+          </div>
           <div className={`v_nav_items ${isPagesActive ? 'active trip' : ''}`}>
             <div
               onClick={() => togglePages((e) => !e)}
@@ -180,7 +207,7 @@ export default function VerticalNavigation() {
             </div>
           </div>
 
-          <div className={`v_nav_items ${isService ? 'active two' : ''}`}>
+          <div className={`v_nav_items ${isService ? 'active trip' : ''}`}>
             <div
               className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
             >
@@ -189,7 +216,7 @@ export default function VerticalNavigation() {
                 href="/admin/operations"
               >
                 <Wrench className="mr-3 w-5 h-5" />
-                Operations
+                Production
               </Link>
               <i
                 onClick={() => toggleService((e) => !e)}
@@ -199,6 +226,12 @@ export default function VerticalNavigation() {
               ></i>
             </div>
             <div className="nav_dropdown">
+              <Link
+                className="inner_nav_items"
+                href="/admin/operations/consumptions"
+              >
+                Consumption
+              </Link>
               <Link
                 className="inner_nav_items"
                 href="/admin/operations/services"

@@ -5,29 +5,31 @@ import { appendForm } from '@/lib/helpers'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import { validateInputs } from '@/lib/validation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
-import ServiceStore from '@/src/zustand/Service'
+import ConsumptionStore from '@/src/zustand/Consumption'
+import ProductStore, { Product } from '@/src/zustand/Product'
 
-const ServiceForm: React.FC = () => {
+const ConsumptionForm: React.FC = () => {
   const {
-    serviceForm,
+    consumptionForm,
     loading,
-    updateService,
-    postService,
+    updateConsumption,
+    postConsumption,
     setForm,
     resetForm,
-    setShowServiceForm,
+    setShowConsumptionForm,
     reshuffleResults,
-  } = ServiceStore()
+  } = ConsumptionStore()
+  const { buyingProducts } = ProductStore()
   const { setMessage } = MessageStore()
   const pathname = usePathname()
   const { setAlert } = AlartStore()
   const { user } = AuthStore()
+  const [isFeed, toggleFeed] = useState(false)
   const defaultFrom = () => {
     const d = new Date()
     d.setHours(0, 0, 0, 0)
     return d
   }
-
   const defaultTo = () => {
     const d = new Date()
     d.setHours(23, 59, 59, 999)
@@ -35,25 +37,32 @@ const ServiceForm: React.FC = () => {
   }
   const [fromDate] = useState<Date>(defaultFrom)
   const [toDate] = useState<Date>(defaultTo)
-  const url = `/services?dateFrom=${fromDate}&dateTo=${toDate}`
+  const url = `/consumptions?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
     reshuffleResults()
   }, [pathname])
 
+  const selectFeed = (feed: Product) => {
+    ConsumptionStore.setState((prev) => {
+      return {
+        consumptionForm: {
+          ...prev.consumptionForm,
+          feed: feed.name,
+          feedId: feed._id,
+          consumptionUnit: feed.consumptionUnit,
+        },
+      }
+    })
+    toggleFeed(false)
+  }
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setForm(name as keyof typeof serviceForm, value)
+    setForm(name as keyof typeof consumptionForm, value)
   }
-
-  const handleFileChange =
-    (key: keyof typeof serviceForm) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files ? e.target.files[0] : null
-      setForm(key, file)
-    }
 
   const handleSubmit = async () => {
     if (!user) {
@@ -69,52 +78,59 @@ const ServiceForm: React.FC = () => {
         field: 'Staff Name field',
       },
       {
-        name: 'title',
-        value: serviceForm.title,
+        name: 'feedId',
+        value: consumptionForm.feedId,
+        rules: { blank: false },
+        field: 'Feed field',
+      },
+      {
+        name: 'birds',
+        value: consumptionForm.birds,
         rules: { blank: true },
-        field: 'Name field',
+        field: 'Birds field',
       },
       {
-        name: 'clientName',
-        value: serviceForm.clientName,
+        name: 'consumption',
+        value: consumptionForm.consumption,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Consumption field',
       },
       {
-        name: 'clientPhone',
-        value: serviceForm.clientPhone,
+        name: 'birdAge',
+        value: consumptionForm.birdAge,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Bird age field',
       },
       {
-        name: 'clientAddress',
-        value: serviceForm.clientAddress,
+        name: 'birdClass',
+        value: consumptionForm.birdClass,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Bird class field',
       },
       {
-        name: 'amount',
-        value: serviceForm.amount,
+        name: 'feed',
+        value: consumptionForm.feed,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Feed field',
       },
       {
-        name: 'video',
-        value: serviceForm.video,
+        name: 'consumptionUnit',
+        value: consumptionForm.consumptionUnit,
         rules: { blank: false },
-        field: 'Video field',
+        field: 'Consumption unit field',
       },
       {
-        name: 'receipt',
-        value: serviceForm.receipt,
+        name: 'weight',
+        value: consumptionForm.weight,
         rules: { blank: false },
-        field: 'Receipt field',
+        field: 'Weight field',
       },
+
       {
-        name: 'description',
-        value: serviceForm.description,
-        rules: { blank: true, minLength: 10 },
-        field: 'Amount field',
+        name: 'remark',
+        value: consumptionForm.remark,
+        rules: { blank: false, maxLength: 10 },
+        field: 'Remark field',
       },
     ]
     const { messages } = validateInputs(inputsToValidate)
@@ -142,30 +158,35 @@ const ServiceForm: React.FC = () => {
   const alertAndSubmit = (data: FormData) => {
     setAlert(
       'Warning',
-      'Are you sure you want to submit this service record',
+      'Are you sure you want to submit this consumption record',
       true,
       () =>
-        serviceForm._id
-          ? updateService(
-              `/services/${serviceForm._id}/?ordering=-createdAt`,
+        consumptionForm._id
+          ? updateConsumption(
+              `/consumptions/${consumptionForm._id}/?ordering=-createdAt`,
               data,
               setMessage,
               () => {
-                setShowServiceForm(false)
+                setShowConsumptionForm(false)
                 resetForm()
               }
             )
-          : postService(`${url}&ordering=-createdAt`, data, setMessage, () => {
-              setShowServiceForm(false)
-              resetForm()
-            })
+          : postConsumption(
+              `${url}&ordering=-createdAt`,
+              data,
+              setMessage,
+              () => {
+                setShowConsumptionForm(false)
+                resetForm()
+              }
+            )
     )
   }
 
   return (
     <>
       <div
-        onClick={() => setShowServiceForm(false)}
+        onClick={() => setShowConsumptionForm(false)}
         className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
       >
         <div
@@ -177,67 +198,98 @@ const ServiceForm: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-2">
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Service Title
+                Birds
               </label>
               <input
                 className="form-input"
-                name="title"
-                value={serviceForm.title}
+                name="birds"
+                value={consumptionForm.birds}
                 onChange={handleInputChange}
-                type="text"
-                placeholder="Enter service title"
+                type="number"
+                placeholder="Enter number of birds"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Name
+                Bird Age
               </label>
               <input
                 className="form-input"
-                name="clientName"
-                value={serviceForm.clientName}
+                name="birdAge"
+                value={consumptionForm.birdAge}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client name"
+                placeholder="Enter bird age"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Phone
+                Bird Class
               </label>
               <input
                 className="form-input"
-                name="clientPhone"
-                value={serviceForm.clientPhone}
+                name="birdClass"
+                value={consumptionForm.birdClass}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client phone"
+                placeholder="Enter bird class"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Address
+                Weight
               </label>
               <input
                 className="form-input"
-                name="clientAddress"
-                value={serviceForm.clientAddress}
+                name="weight"
+                value={consumptionForm.weight}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client address"
+                placeholder="Enter weight"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Amount
+                Feed
+              </label>
+              <div className="relative">
+                <div
+                  onClick={() => toggleFeed((e) => !e)}
+                  className="form-input cursor-pointer"
+                >
+                  {consumptionForm.feed ? consumptionForm.feed : 'Select Feed'}
+                  <i
+                    className={`bi bi-caret-down-fill ml-auto ${
+                      isFeed ? 'active' : ''
+                    }`}
+                  ></i>
+                </div>
+                {isFeed && (
+                  <div className="dropdownList">
+                    {buyingProducts.map((item, index) => (
+                      <div
+                        onClick={() => selectFeed(item)}
+                        key={index}
+                        className="p-3 cursor-pointer border-b border-b-[var(--border)]"
+                      >
+                        {item.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
+                Consumption
               </label>
               <input
                 className="form-input"
-                name="amount"
-                value={serviceForm.amount}
+                name="consumption"
+                value={consumptionForm.consumption}
                 onChange={handleInputChange}
-                type="text"
-                placeholder="Enter amount"
+                type="number"
+                placeholder="Enter consumption"
               />
             </div>
             <div className="flex flex-col">
@@ -249,13 +301,13 @@ const ServiceForm: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Service Description
+              Consumption Remark
             </label>
             <textarea
-              placeholder="Write the description/observation of the service"
+              placeholder="Write the remark/observation of the consumption"
               className="form-input"
-              name="description"
-              value={serviceForm.description}
+              name="remark"
+              value={consumptionForm.remark}
               onChange={handleInputChange}
             ></textarea>
           </div>
@@ -271,34 +323,10 @@ const ServiceForm: React.FC = () => {
                 <button className="custom_btn" onClick={handleSubmit}>
                   Submit
                 </button>
-                <label htmlFor="receipt" className="custom_btn ">
-                  <input
-                    className="input-file"
-                    type="file"
-                    name="receipt"
-                    id="receipt"
-                    accept="image/*"
-                    onChange={handleFileChange('receipt')}
-                  />
-                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
-                  Receipt
-                </label>
-                <label htmlFor="video" className="custom_btn ">
-                  <input
-                    className="input-file"
-                    type="file"
-                    name="video"
-                    id="video"
-                    accept="video/*"
-                    onChange={handleFileChange('video')}
-                  />
-                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
-                  Video
-                </label>
 
                 <button
                   className="custom_btn danger ml-auto"
-                  onClick={() => setShowServiceForm(false)}
+                  onClick={() => setShowConsumptionForm(false)}
                 >
                   Close
                 </button>
@@ -311,4 +339,4 @@ const ServiceForm: React.FC = () => {
   )
 }
 
-export default ServiceForm
+export default ConsumptionForm

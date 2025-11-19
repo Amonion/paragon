@@ -118,6 +118,18 @@ const CreateBuyProduct: React.FC = () => {
         rules: { blank: false, maxSize: 5000 },
         field: 'Description file',
       },
+      {
+        name: 'unitPerPurchase',
+        value: productForm.unitPerPurchase,
+        rules: { blank: false, maxSize: 5000 },
+        field: 'Unit per purchase',
+      },
+      {
+        name: 'consumptionUnit',
+        value: productForm.consumptionUnit,
+        rules: { blank: true, maxSize: 5000 },
+        field: 'Consumption Unit',
+      },
     ]
 
     const { messages } = validateInputs(inputsToValidate)
@@ -237,7 +249,34 @@ const CreateBuyProduct: React.FC = () => {
               placeholder="Enter purchase unit name"
             />
           </div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Consumption Unit Per Purchase
+            </label>
+            <input
+              className="form-input"
+              name="unitPerPurchase"
+              value={productForm.unitPerPurchase}
+              onChange={handleInputChange}
+              type="number"
+              placeholder="Enter consumption unit"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="label" htmlFor="">
+              Consumption Unit Name
+            </label>
+            <input
+              className="form-input"
+              name="consumptionUnit"
+              value={productForm.consumptionUnit}
+              onChange={handleInputChange}
+              type="text"
+              placeholder="Enter consumption unit name"
+            />
+          </div>
         </div>
+
         <div className="flex w-full justify-center">
           <div className="relative my-5 w-full max-w-[200px] h-[150px] rounded-xl  overflow-hidden">
             {preview ? (
@@ -250,11 +289,12 @@ const CreateBuyProduct: React.FC = () => {
           </div>
         </div>
 
-        <QuillEditor
-          contentValue={productForm.description}
-          onChange={(content) => setForm('description', content)}
-        />
-
+        <div className="flex justify-center">
+          <QuillEditor
+            contentValue={productForm.description}
+            onChange={(content) => setForm('description', content)}
+          />
+        </div>
         <div className="table-action flex flex-wrap">
           {loading ? (
             <button className="custom_btn">
