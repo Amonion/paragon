@@ -149,9 +149,12 @@ export default function VerticalNavigation() {
             <div
               className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
             >
-              <Link className="flex flex-1 items-center" href="/admin/socials">
+              <Link
+                className="flex flex-1 items-center"
+                href="/admin/socials/strategies"
+              >
                 <HeartHandshake className="mr-3 w-5 h-5" />
-                Socials
+                Monthly Strategy
               </Link>
               <i
                 onClick={() => toggleSocial((e) => !e)}
