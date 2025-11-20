@@ -18,7 +18,7 @@ const SocialForm: React.FC = () => {
   const { setMessage } = MessageStore()
   const { setAlert } = AlartStore()
   const { user } = AuthStore()
-  const url = `/socials/`
+  const url = `/socials`
 
   const handleFileChange =
     (key: keyof typeof socialForm) =>
@@ -159,7 +159,7 @@ const SocialForm: React.FC = () => {
                 value={socialForm.name}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter number of name"
+                placeholder="Enter social media name"
               />
             </div>
             <div className="flex flex-col">

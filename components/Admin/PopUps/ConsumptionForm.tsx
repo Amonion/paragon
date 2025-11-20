@@ -25,19 +25,7 @@ const ConsumptionForm: React.FC = () => {
   const { setAlert } = AlartStore()
   const { user } = AuthStore()
   const [isFeed, toggleFeed] = useState(false)
-  const defaultFrom = () => {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
-  }
-  const defaultTo = () => {
-    const d = new Date()
-    d.setHours(23, 59, 59, 999)
-    return d
-  }
-  const [fromDate] = useState<Date>(defaultFrom)
-  const [toDate] = useState<Date>(defaultTo)
-  const url = `/consumptions?dateFrom=${fromDate}&dateTo=${toDate}`
+  const url = `/consumptions`
 
   useEffect(() => {
     reshuffleResults()
@@ -172,7 +160,7 @@ const ConsumptionForm: React.FC = () => {
               }
             )
           : postConsumption(
-              `${url}&ordering=-createdAt`,
+              `${url}?ordering=-createdAt`,
               data,
               setMessage,
               () => {

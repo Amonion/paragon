@@ -6,10 +6,10 @@ import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import LinkedPagination from '@/components/Admin/LinkedPagination'
 import { formatDateToDDMMYY } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
-import SocialStore, { Social } from '@/src/zustand/Social'
-import SocialForm from '@/components/Admin/PopUps/SocialForm'
+import MarketingStore, { Marketing } from '@/src/zustand/Marketing'
+import MarketingForm from '@/components/Admin/PopUps/MarketingForm'
 
-const Socials: React.FC = () => {
+const Marketings: React.FC = () => {
   const [page_size] = useState(20)
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
@@ -17,40 +17,33 @@ const Socials: React.FC = () => {
   const {
     loading,
     count,
-    socials,
+    marketings,
     isAllChecked,
-    showSocialForm,
-    setShowSocialForm,
+    showMarketingForm,
+    setShowMarketingForm,
     deleteItem,
-    getSocials,
+    getMarketings,
     toggleActive,
     toggleAllSelected,
-  } = SocialStore()
+  } = MarketingStore()
   const pathname = usePathname()
   const { page, username } = useParams()
-
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const [toDate, setToDate] = useState<Date | null>(null)
 
-  const url = `/socials${
-    fromDate && toDate
-      ? `?dateFrom=${fromDate.toISOString()}&dateTo=${toDate.toISOString()}`
-      : ''
-  }`
-
   useEffect(() => {
-    if (fromDate && toDate) {
-      const params = `&page_size=${page_size}&page=${
-        page ? page : 1
-      }&ordering=${sort}`
+    const url = `/marketing${
+      fromDate && toDate
+        ? `?dateFrom=${fromDate.toISOString()}&dateTo=${toDate.toISOString()}&`
+        : '?'
+    }page_size=${page_size}&page=${page ? page : 1}&ordering=${sort}`
 
-      getSocials(`${url}${params}`, setMessage)
-    }
+    getMarketings(`${url}`, setMessage)
   }, [page, pathname, username, fromDate, toDate])
 
-  const startEdit = (social: Social) => {
-    SocialStore.setState({ socialForm: social })
-    setShowSocialForm(true)
+  const startEdit = (marketing: Marketing) => {
+    MarketingStore.setState({ marketingForm: marketing })
+    setShowMarketingForm(true)
   }
 
   const startDelete = (id: string) => {
@@ -58,7 +51,7 @@ const Socials: React.FC = () => {
       'Warning',
       'Are you sure you want to delete this social record?',
       true,
-      () => deleteItem(`/socials/${id}`, setMessage)
+      () => deleteItem(`/marketing/${id}`, setMessage)
     )
   }
 
@@ -73,24 +66,24 @@ const Socials: React.FC = () => {
       />
 
       <div className="overflow-auto mb-5">
-        {socials.length > 0 ? (
+        {marketings.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
                 <th>Staff</th>
                 <th>Name</th>
-                <th>Picture</th>
-                <th>Post</th>
-                <th>Likes</th>
-                <th>Replies</th>
-                <th>Type</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>username</th>
+                <th>Email</th>
+                <th>Remark</th>
                 <th>Date</th>
               </tr>
             </thead>
 
             <tbody>
-              {socials.map((item, index) => (
+              {marketings.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}
@@ -117,44 +110,24 @@ const Socials: React.FC = () => {
                           className="card_list_item"
                           onClick={() => startEdit(item)}
                         >
-                          Edit consumptions
+                          Edit Report
                         </div>
                         <div
                           className="card_list_item"
                           onClick={() => startDelete(item._id)}
                         >
-                          Delete consumptions
+                          Delete Report
                         </div>
                       </div>
                     )}
                   </td>
                   <td>{item.staffName}</td>
-                  <td>{item.name}</td>
-                  <td>
-                    <div className="relative w-[100px] flex justify-center h-[50px] overflow-hidden rounded-[5px]">
-                      {item.picture ? (
-                        <Image
-                          alt={`email of ${item.picture}`}
-                          src={String(item.picture)}
-                          width={0}
-                          sizes="100vw"
-                          height={0}
-                          className="w-[100px] h-[50px] overflow-hidden rounded-[5px]"
-                          style={{
-                            width: 'auto',
-                            height: '100%',
-                            objectFit: 'contain',
-                          }}
-                        />
-                      ) : (
-                        <span>N/A</span>
-                      )}
-                    </div>
-                  </td>
-                  <td>{item.post}</td>
-                  <td>{item.likes}</td>
-                  <td>{item.comments}</td>
-                  <td>{item.socialType}</td>
+                  <td>{item.customerName}</td>
+                  <td>{item.customerPhone}</td>
+                  <td>{item.customerAddress}</td>
+                  <td>{item.username}</td>
+                  <td>{item.email}</td>
+                  <td>{item.remark}</td>
                   <td>{formatDateToDDMMYY(item.createdAt)}</td>
                 </tr>
               ))}
@@ -162,7 +135,7 @@ const Socials: React.FC = () => {
           </table>
         ) : (
           <div className="relative flex justify-center">
-            <div className="not_found_text">No consumptions Found</div>
+            <div className="not_found_text">No Marketing Report Found</div>
             <Image
               className="max-w-[300px]"
               alt={`no record`}
@@ -191,7 +164,7 @@ const Socials: React.FC = () => {
               ></i>
             </div>
             <div
-              onClick={() => setShowSocialForm(!showSocialForm)}
+              onClick={() => setShowMarketingForm(!showMarketingForm)}
               className="tableActions"
             >
               <i className="bi bi-plus-circle"></i>
@@ -200,11 +173,15 @@ const Socials: React.FC = () => {
         </div>
       </div>
       <div className="card_body sharp">
-        <LinkedPagination url="/admin/socials" count={count} page_size={20} />
+        <LinkedPagination
+          url="/admin/socials/marketings"
+          count={count}
+          page_size={20}
+        />
       </div>
-      {showSocialForm && <SocialForm />}
+      {showMarketingForm && <MarketingForm />}
     </>
   )
 }
 
-export default Socials
+export default Marketings

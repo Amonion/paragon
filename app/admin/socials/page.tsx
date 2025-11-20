@@ -32,20 +32,14 @@ const Socials: React.FC = () => {
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const [toDate, setToDate] = useState<Date | null>(null)
 
-  const url = `/socials${
-    fromDate && toDate
-      ? `?dateFrom=${fromDate.toISOString()}&dateTo=${toDate.toISOString()}`
-      : ''
-  }`
-
   useEffect(() => {
-    if (fromDate && toDate) {
-      const params = `&page_size=${page_size}&page=${
-        page ? page : 1
-      }&ordering=${sort}`
+    const url = `/socials${
+      fromDate && toDate
+        ? `?dateFrom=${fromDate.toISOString()}&dateTo=${toDate.toISOString()}&`
+        : '?'
+    }page_size=${page_size}&page=${page ? page : 1}&ordering=${sort}`
 
-      getSocials(`${url}${params}`, setMessage)
-    }
+    getSocials(`${url}`, setMessage)
   }, [page, pathname, username, fromDate, toDate])
 
   const startEdit = (social: Social) => {

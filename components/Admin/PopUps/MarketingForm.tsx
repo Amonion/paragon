@@ -1,46 +1,31 @@
 'use client'
-import { useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 import { appendForm } from '@/lib/helpers'
 import { AlartStore, MessageStore } from '@/src/zustand/notification/Message'
 import { validateInputs } from '@/lib/validation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
-import ServiceStore from '@/src/zustand/Service'
+import MarketingStore from '@/src/zustand/Marketing'
 
-const ServiceForm: React.FC = () => {
+const MarketingForm: React.FC = () => {
   const {
-    serviceForm,
+    marketingForm,
     loading,
-    updateService,
-    postService,
+    updateMarketing,
+    postMarketing,
     setForm,
     resetForm,
-    setShowServiceForm,
-    reshuffleResults,
-  } = ServiceStore()
+    setShowMarketingForm,
+  } = MarketingStore()
   const { setMessage } = MessageStore()
-  const pathname = usePathname()
   const { setAlert } = AlartStore()
   const { user } = AuthStore()
-  const url = `/services`
-
-  useEffect(() => {
-    reshuffleResults()
-  }, [pathname])
+  const url = `/marketing`
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
-    setForm(name as keyof typeof serviceForm, value)
+    setForm(name as keyof typeof marketingForm, value)
   }
-
-  const handleFileChange =
-    (key: keyof typeof serviceForm) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files ? e.target.files[0] : null
-      setForm(key, file)
-    }
 
   const handleSubmit = async () => {
     if (!user) {
@@ -56,52 +41,35 @@ const ServiceForm: React.FC = () => {
         field: 'Staff Name field',
       },
       {
-        name: 'title',
-        value: serviceForm.title,
+        name: 'customerName',
+        value: marketingForm.customerName,
+        rules: { blank: false },
+        field: 'Name type field',
+      },
+      {
+        name: 'customerAddress',
+        value: marketingForm.customerAddress,
+        rules: { blank: false },
+        field: 'Address field',
+      },
+      {
+        name: 'customerPhone',
+        value: marketingForm.customerPhone,
         rules: { blank: true },
-        field: 'Name field',
+        field: 'Phone field',
       },
       {
-        name: 'clientName',
-        value: serviceForm.clientName,
+        name: 'username',
+        value: marketingForm.username,
         rules: { blank: false },
-        field: 'Name field',
+        field: 'Username field',
       },
+
       {
-        name: 'clientPhone',
-        value: serviceForm.clientPhone,
+        name: 'email',
+        value: marketingForm.email,
         rules: { blank: false },
-        field: 'Name field',
-      },
-      {
-        name: 'clientAddress',
-        value: serviceForm.clientAddress,
-        rules: { blank: false },
-        field: 'Name field',
-      },
-      {
-        name: 'amount',
-        value: serviceForm.amount,
-        rules: { blank: false },
-        field: 'Name field',
-      },
-      {
-        name: 'video',
-        value: serviceForm.video,
-        rules: { blank: false },
-        field: 'Video field',
-      },
-      {
-        name: 'receipt',
-        value: serviceForm.receipt,
-        rules: { blank: false },
-        field: 'Receipt field',
-      },
-      {
-        name: 'description',
-        value: serviceForm.description,
-        rules: { blank: true, minLength: 10 },
-        field: 'Amount field',
+        field: 'Like field',
       },
     ]
     const { messages } = validateInputs(inputsToValidate)
@@ -129,30 +97,35 @@ const ServiceForm: React.FC = () => {
   const alertAndSubmit = (data: FormData) => {
     setAlert(
       'Warning',
-      'Are you sure you want to submit this service record',
+      'Are you sure you want to submit this consumption record',
       true,
       () =>
-        serviceForm._id
-          ? updateService(
-              `/services/${serviceForm._id}/?ordering=-createdAt`,
+        marketingForm._id
+          ? updateMarketing(
+              `/marketing/${marketingForm._id}/?ordering=-createdAt`,
               data,
               setMessage,
               () => {
-                setShowServiceForm(false)
+                setShowMarketingForm(false)
                 resetForm()
               }
             )
-          : postService(`${url}?ordering=-createdAt`, data, setMessage, () => {
-              setShowServiceForm(false)
-              resetForm()
-            })
+          : postMarketing(
+              `${url}?ordering=-createdAt`,
+              data,
+              setMessage,
+              () => {
+                setShowMarketingForm(false)
+                resetForm()
+              }
+            )
     )
   }
 
   return (
     <>
       <div
-        onClick={() => setShowServiceForm(false)}
+        onClick={() => setShowMarketingForm(false)}
         className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
       >
         <div
@@ -164,67 +137,67 @@ const ServiceForm: React.FC = () => {
           <div className="grid sm:grid-cols-2 gap-2">
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Service Title
+                Customer Name
               </label>
               <input
                 className="form-input"
-                name="title"
-                value={serviceForm.title}
+                name="customerName"
+                value={marketingForm.customerName}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter service title"
+                placeholder="Enter customer name"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Name
+                Customer Address
               </label>
               <input
                 className="form-input"
-                name="clientName"
-                value={serviceForm.clientName}
+                name="customerAddress"
+                value={marketingForm.customerAddress}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client name"
+                placeholder="Enter customer address"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Phone
+                Customer Phone
               </label>
               <input
                 className="form-input"
-                name="clientPhone"
-                value={serviceForm.clientPhone}
+                name="customerPhone"
+                value={marketingForm.customerPhone}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client phone"
+                placeholder="Enter customer phone"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Address
+                Customer Email
               </label>
               <input
                 className="form-input"
-                name="clientAddress"
-                value={serviceForm.clientAddress}
+                name="email"
+                value={marketingForm.email}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client address"
+                placeholder="Enter email"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Amount
+                Customer Username
               </label>
               <input
                 className="form-input"
-                name="amount"
-                value={serviceForm.amount}
+                name="username"
+                value={marketingForm.username}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter amount"
+                placeholder="Enter username"
               />
             </div>
             <div className="flex flex-col">
@@ -236,13 +209,13 @@ const ServiceForm: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Service Description
+              Remark
             </label>
             <textarea
-              placeholder="Write the description/observation of the service"
+              placeholder="Write your marketing remark"
               className="form-input"
-              name="description"
-              value={serviceForm.description}
+              name="remark"
+              value={marketingForm.remark}
               onChange={handleInputChange}
             ></textarea>
           </div>
@@ -258,34 +231,10 @@ const ServiceForm: React.FC = () => {
                 <button className="custom_btn" onClick={handleSubmit}>
                   Submit
                 </button>
-                <label htmlFor="receipt" className="custom_btn ">
-                  <input
-                    className="input-file"
-                    type="file"
-                    name="receipt"
-                    id="receipt"
-                    accept="image/*"
-                    onChange={handleFileChange('receipt')}
-                  />
-                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
-                  Receipt
-                </label>
-                <label htmlFor="video" className="custom_btn ">
-                  <input
-                    className="input-file"
-                    type="file"
-                    name="video"
-                    id="video"
-                    accept="video/*"
-                    onChange={handleFileChange('video')}
-                  />
-                  <i className="bi bi-cloud-arrow-up text-2xl mr-2"></i>
-                  Video
-                </label>
 
                 <button
                   className="custom_btn danger ml-auto"
-                  onClick={() => setShowServiceForm(false)}
+                  onClick={() => setShowMarketingForm(false)}
                 >
                   Close
                 </button>
@@ -298,4 +247,4 @@ const ServiceForm: React.FC = () => {
   )
 }
 
-export default ServiceForm
+export default MarketingForm

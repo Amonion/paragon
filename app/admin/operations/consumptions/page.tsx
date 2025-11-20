@@ -28,28 +28,19 @@ const Consumptions: React.FC = () => {
   } = ConsumptionStore()
   const pathname = usePathname()
   const { page, username } = useParams()
-  const defaultFrom = () => {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
-  }
 
-  const defaultTo = () => {
-    const d = new Date()
-    d.setHours(23, 59, 59, 999)
-    return d
-  }
-  const [fromDate, setFromDate] = useState<Date>(defaultFrom)
-  const [toDate, setToDate] = useState<Date>(defaultTo)
-  const url = `/consumptions?dateFrom=${fromDate}&dateTo=${toDate}`
+  const [fromDate, setFromDate] = useState<Date | null>(null)
+  const [toDate, setToDate] = useState<Date | null>(null)
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      const params = `&page_size=${page_size}&page=${
-        page ? page : 1
-      }&ordering=${sort}`
-      getConsumptions(`${url}${params}`, setMessage)
-    }
+    // if (consumptions.length === 0) {
+    const params = `/consumptions${
+      fromDate && toDate
+        ? `?dateFrom=${fromDate.toISOString()}&dateTo=${toDate.toISOString()}&`
+        : '?'
+    }page_size=${page_size}&page=${page ? page : 1}&ordering=${sort}`
+    getConsumptions(`${params}`, setMessage)
+    // }
   }, [page, pathname, username, toDate, fromDate])
 
   const startEdit = (consumption: Consumption) => {
@@ -70,8 +61,8 @@ const Consumptions: React.FC = () => {
     <>
       <StatDuration
         title={`Daily Consumptions`}
-        fromDate={fromDate}
-        toDate={toDate}
+        fromDate={fromDate || new Date()}
+        toDate={toDate || new Date()}
         setFromDate={setFromDate}
         setToDate={setToDate}
       />
