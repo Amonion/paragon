@@ -27,7 +27,7 @@ export const BarEmpty = {
   date: '',
 }
 
-const ProductEmpty = {
+export const ProductEmpty = {
   _id: '',
   name: '',
   supName: '',
@@ -38,6 +38,7 @@ const ProductEmpty = {
   discount: 0,
   units: 0,
   unitPerPurchase: 1,
+  consumptionUnit: '',
   costPrice: 0,
   adjustedPrice: 0,
   price: 0,
