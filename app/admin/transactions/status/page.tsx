@@ -79,7 +79,7 @@ const Deliveries: React.FC = () => {
                 <th>Staff</th>
                 <th>From</th>
                 <th>Delivery</th>
-                <th>Distance</th>
+                <th>Guide</th>
                 <th>Fuel</th>
                 <th>Action</th>
               </tr>
@@ -127,7 +127,7 @@ const Deliveries: React.FC = () => {
                     {formatTimeTo12Hour(item.startedAt)} <br />
                     {formatTimeTo12Hour(item.endedAt)}
                   </td>
-                  <td>{item.distance}</td>
+                  <td>{item.guide}</td>
                   <td>{item.fuel}</td>
                   <td>
                     <div className="flex">

@@ -64,6 +64,7 @@ export interface Transaction {
   total: number
   cartProducts: Product[]
   product: Product
+  guide: string
   picture: string
   fullName: string
   username: string
@@ -100,6 +101,7 @@ export const TransactionEmpty = {
   delivery: 'Instant',
   startingLocation: '',
   invoiceNumber: '',
+  guide: '',
   total: 0,
   distance: 0,
   product: ProductEmpty,

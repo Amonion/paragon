@@ -10,7 +10,10 @@ import {
   formatTimeTo12Hour,
 } from '@/lib/helpers'
 import StatDuration from '@/components/Admin/StatDuration'
-import TransactionStore, { TransactionEmpty } from '@/src/zustand/Transaction'
+import TransactionStore, {
+  Transaction,
+  TransactionEmpty,
+} from '@/src/zustand/Transaction'
 
 const Transactions: React.FC = () => {
   const [page_size] = useState(20)
@@ -47,6 +50,9 @@ const Transactions: React.FC = () => {
   const [fromDate, setFromDate] = useState<Date>(defaultFrom)
   const [toDate, setToDate] = useState<Date>(defaultTo)
   const [partPayment, setPartPayment] = useState(0)
+  const [guide, setGuide] = useState('')
+  const [showGuide, setShowGuide] = useState(false)
+  const [showForm, setShowForm] = useState(false)
   const url = `/transactions?dateFrom=${fromDate}&dateTo=${toDate}`
 
   useEffect(() => {
@@ -66,6 +72,17 @@ const Transactions: React.FC = () => {
     )
   }
 
+  const selectTrx = (trx: Transaction) => {
+    TransactionStore.setState({ transactionForm: trx })
+    setShowForm(true)
+  }
+
+  const selectGuide = (trx: Transaction) => {
+    TransactionStore.setState({ transactionForm: trx })
+    setGuide(trx.guide)
+    setShowGuide(true)
+  }
+
   const handleSubmit = async (e: string) => {
     const form = new FormData()
     form.append('username', transactionForm.username)
@@ -82,6 +99,28 @@ const Transactions: React.FC = () => {
       setMessage,
       () => {
         setTransactionForm(TransactionEmpty)
+        setShowForm(false)
+      }
+    )
+  }
+
+  const handleSubmitGuide = async () => {
+    if (guide.length === 0) {
+      setMessage('Please write a guide to submit', false)
+      return
+    }
+    const form = new FormData()
+    form.append('guide', guide)
+    updatePartPayment(
+      `/transactions/${transactionForm._id}/?ordering=${sort}&page=${
+        page ? page : 1
+      }&dateFrom=${fromDate}&dateTo=${toDate}&isProfit=true`,
+      form,
+      setMessage,
+      () => {
+        setTransactionForm(TransactionEmpty)
+        setShowGuide(false)
+        setGuide('')
       }
     )
   }
@@ -246,11 +285,13 @@ const Transactions: React.FC = () => {
           </div>
         )}
       </div>
+
       {loading && (
         <div className="flex w-full justify-center py-5">
           <i className="bi bi-opencollective loading"></i>
         </div>
       )}
+
       <div className="card_body sharp mb-3">
         <div className="flex flex-wrap gap-3 items-center">
           <div onClick={toggleAllSelected} className="tableActions">
@@ -260,9 +301,28 @@ const Transactions: React.FC = () => {
               }`}
             ></i>
           </div>
+
           <div onClick={startDeleteTransactions} className="tableActions">
             <i className="bi bi-trash"></i>
           </div>
+
+          {selectedTransactions.length === 1 && (
+            <div
+              onClick={() => selectTrx(selectedTransactions[0])}
+              className="tableActions"
+            >
+              <i className="bi bi-pen"></i>
+            </div>
+          )}
+          {selectedTransactions.length === 1 && (
+            <div
+              onClick={() => selectGuide(selectedTransactions[0])}
+              className="tableActions"
+            >
+              <i className="bi bi-geo-alt"></i>
+            </div>
+          )}
+
           <div className="ml-auto flex items-center">
             <div className="text-[var(--success)] mr-3">
               ₦{formatMoney(summary.totalProfit)}
@@ -282,9 +342,12 @@ const Transactions: React.FC = () => {
         />
       </div>
 
-      {transactionForm._id && (
+      {transactionForm._id && showForm && (
         <div
-          onClick={() => setTransactionForm(TransactionEmpty)}
+          onClick={() => {
+            setTransactionForm(TransactionEmpty)
+            setShowForm(false)
+          }}
           className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
         >
           <div
@@ -397,6 +460,47 @@ const Transactions: React.FC = () => {
               >
                 POS
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {transactionForm._id && showGuide && (
+        <div
+          onClick={() => {
+            setTransactionForm(TransactionEmpty)
+            setShowGuide(false)
+          }}
+          className="fixed h-full w-full z-30 left-0 top-0 bg-black/50 items-center justify-center flex"
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+            className="card_body sharp w-full max-w-[600px]"
+          >
+            <div className="flex flex-col">
+              <label className="label mb-2" htmlFor="">
+                Delivery Guide for {transactionForm.fullName}
+              </label>
+              <textarea
+                placeholder="Write delivery guide"
+                className="form-input"
+                value={guide}
+                onChange={(e) => setGuide(e.target.value)}
+              ></textarea>
+            </div>
+
+            <div className="bg-[var(--secondary)] p-3 flex items-center flex-wrap">
+              <div className="mr-auto text-[var(--customRedColor)]">
+                ₦{formatMoney(transactionForm.totalAmount)}
+              </div>
+              <div
+                onClick={handleSubmitGuide}
+                className="px-2 cursor-pointer py-1 bg-[var(--success)] text-white mr-3"
+              >
+                Submit Guide
+              </div>{' '}
             </div>
           </div>
         </div>

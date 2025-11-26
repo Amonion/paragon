@@ -79,7 +79,7 @@ const SellingTable: React.FC = () => {
       const value = e.target.value
       if (value.trim().length > 0) {
         searchUser(
-          `/users/search?fullName=${value}&username=${value}&page_size=${page_size}`
+          `/users/search?fullName=${value}&username=${value}&email=${value}&phone=${value}&page_size=${page_size}`
         )
       } else {
         UserStore.setState({ searchedUsers: [] })

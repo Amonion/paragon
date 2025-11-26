@@ -7,17 +7,15 @@ import { NavStore } from '@/src/zustand/notification/Navigation'
 import { AuthStore } from '@/src/zustand/user/AuthStore'
 import ThemeToggle from './ThemeToggle'
 import {
-  Gauge, // Dashboard
-  User, // Profile
+  Gauge,
   Users,
-  MessageCircle,
   FileArchive,
   CreditCard,
   ArrowLeftRight,
   Boxes,
   Settings,
   Wrench,
-  HeartHandshake, // Comments
+  HeartHandshake,
 } from 'lucide-react'
 
 export default function VerticalNavigation() {
@@ -25,9 +23,9 @@ export default function VerticalNavigation() {
   const [isSocial, toggleSocial] = useState(false)
   const [isTransaction, toggleTransaction] = useState(false)
   const [isMsgActive, toggleMessages] = useState(false)
-  const [isActivities, toggleCompetition] = useState(false)
   const [isPagesActive, togglePages] = useState(false)
   const [isService, toggleService] = useState(false)
+  const [isUser, toggleUser] = useState(false)
   const [isSettingsActive, toggleSettings] = useState(false)
   const pathname = usePathname()
   const { toggleVNav, vNav, clearNav } = NavStore()
@@ -36,9 +34,9 @@ export default function VerticalNavigation() {
   const offStates = () => {
     toggleSettings(false)
     toggleMessages(false)
-    toggleCompetition(false)
     togglePages(false)
     toggleService(false)
+    toggleUser(false)
     toggleTransaction(false)
     toggleSocial(false)
     clearNav()
@@ -112,39 +110,60 @@ export default function VerticalNavigation() {
             <Gauge className="mr-3 w-5 h-5" />
             Dashboard
           </Link>
-
           <Link
             className={`${
-              pathname === '/admin/profile'
+              pathname === '/admin/activities'
                 ? 'text-[var(--customRedColor)]'
                 : ''
             } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
-            href="/admin/profile"
+            href="/admin/activities"
           >
-            <User className="mr-3 w-5 h-5" />
-            Profile
+            <ArrowLeftRight className="mr-3 w-5 h-5" />
+            Sell Products
           </Link>
           <Link
             className={`${
-              pathname === '/admin/users' ? 'text-[var(--customRedColor)]' : ''
-            } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
-            href="/admin/users"
-          >
-            <Users className="mr-3 w-5 h-5" />
-            Customers
-          </Link>
-          <Link
-            className={`${
-              pathname === '/admin/reviews'
+              pathname === '/admin/activities/purchase'
                 ? 'text-[var(--customRedColor)]'
                 : ''
             } v_nav_items hover:text-[var(--customRedColor)] flex items-center`}
-            href="/admin/reviews"
+            href="/admin/activities/purchase"
           >
-            <MessageCircle className="mr-3 w-5 h-5" />
-            Reviews
+            <CreditCard className="mr-3 w-5 h-5" />
+            Purchase Products
           </Link>
 
+          <div className={`v_nav_items ${isUser ? 'active trip' : ''}`}>
+            <div
+              className={`${
+                pathname.includes('/admin/users')
+                  ? 'text-[var(--customRedColor)]'
+                  : ''
+              }  hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
+            >
+              <Link className="flex flex-1 items-center" href="/admin/users">
+                <Users className="mr-3 w-5 h-5" />
+                Customers
+              </Link>
+              <i
+                onClick={() => toggleUser((e) => !e)}
+                className={`bi bi-caret-down-fill ml-auto ${
+                  isUser ? 'active' : ''
+                }`}
+              ></i>
+            </div>
+            <div className="nav_dropdown">
+              <Link className="inner_nav_items" href="/admin/users/reviews">
+                Customer Reviews
+              </Link>
+              <Link className="inner_nav_items" href="/admin/users/equipments">
+                Equipment Report
+              </Link>
+              <Link className="inner_nav_items" href="/admin/users/visitors">
+                Visitors
+              </Link>
+            </div>
+          </div>
           <div className={`v_nav_items ${isSocial ? 'active two' : ''}`}>
             <div
               className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
@@ -210,7 +229,7 @@ export default function VerticalNavigation() {
             </div>
           </div>
 
-          <div className={`v_nav_items ${isService ? 'active trip' : ''}`}>
+          <div className={`v_nav_items ${isService ? 'active two' : ''}`}>
             <div
               className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
             >
@@ -241,16 +260,10 @@ export default function VerticalNavigation() {
               >
                 Services
               </Link>
-              <Link
-                className="inner_nav_items"
-                href="/admin/operations/expenses"
-              >
-                Expenses
-              </Link>
             </div>
           </div>
 
-          <div className={`v_nav_items ${isTransaction ? 'active two' : ''}`}>
+          <div className={`v_nav_items ${isTransaction ? 'active trip' : ''}`}>
             <div
               className={`hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
             >
@@ -281,35 +294,11 @@ export default function VerticalNavigation() {
               >
                 Purchase Transactions
               </Link>
-            </div>
-          </div>
-
-          <div className={`v_nav_items ${isActivities ? 'active two' : ''}`}>
-            <div
-              className={`flex hover:text-[var(--customRedColor)] cursor-pointer ${
-                pathname.includes('activities')
-                  ? 'text-[var(--customRedColor)]'
-                  : ''
-              } items-center py-3`}
-              onClick={() => toggleCompetition((e) => !e)}
-            >
-              <ArrowLeftRight className="mr-3 w-5 h-5" />
-              Sell-Purchase
-              <i
-                className={`bi bi-caret-down-fill ml-auto ${
-                  isActivities ? 'active' : ''
-                }`}
-              ></i>
-            </div>
-            <div className="nav_dropdown">
-              <Link className="inner_nav_items" href="/admin/activities">
-                Sell Products
-              </Link>
               <Link
                 className="inner_nav_items"
-                href="/admin/activities/purchase"
+                href="/admin/operations/expenses"
               >
-                Purchase Products
+                Expenses
               </Link>
             </div>
           </div>

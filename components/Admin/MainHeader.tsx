@@ -101,6 +101,9 @@ export default function MainHeader() {
             />
           </Link>
 
+          <Link href="/admin/profile" className="headerCircle">
+            <i className="bi bi-person common-icon"></i>
+          </Link>
           <Link href="/admin/notifications" className="headerCircle">
             {unread > 0 && (
               <span className="dot_notification">

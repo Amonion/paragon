@@ -84,49 +84,6 @@ const Ratings: React.FC = () => {
 
   return (
     <>
-      {/* <div className="card_body sharp mb-5">
-        <div className="text-lg text-[var(--text-secondary)]">
-          Table of Frequently Asked Questions
-        </div>
-        <div className="relative mb-2">
-          <div className={`input_wrap ml-auto active `}>
-            <input
-              ref={inputRef}
-              type="search"
-              onChange={handlesearchFaq}
-              className={`transparent-input flex-1 `}
-              placeholder="Search Faqs"
-            />
-            {loading ? (
-              <i className="bi bi-opencollective common-icon loading"></i>
-            ) : (
-              <i className="bi bi-search common-icon cursor-pointer"></i>
-            )}
-          </div>
-
-          {searchedFaqs.length > 0 && (
-            <div
-              className={`dropdownList ${
-                searchedFaqs.length > 0
-                  ? 'overflow-auto'
-                  : 'overflow-hidden h-0'
-              }`}
-            >
-              {searchedFaqs.map((item, index) => (
-                <div key={index} className="input_drop_list">
-                  <Link
-                    href={`/school/students/student/${item._id}`}
-                    className="flex-1"
-                  >
-                    {item.question}, {item.category}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div> */}
-
       <div className="overflow-auto mb-5">
         {ratings.length > 0 ? (
           <table>
