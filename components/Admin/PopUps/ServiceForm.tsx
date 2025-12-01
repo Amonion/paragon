@@ -68,6 +68,12 @@ const ServiceForm: React.FC = () => {
         field: 'Name field',
       },
       {
+        name: 'warranty',
+        value: serviceForm.warranty,
+        rules: { blank: false },
+        field: 'Name field',
+      },
+      {
         name: 'clientPhone',
         value: serviceForm.clientPhone,
         rules: { blank: false },
@@ -177,7 +183,7 @@ const ServiceForm: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Name
+                Vendor Name
               </label>
               <input
                 className="form-input"
@@ -190,7 +196,7 @@ const ServiceForm: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Phone
+                Vendor Phone
               </label>
               <input
                 className="form-input"
@@ -203,12 +209,25 @@ const ServiceForm: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Address
+                Vendor Address
               </label>
               <input
                 className="form-input"
                 name="clientAddress"
                 value={serviceForm.clientAddress}
+                onChange={handleInputChange}
+                type="text"
+                placeholder="Enter client address"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
+                Client Warranty
+              </label>
+              <input
+                className="form-input"
+                name="warranty"
+                value={serviceForm.warranty}
                 onChange={handleInputChange}
                 type="text"
                 placeholder="Enter client address"
@@ -236,10 +255,10 @@ const ServiceForm: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Service Description
+              Service Remark
             </label>
             <textarea
-              placeholder="Write the description/observation of the service"
+              placeholder="Write the remark/observation of the service"
               className="form-input"
               name="description"
               value={serviceForm.description}

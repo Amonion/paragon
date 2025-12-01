@@ -18,6 +18,7 @@ export interface Service {
   username: string
   clientName: string
   clientPhone: string
+  warranty: string
   clientAddress: string
   amount: number
   startedAt: null | Date | number
@@ -37,6 +38,7 @@ export const ServiceEmpty = {
   clientName: '',
   clientPhone: '',
   clientAddress: '',
+  warranty: '',
   amount: 0,
   startedAt: null,
   endedAt: null,

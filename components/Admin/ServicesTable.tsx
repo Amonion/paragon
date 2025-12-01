@@ -114,11 +114,12 @@ const ServicesTable: React.FC = () => {
               <tr className="bg-[var(--primary)] p-2">
                 <th>S/N</th>
                 <th>Title</th>
-                <th>Client</th>
+                <th>Vendor</th>
                 <th>Phone</th>
                 <th>Address</th>
-                <th>Amount</th>
+                <th>Bill</th>
                 <th>Duration</th>
+                <th>Warranty</th>
                 <th>Time</th>
               </tr>
             </thead>
@@ -204,6 +205,7 @@ const ServicesTable: React.FC = () => {
                       )}
                     </div>
                   </td>
+                  <td>{item.warranty}</td>
                   <td>
                     {formatTimeTo12Hour(item.createdAt)} <br />
                     {formatDateToDDMMYY(item.createdAt)}
@@ -227,6 +229,7 @@ const ServicesTable: React.FC = () => {
           </div>
         )}
       </div>
+
       {loading && (
         <div className="flex w-full justify-center py-5">
           <i className="bi bi-opencollective loading"></i>

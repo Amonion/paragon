@@ -125,8 +125,8 @@ const Expenses: React.FC = () => {
                 <th>S/N</th>
                 <th>Staff</th>
                 <th>Amount</th>
-                <th>Description</th>
-                <th>Time</th>
+                <th>Particulars</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -225,7 +225,7 @@ const Expenses: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Expenses
+                Particulars
               </label>
               <textarea
                 placeholder="Enter expense description"

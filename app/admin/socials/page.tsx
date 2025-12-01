@@ -77,6 +77,7 @@ const Socials: React.FC = () => {
                 <th>Picture</th>
                 <th>Post</th>
                 <th>Likes</th>
+                <th>Views</th>
                 <th>Replies</th>
                 <th>Type</th>
                 <th>Date</th>
@@ -111,13 +112,13 @@ const Socials: React.FC = () => {
                           className="card_list_item"
                           onClick={() => startEdit(item)}
                         >
-                          Edit consumptions
+                          Edit Social
                         </div>
                         <div
                           className="card_list_item"
                           onClick={() => startDelete(item._id)}
                         >
-                          Delete consumptions
+                          Delete Social
                         </div>
                       </div>
                     )}
@@ -147,6 +148,7 @@ const Socials: React.FC = () => {
                   </td>
                   <td>{item.post}</td>
                   <td>{item.likes}</td>
+                  <td>{item.views}</td>
                   <td>{item.comments}</td>
                   <td>{item.socialType}</td>
                   <td>{formatDateToDDMMYY(item.createdAt)}</td>

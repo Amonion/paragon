@@ -171,7 +171,7 @@ const CreateBuyProduct: React.FC = () => {
         <div className="grid-3 grid-lay">
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Supplier Name
+              Merchandise Name
             </label>
             <input
               className="form-input"
@@ -179,12 +179,12 @@ const CreateBuyProduct: React.FC = () => {
               value={productForm.supName}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter suppliers name"
+              placeholder="Enter merchandise name"
             />
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Supplier Address
+              Merchandise Address
             </label>
             <input
               className="form-input"
@@ -192,12 +192,12 @@ const CreateBuyProduct: React.FC = () => {
               value={productForm.supAddress}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter suppliers address"
+              placeholder="Enter merchandise address"
             />
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Supplier Phone
+              Merchandise Phone
             </label>
             <input
               className="form-input"
@@ -205,13 +205,13 @@ const CreateBuyProduct: React.FC = () => {
               value={productForm.supPhone}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter suppliers phone"
+              placeholder="Enter merchandise phone"
             />
           </div>
 
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Product Name
+              Item Name
             </label>
             <input
               className="form-input"
@@ -219,7 +219,7 @@ const CreateBuyProduct: React.FC = () => {
               value={productForm.name}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter product name"
+              placeholder="Enter item name"
             />
           </div>
 
@@ -238,7 +238,7 @@ const CreateBuyProduct: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Product Unit Name
+              Item Unit Name
             </label>
             <input
               className="form-input"

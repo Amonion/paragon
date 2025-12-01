@@ -18,6 +18,7 @@ export interface Social {
   picture: string | File
   likes: number
   comments: number
+  views: number
   url: string
   staffName: string
   createdAt: Date | null | number
@@ -33,6 +34,7 @@ export const SocialEmpty = {
   socialType: '',
   picture: '',
   likes: 0,
+  views: 0,
   comments: 0,
   url: '',
   staffName: '',

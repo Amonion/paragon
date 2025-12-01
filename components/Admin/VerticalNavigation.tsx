@@ -136,12 +136,15 @@ export default function VerticalNavigation() {
           <div className={`v_nav_items ${isUser ? 'active trip' : ''}`}>
             <div
               className={`${
-                pathname.includes('/admin/users')
+                pathname.includes('/admin/customers')
                   ? 'text-[var(--customRedColor)]'
                   : ''
               }  hover:text-[var(--customRedColor)] flex cursor-pointer items-center py-3`}
             >
-              <Link className="flex flex-1 items-center" href="/admin/users">
+              <Link
+                className="flex flex-1 items-center"
+                href="/admin/customers"
+              >
                 <Users className="mr-3 w-5 h-5" />
                 Customers
               </Link>
@@ -153,13 +156,19 @@ export default function VerticalNavigation() {
               ></i>
             </div>
             <div className="nav_dropdown">
-              <Link className="inner_nav_items" href="/admin/users/reviews">
+              <Link className="inner_nav_items" href="/admin/customers/reviews">
                 Customer Reviews
               </Link>
-              <Link className="inner_nav_items" href="/admin/users/equipments">
+              <Link
+                className="inner_nav_items"
+                href="/admin/customers/equipments"
+              >
                 Equipment Report
               </Link>
-              <Link className="inner_nav_items" href="/admin/users/visitors">
+              <Link
+                className="inner_nav_items"
+                href="/admin/customers/visitors"
+              >
                 Visitors
               </Link>
             </div>

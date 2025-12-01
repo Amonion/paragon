@@ -57,15 +57,13 @@ export default function RootLayout({
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
-    const shouldRing =
-      pathname !== '/admin/transactions' &&
-      transactions.some((item) => item.status === false) &&
-      !isNotification
-
-    if (shouldRing) {
-      interval = setInterval(() => {
-        playPopSound()
-      }, 5000)
+    if (pathname !== '/admin/transactions' && transactions.length > 0) {
+      const shouldRing = !isNotification
+      if (shouldRing && pathname === 'not noso') {
+        interval = setInterval(() => {
+          playPopSound()
+        }, 5000)
+      }
     } else {
       if (pathname === '/admin/transactions') {
         TransactionStore.setState({ isNotification: false })

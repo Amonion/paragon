@@ -135,7 +135,7 @@ const StrategyForm: React.FC = () => {
           ))}
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Customer Name
+              Strategic Title
             </label>
             <input
               className="form-input"
@@ -143,7 +143,7 @@ const StrategyForm: React.FC = () => {
               value={strategy}
               onChange={(e) => setStrategy(e.target.value)}
               type="text"
-              placeholder="Enter customer name"
+              placeholder="Enter strategy title"
             />
           </div>
 

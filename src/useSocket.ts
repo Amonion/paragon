@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client'
 // const SOCKET_URL = "http://localhost:8080";
 const SOCKET_URL =
   process.env.NODE_ENV === 'production'
-    ? 'https://schoolingsocial-api-v1.onrender.com'
+    ? 'https://paragon-api-1.onrender.com'
     : 'http://localhost:8082'
 
 const useSocket = () => {

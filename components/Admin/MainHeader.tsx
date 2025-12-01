@@ -6,14 +6,19 @@ import { useParams, usePathname, useRouter } from 'next/navigation'
 import NotificationStore from '@/src/zustand/notification/Notification'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import ExpenseStore from '@/src/zustand/Expenses'
+import { Monitor } from 'lucide-react'
+import { AuthStore } from '@/src/zustand/user/AuthStore'
+import useSocket from '@/src/useSocket'
 
 export default function MainHeader() {
   const { toggleVNav, setHeaderHeight } = NavStore()
   const { page_size, notifications, getNotifications } = NotificationStore()
   const { latestExpenses, getLatestExpenses } = ExpenseStore()
   const { unread } = NotificationStore()
+  const socket = useSocket()
   const [sort] = useState('-createdAt')
   const { setMessage } = MessageStore()
+  const { user } = AuthStore()
   const [showHeader, setShowHeader] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isOutOfView, setIsOutOfView] = useState(false)
@@ -21,6 +26,19 @@ export default function MainHeader() {
   const router = useRouter()
   const pathname = usePathname()
   const { page } = useParams()
+
+  useEffect(() => {
+    if (!socket) return
+    if (user) {
+      const form = {
+        staffName: user.fullName,
+        staffUsername: user.username,
+        page: pathname.replace('/admin/', ''),
+        createdAt: new Date(),
+      }
+      socket.emit(`message`, { to: 'activity', form })
+    }
+  }, [pathname, user, socket])
 
   useEffect(() => {
     if (divRef.current) {
@@ -86,6 +104,9 @@ export default function MainHeader() {
               <i className="bi bi-arrow-left common-icon"></i>
             </div>
           )}
+          <Link href={'/admin/staff-activities'} className="headerCircle top">
+            <Monitor size={16} />
+          </Link>
           <div className="mr-auto"></div>
 
           <Link href="/" className="block absoluteCenter">

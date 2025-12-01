@@ -79,6 +79,12 @@ const SocialForm: React.FC = () => {
         field: 'Like field',
       },
       {
+        name: 'views',
+        value: socialForm.views,
+        rules: { blank: false },
+        field: 'Like field',
+      },
+      {
         name: 'comments',
         value: socialForm.comments,
         rules: { blank: false },
