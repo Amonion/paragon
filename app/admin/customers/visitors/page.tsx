@@ -354,7 +354,7 @@ const Visitors: React.FC = () => {
             className="card_body sharp w-full max-w-[600px]"
           >
             <div className="relative mb-2">
-              <div className="t mb-2">Collected by: {visitorForm.visited}</div>
+              <div className="t mb-2">Staff visited: {visitorForm.visited}</div>
               <div className={`input_wrap ml-auto active `}>
                 <input
                   ref={inputRef}
