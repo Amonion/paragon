@@ -184,7 +184,7 @@ const CreateBuyProduct: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Merchandise Address
+              Suppliers Address
             </label>
             <input
               className="form-input"
@@ -192,12 +192,12 @@ const CreateBuyProduct: React.FC = () => {
               value={productForm.supAddress}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter merchandise address"
+              placeholder="Enter suppliers address"
             />
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Merchandise Phone
+              Suppliers Phone
             </label>
             <input
               className="form-input"
@@ -205,7 +205,7 @@ const CreateBuyProduct: React.FC = () => {
               value={productForm.supPhone}
               onChange={handleInputChange}
               type="text"
-              placeholder="Enter merchandise phone"
+              placeholder="Enter suppliers phone"
             />
           </div>
 
