@@ -196,6 +196,19 @@ const SocialForm: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
+                Views
+              </label>
+              <input
+                className="form-input"
+                name="views"
+                value={socialForm.views}
+                onChange={handleInputChange}
+                type="number"
+                placeholder="Enter Views"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="label" htmlFor="">
                 Comments
               </label>
               <input
