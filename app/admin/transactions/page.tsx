@@ -28,7 +28,7 @@ const Transactions: React.FC = () => {
     transactionForm,
     isAllChecked,
     selectedTransactions,
-    toggleChecked,
+    // toggleChecked,
     toggleAllSelected,
     massDeleteTransactions,
     updatePartPayment,
@@ -183,14 +183,14 @@ const Transactions: React.FC = () => {
                 >
                   <td>
                     <div className="flex items-center">
-                      <div
+                      {/* <div
                         className={`checkbox ${item.isChecked ? 'active' : ''}`}
                         onClick={() => toggleChecked(index)}
                       >
                         {item.isChecked && (
                           <i className="bi bi-check text-white text-lg"></i>
                         )}
-                      </div>
+                      </div> */}
                       {(page ? Number(page) - 1 : 1 - 1) * page_size +
                         index +
                         1}
