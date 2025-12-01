@@ -217,12 +217,12 @@ const ServiceForm: React.FC = () => {
                 value={serviceForm.clientAddress}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client address"
+                placeholder="Enter vendor address"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Client Warranty
+                Vendor Warranty
               </label>
               <input
                 className="form-input"
@@ -230,12 +230,12 @@ const ServiceForm: React.FC = () => {
                 value={serviceForm.warranty}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter client address"
+                placeholder="Enter vendor address"
               />
             </div>
             <div className="flex flex-col">
               <label className="label" htmlFor="">
-                Amount
+                Bill
               </label>
               <input
                 className="form-input"
@@ -243,7 +243,7 @@ const ServiceForm: React.FC = () => {
                 value={serviceForm.amount}
                 onChange={handleInputChange}
                 type="text"
-                placeholder="Enter amount"
+                placeholder="Enter bill"
               />
             </div>
             <div className="flex flex-col">
