@@ -24,7 +24,7 @@ const Transactions: React.FC = () => {
     summary,
     loading,
     count,
-    transactions,
+    trx,
     transactionForm,
     isAllChecked,
     selectedTransactions,
@@ -161,7 +161,7 @@ const Transactions: React.FC = () => {
       />
 
       <div className="overflow-auto mb-5">
-        {transactions && transactions.length > 0 ? (
+        {trx.length > 0 ? (
           <table>
             <thead>
               <tr className="bg-[var(--primary)] p-2">
@@ -176,7 +176,7 @@ const Transactions: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((item, index) => (
+              {trx.map((item, index) => (
                 <tr
                   key={index}
                   className={` ${index % 2 === 1 ? 'bg-[var(--primary)]' : ''}`}

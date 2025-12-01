@@ -141,6 +141,7 @@ interface TransactionState {
   period: string
   selectedTransactions: Transaction[]
   transactions: Transaction[]
+  trx: Transaction[]
   deliveries: Transaction[]
   userTransactions: Transaction[]
   latest: Transaction[]
@@ -214,6 +215,7 @@ const TransactionStore = create<TransactionState>((set) => ({
   totals: TotalsEmpty,
   period: 'all',
   transactions: [],
+  trx: [],
   userTransactions: [],
   fromDate: null,
   toDate: null,
@@ -252,7 +254,7 @@ const TransactionStore = create<TransactionState>((set) => ({
   },
 
   setProcessedResults: ({ count, results }: FetchResponse) => {
-    if (results) {
+    if (results.length > 0) {
       const updatedResults = results.map((item: Transaction) => ({
         ...item,
         isChecked: false,
@@ -262,6 +264,7 @@ const TransactionStore = create<TransactionState>((set) => ({
       set({
         count,
         transactions: updatedResults,
+        trx: results,
       })
     }
   },

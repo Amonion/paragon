@@ -3,7 +3,7 @@ import '../../styles/team/team.css'
 import '../../styles/users/main.css'
 import '../../styles/utility.css'
 import Response from '../../components/Messages/Response'
-import { playPopSound } from '@/lib/sound'
+// import { playPopSound } from '@/lib/sound'
 import UserAlert from '@/components/Messages/UserAlert'
 import { MessageStore } from '@/src/zustand/notification/Message'
 import { NavStore } from '@/src/zustand/notification/Navigation'
@@ -29,7 +29,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const { transactions, isNotification } = TransactionStore()
+  // const { transactions, isNotification } = TransactionStore()
   const { buyingProducts, getBuyingProducts } = ProductStore()
   const { message, setMessage } = MessageStore()
   const { headerHeight } = NavStore()
@@ -54,26 +54,26 @@ export default function RootLayout({
     return () => media.removeEventListener('change', handler)
   }, [pathname])
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
+  // useEffect(() => {
+  //   let interval: NodeJS.Timeout | null = null
 
-    if (pathname !== '/admin/transactions' && transactions.length > 0) {
-      const shouldRing = !isNotification
-      if (shouldRing && pathname === 'not noso') {
-        interval = setInterval(() => {
-          playPopSound()
-        }, 5000)
-      }
-    } else {
-      if (pathname === '/admin/transactions') {
-        TransactionStore.setState({ isNotification: false })
-      }
-    }
+  //   if (pathname !== '/admin/transactions' && transactions.length > 0) {
+  //     const shouldRing = !isNotification
+  //     if (shouldRing && pathname === 'not noso') {
+  //       interval = setInterval(() => {
+  //         playPopSound()
+  //       }, 5000)
+  //     }
+  //   } else {
+  //     if (pathname === '/admin/transactions') {
+  //       TransactionStore.setState({ isNotification: false })
+  //     }
+  //   }
 
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [pathname, transactions, isNotification])
+  //   return () => {
+  //     if (interval) clearInterval(interval)
+  //   }
+  // }, [pathname, transactions, isNotification])
 
   useEffect(() => {
     if (!socket) return

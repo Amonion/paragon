@@ -225,7 +225,7 @@ const CreateBuyProduct: React.FC = () => {
 
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Unit Price
+              Merchandise Unit Price
             </label>
             <input
               className="form-input"
@@ -238,7 +238,7 @@ const CreateBuyProduct: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <label className="label" htmlFor="">
-              Item Unit Name
+              Merchandise Unit Name
             </label>
             <input
               className="form-input"
