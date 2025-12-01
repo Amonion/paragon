@@ -153,7 +153,7 @@ const Visitors: React.FC = () => {
       {
         name: 'visited',
         value: visitorForm.visited,
-        rules: { blank: true },
+        rules: { blank: false },
         field: 'Authors field',
       },
       {
